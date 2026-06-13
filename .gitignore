@@ -1,0 +1,21 @@
+# OS / editor cruft
+.DS_Store
+Thumbs.db
+*.swp
+.idea/
+.vscode/
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# skill-creator eval workspaces / generated artifacts
+*-workspace/
+evals/results/
+benchmark.json
+benchmark.md
+
+# loop-state working dirs, if a relay loop is ever run from inside this repo
+.loop/
