@@ -1,0 +1,160 @@
+{
+  "source": "Chrome read-only spot check of https://ai-hub.ndhy.com/docs/models?type=chat",
+  "checked_at": "2026-05-22",
+  "purpose": "Record visible model-detail card naming evidence. LLM cards expose a 模型版本 value for DSL model.name. AIGC cards may omit 模型版本, so direct component nodes must use canvas/exported model_info.model_id selectors instead. Canvas selector availability is workspace-specific and must override public model-list assumptions.",
+  "cards": [
+    {
+      "tab": "大语言模型",
+      "display_name": "GPT-5.5",
+      "visible_model_version": "gpt-5.5-2026-04-24",
+      "context_window": "1.1M",
+      "max_output": "128K",
+      "dsl_rule": "Use visible_model_version as LLM node model.name."
+    },
+    {
+      "tab": "大语言模型",
+      "display_name": "GPT-5.4",
+      "visible_model_version": "gpt-5.4-2026-03-05",
+      "context_window": "1.1M",
+      "max_output": "128K",
+      "dsl_rule": "Use visible_model_version as LLM node model.name."
+    },
+    {
+      "tab": "大语言模型",
+      "display_name": "Claude 4.7 Opus",
+      "visible_model_version": "claude-opus-4-7",
+      "context_window": "1.0M",
+      "max_output": "128K",
+      "dsl_rule": "Use visible_model_version as LLM node model.name."
+    },
+    {
+      "tab": "大语言模型",
+      "display_name": "Claude 4.6 Sonnet",
+      "visible_model_version": "claude-sonnet-4-6",
+      "context_window": "1.0M",
+      "max_output": "64K",
+      "dsl_rule": "Use visible_model_version as LLM node model.name."
+    },
+    {
+      "tab": "图像生成模型",
+      "display_name": "GPT Image 2",
+      "visible_model_version": "",
+      "dsl_rule": "No 模型版本 line was visible in the model card. For direct image-generation nodes, use observed canvas selector id gpt-image-2-t2i, not display_name and not the public catalog/version value."
+    },
+    {
+      "tab": "图像生成模型",
+      "display_name": "即梦图片 5.0",
+      "visible_model_version": "",
+      "dsl_rule": "No 模型版本 line was visible in the model card. Confirm the image-generation selector in the canvas/export before writing model_info.model_id."
+    },
+    {
+      "tab": "视频生成模型",
+      "display_name": "即梦 Seedance 2.0",
+      "visible_model_version": "",
+      "dsl_rule": "No 模型版本 line was visible in the model card. In the current workspace, the direct Seedance 2.0 video submodes were visible but locked in the canvas selector. Do not use these selectors by default unless the target workspace permission is confirmed and a fresh export/fingerprint is captured."
+    },
+    {
+      "tab": "视频生成模型",
+      "display_name": "Sora 2",
+      "visible_model_version": "",
+      "dsl_rule": "No 模型版本 line was visible in the model card. Confirm the video-generation selector in the canvas/export before writing model_info.model_id."
+    },
+    {
+      "tab": "音频生成模型",
+      "display_name": "Suno V5",
+      "visible_model_version": "",
+      "dsl_rule": "No 模型版本 line was visible in the model card. For direct audio-generation music nodes, use exported canvas selector id suno-v5-music_generate."
+    },
+    {
+      "tab": "音频生成模型",
+      "display_name": "Doubao Seed TTS 2.0",
+      "visible_model_version": "",
+      "dsl_rule": "No 模型版本 line was visible in the model card. For direct audio-generation TTS nodes, use observed canvas selector id seed-tts-2.0."
+    },
+    {
+      "tab": "音频生成模型",
+      "display_name": "Doubao Seed ASR",
+      "visible_model_version": "",
+      "dsl_rule": "No 模型版本 line was visible in the model card. For direct speech-recognition nodes, use saved-canvas-export selector id doubao-asr-speech2text; do not write model-list id volc.seedasr.auc directly."
+    },
+    {
+      "tab": "3D 资源生成模型",
+      "display_name": "混元生 3D（专业版）3.1",
+      "visible_model_version": "",
+      "dsl_rule": "No 模型版本 line was visible in the model card. A live AI Hub export on 2026-05-27 showed the 文生3D模型 selector id is hunyuan-3d-3.1-pro-text with case-sensitive params Prompt, GenerateType, EnablePBR, FaceCount, ResultFormat, and enable_cs_transfer. Do not use retired node type 3d-resource-generation or stale selector tencent-hunyuan-3d-3.1-resource-pro for direct DSL generation."
+    }
+  ],
+  "canvas_checks": [
+    {
+      "checked_at": "2026-05-22",
+      "app_url": "https://ai-hub.ndhy.com/app/377c1422-e4ea-4d62-90ba-c1a859f9984c/workflow",
+      "node_type": "video-generation",
+      "selector_label": "即梦 Seedance 2.0 参考帧生视频",
+      "result": "locked_in_current_workspace",
+      "note": "Canvas tooltip: 无该模型权限，联系AIhub助手（10019151），或填写表单申请"
+    },
+    {
+      "checked_at": "2026-05-22",
+      "app_url": "https://ai-hub.ndhy.com/app/377c1422-e4ea-4d62-90ba-c1a859f9984c/workflow",
+      "node_type": "video-generation",
+      "selector_label": "即梦 3.5 Pro 文生视频",
+      "selector_id": "jimeng-3.5-pro-text2video",
+      "result": "selectable_in_current_workspace_but_not_export_safe",
+      "observed_fields": [
+        "prompt",
+        "resolution",
+        "ratio",
+        "duration",
+        "generate_audio",
+        "camerafixed",
+        "watermark",
+        "seed",
+        "return_last_frame",
+        "enable_cs_transfer"
+      ],
+      "superseded_by": "2026-05-27 saved canvas export",
+      "note": "This was a canvas/card observation only. A later saved export showed the production DSL selector is jimeng-seedance-1.5-pro-text2video and the exported param is camera_fixed."
+    },
+    {
+      "checked_at": "2026-05-27",
+      "app_url": "https://ai-hub.ndhy.com/app/e129c873-27f8-4280-88f7-537a8e7688fd/workflow",
+      "node_type": "video-generation",
+      "selector_label": "即梦 3.5 Pro 文生视频",
+      "selector_id": "jimeng-seedance-1.5-pro-text2video",
+      "result": "saved_canvas_exported_reimport_open_run_pending",
+      "source_file": "E2E-成语故事短视频-原生节点-v3 (19).yml",
+      "sha256": "2e76b74a68eb78cde8b2afb11986b846b4e24db3c35b8edecc4ec9c42f99305a",
+      "observed_fields": [
+        "prompt",
+        "resolution",
+        "ratio",
+        "duration",
+        "generate_audio",
+        "camera_fixed",
+        "watermark",
+        "seed",
+        "return_last_frame",
+        "enable_cs_transfer"
+      ]
+    },
+    {
+      "checked_at": "2026-05-22",
+      "app_url": "https://ai-hub.ndhy.com/app/377c1422-e4ea-4d62-90ba-c1a859f9984c/workflow",
+      "node_type": "video-generation",
+      "selector_label": "即梦 3.0 参考图生视频",
+      "selector_id": "jimeng-3.0-pro-image2video",
+      "result": "selectable_in_current_workspace",
+      "observed_fields": [
+        "prompt",
+        "reference_images",
+        "resolution",
+        "ratio",
+        "duration",
+        "watermark",
+        "seed",
+        "return_last_frame",
+        "enable_cs_transfer"
+      ]
+    }
+  ]
+}

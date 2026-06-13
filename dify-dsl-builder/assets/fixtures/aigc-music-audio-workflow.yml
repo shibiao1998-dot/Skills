@@ -1,0 +1,802 @@
+app:
+  description: 输入音乐、BGM 或歌曲需求，使用 AI Hub 原生音频生成组件生成音乐音频，并返回音频 URL、参数包和诊断信息。
+  icon: 🎵
+  icon_background: '#EEF2FF'
+  icon_type: emoji
+  mode: workflow
+  name: AIGC 音乐/BGM 生成 Workflow
+  use_icon_as_answer_icon: false
+dependencies:
+- current_identifier: null
+  type: package
+  value:
+    plugin_unique_identifier: aict/ai_hub:3.3.1@4e71d8262fbecb133fd6801e8b0a4c141f0bf4f0d6b68cec1b5c254a65365e96
+kind: app
+version: 0.3.1
+workflow:
+  conversation_variables: []
+  environment_variables: []
+  features:
+    file_upload:
+      allowed_file_extensions: []
+      allowed_file_types: []
+      allowed_file_upload_methods:
+      - local_file
+      - cs_file
+      audio:
+        enabled: false
+        number_limits: 1
+        transfer_methods:
+        - local_file
+      enabled: false
+      fileUploadConfig:
+        audio_file_size_limit: 100
+        batch_count_limit: 5
+        file_size_limit: 50
+        image_file_size_limit: 20
+        video_file_size_limit: 100
+        workflow_file_upload_limit: 10
+      image:
+        enabled: false
+        number_limits: 3
+        transfer_methods:
+        - local_file
+        - cs_file
+      number_limits: 3
+      video:
+        enabled: false
+        number_limits: 1
+        transfer_methods:
+        - local_file
+    opening_statement: ''
+    retriever_resource:
+      enabled: true
+    sensitive_word_avoidance:
+      enabled: false
+    speech_to_text:
+      enabled: false
+    suggested_questions: []
+    suggested_questions_after_answer:
+      enabled: false
+    text_to_speech:
+      enabled: false
+      language: ''
+      voice: ''
+  graph:
+    edges:
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: start
+        targetType: llm
+      id: start-source-plan_music_audio-target
+      source: start
+      sourceHandle: source
+      target: plan_music_audio
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: llm
+        targetType: code
+      id: plan_music_audio-source-normalize_music_request-target
+      source: plan_music_audio
+      sourceHandle: source
+      target: normalize_music_request
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: code
+        targetType: audio-generation
+      id: normalize_music_request-source-generate_music_audio-target
+      source: normalize_music_request
+      sourceHandle: source
+      target: generate_music_audio
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: audio-generation
+        targetType: code
+      id: generate_music_audio-source-normalize_music_output-target
+      source: generate_music_audio
+      sourceHandle: source
+      target: normalize_music_output
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: code
+        targetType: end
+      id: normalize_music_output-source-end-target
+      source: normalize_music_output
+      sourceHandle: source
+      target: end
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    nodes:
+    - data:
+        desc: 单次音乐/BGM/歌曲生成输入。需求模糊时应先澄清用途、是否纯音乐、歌词和风格边界。
+        selected: false
+        title: Start
+        type: start
+        variables:
+        - label: music_brief
+          max_length: 2000
+          options: []
+          required: true
+          type: paragraph
+          variable: music_brief
+        - label: instrumental_mode
+          options:
+          - auto
+          - 'true'
+          - 'false'
+          required: false
+          type: select
+          variable: instrumental_mode
+        - label: lyrics
+          max_length: 3000
+          options: []
+          required: false
+          type: paragraph
+          variable: lyrics
+        - label: music_style
+          max_length: 1000
+          options: []
+          required: false
+          type: text-input
+          variable: music_style
+        - label: title
+          max_length: 100
+          options: []
+          required: false
+          type: text-input
+          variable: title
+        - label: vocal_gender
+          options:
+          - auto
+          - 男
+          - 女
+          required: false
+          type: select
+          variable: vocal_gender
+        - label: negative_style
+          max_length: 500
+          options: []
+          required: false
+          type: text-input
+          variable: negative_style
+      height: 188
+      id: start
+      position:
+        x: 80
+        y: 260
+      positionAbsolute:
+        x: 80
+        y: 260
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        audio:
+          configs:
+            variable_selector: []
+          enabled: false
+        context:
+          enabled: false
+          variable_selector: []
+        desc: 生成 Suno V5 音乐生成组件可直接使用的歌词、风格、标题、控制参数和质量标准。
+        document:
+          configs:
+            variable_selector: []
+          enabled: false
+        model:
+          completion_params:
+            json_schema: "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"\
+              prompt\": {\n      \"type\": \"string\",\n      \"description\": \"\
+              传给音乐生成模型的歌词、纯音乐创作说明或完整音乐提示词\"\n    },\n    \"instrumental\": {\n   \
+              \   \"type\": \"string\",\n      \"enum\": [\n        \"true\",\n  \
+              \      \"false\"\n      ],\n      \"description\": \"是否生成纯音乐；BGM、配乐、背景音乐场景使用\
+              \ true\"\n    },\n    \"title\": {\n      \"type\": \"string\",\n  \
+              \    \"description\": \"音乐标题，短而清楚，不使用版权曲名或真实艺人名\"\n    },\n    \"style\"\
+              : {\n      \"type\": \"string\",\n      \"description\": \"英文逗号分隔的音乐风格、情绪、速度、乐器、人声和制作质量要求\"\
+              \n    },\n    \"negativeTags\": {\n      \"type\": \"string\",\n   \
+              \   \"description\": \"英文逗号分隔的反向风格和质量排除项\"\n    },\n    \"vocalGender\"\
+              : {\n      \"type\": \"string\",\n      \"enum\": [\n        \"男\",\n\
+              \        \"女\"\n      ],\n      \"description\": \"需要人声时的人声性别；纯音乐场景保留默认值即可\"\
+              \n    },\n    \"styleWeight\": {\n      \"type\": \"number\",\n    \
+              \  \"description\": \"风格遵循强度，范围 0 到 1\"\n    },\n    \"weirdnessConstraint\"\
+              : {\n      \"type\": \"number\",\n      \"description\": \"新奇程度约束，范围\
+              \ 0 到 1，生产默认保持较低\"\n    },\n    \"audioWeight\": {\n      \"type\":\
+              \ \"number\",\n      \"description\": \"音频整体生成权重，范围 0 到 1\"\n    },\n\
+              \    \"quality_checklist\": {\n      \"type\": \"string\",\n      \"\
+              description\": \"面向业务验收的音乐质量检查清单\"\n    }\n  },\n  \"required\": [\n\
+              \    \"prompt\",\n    \"instrumental\",\n    \"title\",\n    \"style\"\
+              ,\n    \"negativeTags\",\n    \"vocalGender\",\n    \"styleWeight\"\
+              ,\n    \"weirdnessConstraint\",\n    \"audioWeight\",\n    \"quality_checklist\"\
+              \n  ],\n  \"additionalProperties\": false\n}"
+            max_completion_tokens: 2048
+            response_format: json_schema
+            temperature: 0.2
+          mode: chat
+          name: gpt-5.5-2026-04-24
+          provider: aict/ai_hub/ai_hub
+        prompt_template:
+        - id: system-prompt
+          role: system
+          text: 你是资深音乐制作人、Suno 提示词工程师和短视频 BGM 统筹。你的任务是把业务人员的音乐想法转成可执行的音乐生成参数。必须优先保证可听、可用、风格清楚，不要写版权曲名、艺人名或难以授权的具体仿作。
+        - id: user-prompt
+          role: user
+          text: '请根据输入生成音乐音频参数。
+
+
+            音乐需求：{{#start.music_brief#}}
+
+            是否纯音乐：{{#start.instrumental_mode#}}
+
+            用户提供歌词：{{#start.lyrics#}}
+
+            用户指定风格：{{#start.music_style#}}
+
+            用户指定标题：{{#start.title#}}
+
+            期望人声：{{#start.vocal_gender#}}
+
+            排除风格：{{#start.negative_style#}}
+
+
+            要求：
+
+            - 如果用户给了歌词，优先保留歌词并整理为可唱结构。
+
+            - 如果用户要求 BGM、配乐、纯音乐、背景音乐，instrumental 输出 true。
+
+            - 如果用户没有给歌词但明显想要歌曲，请生成短小、完整、可唱的中文歌词。
+
+            - style 用英文逗号分隔，写清 genre, mood, tempo, instruments, vocal, production
+            quality。
+
+            - negativeTags 用英文逗号分隔，避免 low quality, off key, noisy vocal, distorted
+            mix。
+
+            - 不要使用真实歌手名、版权歌曲名、品牌音乐名。
+
+            - quality_checklist 要让业务人员能判断第一次运行结果是否可用。
+
+            - 输出必须严格符合 JSON Schema，只返回 JSON 对象，不输出 Markdown、解释或额外字段。'
+        structured_output:
+          schema:
+            type: object
+            properties:
+              prompt:
+                type: string
+                description: 传给音乐生成模型的歌词、纯音乐创作说明或完整音乐提示词
+              instrumental:
+                type: string
+                enum:
+                - 'true'
+                - 'false'
+                description: 是否生成纯音乐；BGM、配乐、背景音乐场景使用 true
+              title:
+                type: string
+                description: 音乐标题，短而清楚，不使用版权曲名或真实艺人名
+              style:
+                type: string
+                description: 英文逗号分隔的音乐风格、情绪、速度、乐器、人声和制作质量要求
+              negativeTags:
+                type: string
+                description: 英文逗号分隔的反向风格和质量排除项
+              vocalGender:
+                type: string
+                enum:
+                - 男
+                - 女
+                description: 需要人声时的人声性别；纯音乐场景保留默认值即可
+              styleWeight:
+                type: number
+                description: 风格遵循强度，范围 0 到 1
+              weirdnessConstraint:
+                type: number
+                description: 新奇程度约束，范围 0 到 1，生产默认保持较低
+              audioWeight:
+                type: number
+                description: 音频整体生成权重，范围 0 到 1
+              quality_checklist:
+                type: string
+                description: 面向业务验收的音乐质量检查清单
+            required:
+            - prompt
+            - instrumental
+            - title
+            - style
+            - negativeTags
+            - vocalGender
+            - styleWeight
+            - weirdnessConstraint
+            - audioWeight
+            - quality_checklist
+            additionalProperties: false
+        structured_output_enabled: true
+        selected: false
+        title: 规划音乐音频
+        type: llm
+        variables: []
+        video:
+          configs:
+            variable_selector: []
+          enabled: false
+        vision:
+          enabled: false
+      height: 160
+      id: plan_music_audio
+      position:
+        x: 390
+        y: 260
+      positionAbsolute:
+        x: 390
+        y: 260
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        code: "function cleanText(value, fallback, maxLength) {\n  const text = String(value\
+          \ || '').trim();\n  const resolved = text || fallback;\n  return resolved.length\
+          \ > maxLength ? resolved.slice(0, maxLength) : resolved;\n}\n\nfunction\
+          \ clampNumber(value, fallback, min, max) {\n  const num = Number(value);\n\
+          \  if (!Number.isFinite(num)) {\n    return fallback;\n  }\n  return Math.min(max,\
+          \ Math.max(min, num));\n}\n\nfunction normalizeBooleanText(value, fallback)\
+          \ {\n  const text = String(value || '').trim().toLowerCase();\n  if (text\
+          \ === 'true' || text === 'false') {\n    return text;\n  }\n  return fallback;\n\
+          }\n\nfunction inferInstrumental(mode, brief, lyrics, planned) {\n  const\
+          \ explicit = normalizeBooleanText(mode, '');\n  if (explicit) {\n    return\
+          \ explicit;\n  }\n  const plan = normalizeBooleanText(planned, '');\n  if\
+          \ (plan) {\n    return plan;\n  }\n  const combined = `${brief || ''} ${lyrics\
+          \ || ''}`.toLowerCase();\n  return /纯音乐|bgm|背景音乐|配乐|instrumental|no vocal|无歌词/.test(combined)\
+          \ ? 'true' : 'false';\n}\n\nfunction normalizeGender(value, instrumental)\
+          \ {\n  if (instrumental === 'true') {\n    return '';\n  }\n  const text\
+          \ = String(value || '').trim().toLowerCase();\n  if (['m', 'male', '男',\
+          \ '男声', '男性'].includes(text)) {\n    return 'm';\n  }\n  if (['f', 'female',\
+          \ '女', '女声', '女性'].includes(text)) {\n    return 'f';\n  }\n  return 'f';\n\
+          }\n\nfunction main({planned_prompt, planned_instrumental,\
+          \ planned_title, planned_style, planned_negative_tags, planned_vocal_gender,\
+          \ planned_style_weight, planned_weirdness_constraint, planned_audio_weight,\
+          \ planned_quality_checklist, music_brief, instrumental_mode, lyrics, music_style,\
+          \ title, vocal_gender, negative_style}) {\n  const sourceBrief = cleanText(music_brief,\
+          \ '生成一段适合业务使用的高质量背景音乐。', 2000);\n  const instrumental = inferInstrumental(instrumental_mode,\
+          \ sourceBrief, lyrics, planned_instrumental);\n  const promptFallback = instrumental ===\
+          \ 'true'\n    ? `${sourceBrief}\\nCreate a polished instrumental track with\
+          \ clear structure and usable intro, development, and ending.`\n    : `${lyrics\
+          \ || sourceBrief}\\nCreate a short, singable Chinese song with clear verse\
+          \ and chorus.`;\n  const prompt = cleanText(lyrics || planned_prompt, promptFallback,\
+          \ 3000);\n  const selectedTitle = cleanText(title || planned_title, 'AI\
+          \ Hub Music', 60);\n  const selectedStyle = cleanText(music_style || planned_style,\
+          \ 'cinematic, warm, melodic, polished production, clear mix', 220);\n  const\
+          \ negativeTags = cleanText(negative_style || planned_negative_tags, 'low\
+          \ quality, noisy vocal, off key, off tempo, distorted mix, excessive reverb',\
+          \ 180);\n  const selectedGender = normalizeGender(vocal_gender || planned_vocal_gender,\
+          \ instrumental);\n  const styleWeight = clampNumber(planned_style_weight,\
+          \ 0.9, 0, 1);\n  const weirdnessConstraint = clampNumber(planned_weirdness_constraint,\
+          \ 0.2, 0, 1);\n  const audioWeight = clampNumber(planned_audio_weight, 0.7,\
+          \ 0, 1);\n  const qualityChecklist = cleanText(planned_quality_checklist,\
+          \ '1. 音乐结构完整，有清楚开头、发展和收束。\\n2. 风格与使用场景一致。\\n3. 人声或主旋律清晰，无明显跑调、爆音或节奏错乱。\\\
+          n4. 可直接用于首轮业务验收。', 1500);\n  const diagnostics = {\n    selected_model:\
+          \ 'suno-v5-music_generate',\n    selected_model_note: 'AI Hub direct audio-generation\
+          \ component model_info.model_id uses exported canvas selector id suno-v5-music_generate',\n\
+          \    instrumental,\n    prompt_length: prompt.length,\n    style: selectedStyle,\n\
+          \    negativeTags,\n    vocalGender: selectedGender,\n    styleWeight,\n\
+          \    weirdnessConstraint,\n    audioWeight,\n    quality_checklist: qualityChecklist\n\
+          \  };\n  return {\n    prompt,\n    style: selectedStyle,\n    title: selectedTitle,\n\
+          \    model: 'V5',\n    instrumental,\n\
+          \    negativeTags,\n    vocalGender: selectedGender,\n    styleWeight,\n\
+          \    weirdnessConstraint,\n    audioWeight,\n    quality_checklist: qualityChecklist,\n\
+          \    diagnostics: JSON.stringify(diagnostics, null, 2)\n  };\n}\n"
+        code_language: javascript
+        desc: 规范 Suno V5 参数，校验歌词/提示词、风格、标题、人声和权重。
+        outputs:
+          prompt:
+            children: null
+            type: string
+          style:
+            children: null
+            type: string
+          title:
+            children: null
+            type: string
+          model:
+            children: null
+            type: string
+          instrumental:
+            children: null
+            type: string
+          negativeTags:
+            children: null
+            type: string
+          vocalGender:
+            children: null
+            type: string
+          styleWeight:
+            children: null
+            type: number
+          weirdnessConstraint:
+            children: null
+            type: number
+          audioWeight:
+            children: null
+            type: number
+          quality_checklist:
+            children: null
+            type: string
+          diagnostics:
+            children: null
+            type: string
+        selected: false
+        title: 规范音乐生成参数
+        type: code
+        variables:
+        - value_selector:
+          - plan_music_audio
+          - structured_output
+          - prompt
+          value_type: string
+          variable: planned_prompt
+        - value_selector:
+          - plan_music_audio
+          - structured_output
+          - instrumental
+          value_type: string
+          variable: planned_instrumental
+        - value_selector:
+          - plan_music_audio
+          - structured_output
+          - title
+          value_type: string
+          variable: planned_title
+        - value_selector:
+          - plan_music_audio
+          - structured_output
+          - style
+          value_type: string
+          variable: planned_style
+        - value_selector:
+          - plan_music_audio
+          - structured_output
+          - negativeTags
+          value_type: string
+          variable: planned_negative_tags
+        - value_selector:
+          - plan_music_audio
+          - structured_output
+          - vocalGender
+          value_type: string
+          variable: planned_vocal_gender
+        - value_selector:
+          - plan_music_audio
+          - structured_output
+          - styleWeight
+          value_type: number
+          variable: planned_style_weight
+        - value_selector:
+          - plan_music_audio
+          - structured_output
+          - weirdnessConstraint
+          value_type: number
+          variable: planned_weirdness_constraint
+        - value_selector:
+          - plan_music_audio
+          - structured_output
+          - audioWeight
+          value_type: number
+          variable: planned_audio_weight
+        - value_selector:
+          - plan_music_audio
+          - structured_output
+          - quality_checklist
+          value_type: string
+          variable: planned_quality_checklist
+        - value_selector:
+          - start
+          - music_brief
+          value_type: string
+          variable: music_brief
+        - value_selector:
+          - start
+          - instrumental_mode
+          value_type: string
+          variable: instrumental_mode
+        - value_selector:
+          - start
+          - lyrics
+          value_type: string
+          variable: lyrics
+        - value_selector:
+          - start
+          - music_style
+          value_type: string
+          variable: music_style
+        - value_selector:
+          - start
+          - title
+          value_type: string
+          variable: title
+        - value_selector:
+          - start
+          - vocal_gender
+          value_type: string
+          variable: vocal_gender
+        - value_selector:
+          - start
+          - negative_style
+          value_type: string
+          variable: negative_style
+      height: 220
+      id: normalize_music_request
+      position:
+        x: 700
+        y: 260
+      positionAbsolute:
+        x: 700
+        y: 260
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        desc: 使用当前 AI Hub 可用的 Suno V5 原生音频生成组件生成歌曲或 BGM。
+        model_info:
+          capability: music_generate
+          config_version: v1
+          model_id: suno-v5-music_generate
+          model_name: Suno V5
+          provider: suno
+          provider_name: Suno
+        params:
+          audioWeight:
+            type: variable
+            value_selector:
+            - normalize_music_request
+            - audioWeight
+          customMode:
+            type: constant
+            value: true
+          enable_cs_transfer:
+            type: constant
+            value: true
+          instrumental:
+            type: constant
+            value: true
+          negativeTags:
+            type: variable
+            value_selector:
+            - normalize_music_request
+            - negativeTags
+          promptDescription:
+            type: constant
+            value: null
+          promptLyrics:
+            type: variable
+            value_selector:
+            - normalize_music_request
+            - prompt
+          style:
+            type: variable
+            value_selector:
+            - normalize_music_request
+            - style
+          styleWeight:
+            type: variable
+            value_selector:
+            - normalize_music_request
+            - styleWeight
+          title:
+            type: variable
+            value_selector:
+            - normalize_music_request
+            - title
+          vocalGender:
+            type: constant
+            value: ''
+          weirdnessConstraint:
+            type: variable
+            value_selector:
+            - normalize_music_request
+            - weirdnessConstraint
+        selected: false
+        title: 生成音乐音频
+        type: audio-generation
+      height: 236
+      id: generate_music_audio
+      position:
+        x: 1010
+        y: 260
+      positionAbsolute:
+        x: 1010
+        y: 260
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        code: "function toArray(value) {\n  if (Array.isArray(value)) {\n    return\
+          \ value;\n  }\n  if (value === null || value === undefined || value ===\
+          \ '') {\n    return [];\n  }\n  return [value];\n}\n\nfunction firstAudio(items)\
+          \ {\n  for (const item of items) {\n    if (typeof item === 'string' &&\
+          \ item.trim()) {\n      return {audio_url: item.trim()};\n    }\n    if\
+          \ (item && typeof item === 'object') {\n      const audioUrl = item.remote_url\
+          \ || item.url || item.download_url || item.audio_url || item.stream_url\
+          \ || '';\n      if (String(audioUrl).trim()) {\n        return {\n     \
+          \     audio_url: String(audioUrl).trim(),\n          stream_url: String(item.stream_url\
+          \ || item.remote_url || item.url || ''),\n          duration: String(item.duration\
+          \ || item.audio_duration || ''),\n          title: String(item.title ||\
+          \ item.filename || '')\n        };\n      }\n    }\n  }\n  return {audio_url:\
+          \ ''};\n}\n\nfunction main({audios, prompt, title, style, instrumental,\
+          \ diagnostics}) {\n  const allAudios = toArray(audios);\n  const audio =\
+          \ firstAudio(allAudios);\n  if (!audio.audio_url) {\n    throw new Error('audio-generation\
+          \ returned no usable audio_url for music audio');\n  }\n  const musicPackage\
+          \ = {\n    audio_url: audio.audio_url,\n    stream_url: audio.stream_url\
+          \ || '',\n    duration: audio.duration || '',\n    title: audio.title ||\
+          \ title,\n    style,\n    instrumental,\n    prompt,\n    diagnostics_json:\
+          \ diagnostics\n  };\n  return {\n    audio_url: audio.audio_url,\n    stream_url:\
+          \ audio.stream_url || '',\n    status: 'success',\n    message: 'Music audio\
+          \ generated by AI Hub audio-generation component with Suno V5',\n    duration:\
+          \ audio.duration || '',\n    title: audio.title || title,\n    music_package_json:\
+          \ JSON.stringify(musicPackage, null, 2),\n    raw_response_json: JSON.stringify({audios:\
+          \ allAudios}, null, 2)\n  };\n}\n"
+        code_language: javascript
+        desc: 提取音频 URL，并整理 End 节点需要返回的音乐资产包和原始响应。
+        outputs:
+          audio_url:
+            children: null
+            type: string
+          stream_url:
+            children: null
+            type: string
+          status:
+            children: null
+            type: string
+          message:
+            children: null
+            type: string
+          duration:
+            children: null
+            type: string
+          title:
+            children: null
+            type: string
+          music_package_json:
+            children: null
+            type: string
+          raw_response_json:
+            children: null
+            type: string
+        selected: false
+        title: 整理音乐输出
+        type: code
+        variables:
+        - value_selector:
+          - generate_music_audio
+          - audios
+          value_type: array[file]
+          variable: audios
+        - value_selector:
+          - normalize_music_request
+          - prompt
+          value_type: string
+          variable: prompt
+        - value_selector:
+          - normalize_music_request
+          - title
+          value_type: string
+          variable: title
+        - value_selector:
+          - normalize_music_request
+          - style
+          value_type: string
+          variable: style
+        - value_selector:
+          - normalize_music_request
+          - instrumental
+          value_type: string
+          variable: instrumental
+        - value_selector:
+          - normalize_music_request
+          - diagnostics
+          value_type: string
+          variable: diagnostics
+      height: 224
+      id: normalize_music_output
+      position:
+        x: 1320
+        y: 260
+      positionAbsolute:
+        x: 1320
+        y: 260
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        desc: ''
+        outputs:
+        - value_selector:
+          - normalize_music_output
+          - audio_url
+          value_type: string
+          variable: audio_url
+        - value_selector:
+          - normalize_music_output
+          - stream_url
+          value_type: string
+          variable: stream_url
+        - value_selector:
+          - normalize_music_output
+          - status
+          value_type: string
+          variable: status
+        - value_selector:
+          - normalize_music_output
+          - message
+          value_type: string
+          variable: message
+        - value_selector:
+          - normalize_music_output
+          - duration
+          value_type: string
+          variable: duration
+        - value_selector:
+          - normalize_music_output
+          - title
+          value_type: string
+          variable: title
+        - value_selector:
+          - normalize_music_output
+          - music_package_json
+          value_type: string
+          variable: music_package
+        - value_selector:
+          - normalize_music_output
+          - raw_response_json
+          value_type: string
+          variable: raw_response_json
+        - value_selector:
+          - normalize_music_request
+          - diagnostics
+          value_type: string
+          variable: diagnostics
+        selected: false
+        title: End
+        type: end
+      height: 204
+      id: end
+      position:
+        x: 1630
+        y: 260
+      positionAbsolute:
+        x: 1630
+        y: 260
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    viewport:
+      x: 0
+      y: 0
+      zoom: 0.75

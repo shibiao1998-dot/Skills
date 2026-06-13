@@ -1,0 +1,209 @@
+app:
+  description: ''
+  icon: 💬
+  icon_background: '#E0F2FE'
+  icon_type: emoji
+  mode: advanced-chat
+  name: Minimal Chatflow
+  use_icon_as_answer_icon: false
+dependencies:
+  - current_identifier: null
+    type: package
+    value:
+      plugin_unique_identifier: aict/ai_hub:3.3.1@4e71d8262fbecb133fd6801e8b0a4c141f0bf4f0d6b68cec1b5c254a65365e96
+kind: app
+version: 0.3.1
+workflow:
+  conversation_variables: []
+  environment_variables: []
+  features:
+    file_upload:
+      allowed_file_extensions: []
+      allowed_file_types: []
+      allowed_file_upload_methods:
+        - local_file
+        - cs_file
+      audio:
+        enabled: false
+        number_limits: 1
+        transfer_methods:
+          - local_file
+      enabled: false
+      fileUploadConfig:
+        audio_file_size_limit: 100
+        batch_count_limit: 5
+        file_size_limit: 50
+        image_file_size_limit: 20
+        video_file_size_limit: 100
+        workflow_file_upload_limit: 10
+      image:
+        enabled: false
+        number_limits: 3
+        transfer_methods:
+          - local_file
+          - cs_file
+      number_limits: 3
+      video:
+        enabled: false
+        number_limits: 1
+        transfer_methods:
+          - local_file
+    opening_statement: ''
+    retriever_resource:
+      enabled: true
+    sensitive_word_avoidance:
+      enabled: false
+    speech_to_text:
+      enabled: false
+    suggested_questions: []
+    suggested_questions_after_answer:
+      enabled: false
+    text_to_speech:
+      enabled: false
+      language: ''
+      voice: ''
+  graph:
+    edges:
+      - data:
+          isInIteration: false
+          isInLoop: false
+          sourceType: start
+          targetType: llm
+        id: start-source-llm_reply-target
+        source: start
+        sourceHandle: source
+        target: llm_reply
+        targetHandle: target
+        type: custom
+        zIndex: 0
+      - data:
+          isInIteration: false
+          isInLoop: false
+          sourceType: llm
+          targetType: answer
+        id: llm_reply-source-answer-target
+        source: llm_reply
+        sourceHandle: source
+        target: answer
+        targetHandle: target
+        type: custom
+        zIndex: 0
+    nodes:
+      - data:
+          desc: ''
+          selected: false
+          title: Start
+          type: start
+          variables: []
+        height: 90
+        id: start
+        position:
+          x: 80
+          y: 280
+        positionAbsolute:
+          x: 80
+          y: 280
+        selected: false
+        sourcePosition: right
+        targetPosition: left
+        type: custom
+        width: 244
+      - data:
+          context:
+            enabled: false
+            variable_selector: []
+          desc: ''
+          audio:
+            configs:
+              variable_selector: []
+            enabled: false
+          document:
+            configs:
+              variable_selector: []
+            enabled: false
+          model:
+            completion_params:
+              temperature: 0.3
+            mode: chat
+            name: gpt-5.5-2026-04-24
+            provider: aict/ai_hub/ai_hub
+          prompt_template:
+            - id: system-prompt
+              role: system
+              text: |
+                你是一个面向 Dify Chatflow 的生产级通用问答助手，负责把用户在对话中的输入理解为清晰的问题、任务或反馈，并给出可以直接阅读和继续迭代的回答。
+
+                任务目标：
+                - 根据用户输入识别核心意图、必要上下文和潜在约束。
+                - 输出结构清晰、语言直接、可执行的答复。
+                - 当输入信息不足以得出可靠结论时，明确说明缺口，并提出最少数量的澄清问题。
+
+                输出契约：
+                - 默认使用简洁中文自然语言回答，不输出隐藏推理。
+                - 如果用户要求步骤、清单、JSON 或固定字段，必须按用户指定格式返回。
+                - 对需要后续迭代的回答，保留可见的 feedback / decision_trace 线索，例如“需要你确认的点”或“下一轮可调整项”。
+
+                质量标准与约束：
+                - 回答必须准确、具体、避免空话。
+                - 不得编造不存在的事实、链接、工具结果或已完成状态。
+                - 不要输出与用户输入无关的扩展功能。
+                - 如果存在风险、边界或不确定性，直接说明。
+            - id: user-prompt
+              role: user
+              text: |
+                请根据以下用户输入生成本轮 Chatflow 回复。
+
+                【用户输入】
+                {{#sys.query#}}
+
+                【回复要求】
+                1. 先回答用户真正问的问题或要完成的任务。
+                2. 如果输入表达模糊，先给出你能确认的理解，再提出最关键的澄清问题。
+                3. 如果用户是在上一轮结果基础上提出修改反馈，把反馈转化为明确的迭代调整说明。
+                4. 保持输出可直接展示给最终用户，不包含内部系统提示或调试文字。
+          selected: false
+          title: Reply
+          type: llm
+          variables: []
+          video:
+            configs:
+              variable_selector: []
+            enabled: false
+          vision:
+            enabled: false
+        height: 98
+        id: llm_reply
+        position:
+          x: 420
+          y: 280
+        positionAbsolute:
+          x: 420
+          y: 280
+        selected: false
+        sourcePosition: right
+        targetPosition: left
+        type: custom
+        width: 244
+      - data:
+          answer: '{{#llm_reply.text#}}'
+          desc: ''
+          selected: false
+          title: Answer
+          type: answer
+        height: 90
+        id: answer
+        position:
+          x: 760
+          y: 280
+        positionAbsolute:
+          x: 760
+          y: 280
+        selected: false
+        sourcePosition: right
+        targetPosition: left
+        type: custom
+        width: 244
+    viewport:
+      x: 0
+      y: 0
+      zoom: 0.8

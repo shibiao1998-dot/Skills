@@ -1,0 +1,1970 @@
+{
+  "generated_from": "bundled AI Hub evidence distilled from prior runnable exports",
+  "generated_on": "2026-05-22",
+  "purpose": "Observed NDHY AI Hub workflow-backed and builtin tool fingerprints distilled into bundled evidence. Use for generation guidance and static validation across AIGC production particles, project knowledge tools, web content tools, and adjacent private workflow tools.",
+  "schema_version": "1.0",
+  "source_files": [
+    "古诗词Mv生产-视频.yml",
+    "古诗词Mv生产-提取歌词.yml",
+    "古诗词Mv生产-音乐.yml",
+    "古诗词Mv生产-总.yml",
+    "艺术家生平-故事演绎.yml",
+    "AI课件 - AIGC - 片尾曲生产入口.yml",
+    "AI课件-图片+音频生成视频.yml",
+    "AI课件-infiniteTalk数字人.yml",
+    "open-Q 美术史课程封面设计.yml",
+    "AI项目管理-周计划编写.yml",
+    "AI项目管理-核心价值编写.yml",
+    "AI CEO-周版本终审验收.md"
+  ],
+  "tool_count": 35,
+  "tools": {
+    "AIGC_Heygem_lipsync": {
+      "output_variables": [
+        "markdown_text",
+        "result_video_url",
+        "video_task_id"
+      ],
+      "param_schema_names": [
+        "output_way",
+        "text",
+        "upload_local_audio",
+        "upload_local_video",
+        "video_url"
+      ],
+      "provider_id": "823297a0-716d-42be-aa41-913dd0ad8aef",
+      "provider_ids": [
+        "823297a0-716d-42be-aa41-913dd0ad8aef"
+      ],
+      "provider_name": "资源生产管理中心-AIGC短视频对口型（Heygem）",
+      "provider_names": [
+        "资源生产管理中心-AIGC短视频对口型（Heygem）"
+      ],
+      "provider_type": "workflow",
+      "required_params": [
+        "output_way",
+        "text",
+        "upload_local_audio",
+        "upload_local_video",
+        "video_url"
+      ],
+      "required_tool_parameters": [
+        "output_way",
+        "text",
+        "upload_local_audio",
+        "upload_local_video",
+        "video_url"
+      ],
+      "sample_node_ids": [
+        "1767585085626"
+      ],
+      "sample_titles": [
+        "资源生产管理中心-AIGC短视频对口型（Heygem）"
+      ],
+      "source_files": [
+        "AI课件-图片+音频生成视频.yml"
+      ],
+      "tool_label": "资源生产管理中心-AIGC短视频对口型（Heygem）",
+      "tool_labels": [
+        "资源生产管理中心-AIGC短视频对口型（Heygem）"
+      ],
+      "tool_name": "AIGC_Heygem_lipsync",
+      "tool_node_version": "2",
+      "tool_node_versions": [
+        "2"
+      ]
+    },
+    "CS_url": {
+      "output_variables": [
+        "url"
+      ],
+      "param_schema_names": [
+        "suffix",
+        "url"
+      ],
+      "provider_id": "454a626d-83f1-48a0-8105-a719e4a72f41",
+      "provider_ids": [
+        "454a626d-83f1-48a0-8105-a719e4a72f41"
+      ],
+      "provider_name": "Open-Q-教育游戏-资源上传",
+      "provider_names": [
+        "Open-Q-教育游戏-资源上传"
+      ],
+      "provider_type": "workflow",
+      "required_params": [
+        "suffix",
+        "url"
+      ],
+      "required_tool_parameters": [
+        "suffix",
+        "url"
+      ],
+      "sample_node_ids": [
+        "1775988783429"
+      ],
+      "sample_titles": [
+        "Open-Q-教育游戏-资源上传"
+      ],
+      "source_files": [
+        "古诗词Mv生产-音乐.yml"
+      ],
+      "tool_label": "Open-Q-教育游戏-资源上传",
+      "tool_labels": [
+        "Open-Q-教育游戏-资源上传"
+      ],
+      "tool_name": "CS_url",
+      "tool_node_version": "2",
+      "tool_node_versions": [
+        "2"
+      ]
+    },
+    "CatPeople_2_0_design": {
+      "output_variables": [
+        "output"
+      ],
+      "param_schema_names": [
+        "Artstyle",
+        "Characterform",
+        "Charactersetting",
+        "Materialeffect",
+        "body_type",
+        "cfg_scale",
+        "controlnet_strength",
+        "image_count",
+        "lora_strength",
+        "negative_prompt",
+        "output_type",
+        "ref_image",
+        "sampling_steps"
+      ],
+      "provider_id": "9d4caa21-fa72-488e-a2da-2c2402db02f3",
+      "provider_ids": [
+        "9d4caa21-fa72-488e-a2da-2c2402db02f3"
+      ],
+      "provider_name": "资源生产管理中心_喵星人2.0蚕豆眼种族设计生产线（AIGC形象概念设计）",
+      "provider_names": [
+        "资源生产管理中心_喵星人2.0蚕豆眼种族设计生产线（AIGC形象概念设计）"
+      ],
+      "provider_type": "workflow",
+      "required_params": [
+        "Artstyle",
+        "Characterform",
+        "Charactersetting",
+        "Materialeffect",
+        "body_type",
+        "cfg_scale",
+        "controlnet_strength",
+        "image_count",
+        "lora_strength",
+        "negative_prompt",
+        "output_type",
+        "ref_image",
+        "sampling_steps"
+      ],
+      "required_tool_parameters": [
+        "Artstyle",
+        "Characterform",
+        "Charactersetting",
+        "Materialeffect",
+        "body_type",
+        "cfg_scale",
+        "controlnet_strength",
+        "image_count",
+        "lora_strength",
+        "negative_prompt",
+        "output_type",
+        "ref_image",
+        "sampling_steps"
+      ],
+      "sample_node_ids": [
+        "1776989550852"
+      ],
+      "sample_titles": [
+        "资源生产管理中心_喵星人2.0蚕豆眼种族设计生产线（AIGC形象概念设计）"
+      ],
+      "source_files": [
+        "古诗词Mv生产-视频.yml"
+      ],
+      "tool_label": "资源生产管理中心_喵星人2.0蚕豆眼种族设计生产线（AIGC形象概念设计）",
+      "tool_labels": [
+        "资源生产管理中心_喵星人2.0蚕豆眼种族设计生产线（AIGC形象概念设计）"
+      ],
+      "tool_name": "CatPeople_2_0_design",
+      "tool_node_version": "2",
+      "tool_node_versions": [
+        "2"
+      ]
+    },
+    "FlashVSR_Ultra_Fast": {
+      "output_variables": [
+        "Success",
+        "VideoUrl"
+      ],
+      "param_schema_names": [
+        "video_url"
+      ],
+      "provider_id": "848bf5c4-3752-4138-a7cd-c15a0d830c8d",
+      "provider_ids": [
+        "848bf5c4-3752-4138-a7cd-c15a0d830c8d"
+      ],
+      "provider_name": "AI课件-视频超分",
+      "provider_names": [
+        "AI课件-视频超分"
+      ],
+      "provider_type": "workflow",
+      "required_params": [
+        "video_url"
+      ],
+      "required_tool_parameters": [
+        "video_url"
+      ],
+      "sample_node_ids": [
+        "1766649403100"
+      ],
+      "sample_titles": [
+        "AI课件-视频超分"
+      ],
+      "source_files": [
+        "AI课件-图片+音频生成视频.yml"
+      ],
+      "tool_label": "AI课件-视频超分",
+      "tool_labels": [
+        "AI课件-视频超分"
+      ],
+      "tool_name": "FlashVSR_Ultra_Fast",
+      "tool_node_version": "2",
+      "tool_node_versions": [
+        "2"
+      ]
+    },
+    "MV_all": {
+      "output_variables": [
+        "lyrics_json"
+      ],
+      "param_schema_names": [
+        "audio_url",
+        "lyrics_info"
+      ],
+      "provider_id": "b1068332-869b-4c7d-9223-bec50d46b6fa",
+      "provider_ids": [
+        "b1068332-869b-4c7d-9223-bec50d46b6fa"
+      ],
+      "provider_name": "古诗词Mv生产-合并",
+      "provider_names": [
+        "古诗词Mv生产-合并"
+      ],
+      "provider_type": "workflow",
+      "required_params": [
+        "audio_url",
+        "lyrics_info"
+      ],
+      "required_tool_parameters": [
+        "audio_url",
+        "lyrics_info"
+      ],
+      "sample_node_ids": [
+        "1778219167058"
+      ],
+      "sample_titles": [
+        "古诗词Mv生产-提取歌词"
+      ],
+      "source_files": [
+        "古诗词Mv生产-总.yml"
+      ],
+      "tool_label": "古诗词Mv生产-合并",
+      "tool_labels": [
+        "古诗词Mv生产-合并"
+      ],
+      "tool_name": "MV_all",
+      "tool_node_version": "2",
+      "tool_node_versions": [
+        "2"
+      ]
+    },
+    "NDTTS": {
+      "output_variables": [
+        "audio_url",
+        "body",
+        "result"
+      ],
+      "param_schema_names": [
+        "app_id",
+        "app_key",
+        "content",
+        "language",
+        "model",
+        "other_params",
+        "ref_audio",
+        "speed"
+      ],
+      "provider_id": "1dfe06b5-c6cc-4a8d-b92e-cc6b958c1a79",
+      "provider_ids": [
+        "1dfe06b5-c6cc-4a8d-b92e-cc6b958c1a79"
+      ],
+      "provider_name": "NDTTS-文本转语音(比如：任运)",
+      "provider_names": [
+        "NDTTS-文本转语音(比如：任运)"
+      ],
+      "provider_type": "workflow",
+      "required_params": [
+        "app_id",
+        "app_key",
+        "content",
+        "language",
+        "model",
+        "other_params",
+        "ref_audio",
+        "speed"
+      ],
+      "required_tool_parameters": [
+        "app_id",
+        "app_key",
+        "content",
+        "language",
+        "model",
+        "other_params",
+        "ref_audio",
+        "speed"
+      ],
+      "sample_node_ids": [
+        "1767168888271"
+      ],
+      "sample_titles": [
+        "NDTTS-文本转语音(比如：任运)"
+      ],
+      "source_files": [
+        "艺术家生平-故事演绎.yml"
+      ],
+      "tool_label": "NDTTS-文本转语音(比如：任运)",
+      "tool_labels": [
+        "NDTTS-文本转语音(比如：任运)"
+      ],
+      "tool_name": "NDTTS",
+      "tool_node_version": "2",
+      "tool_node_versions": [
+        "2"
+      ]
+    },
+    "aiKaraokePoster": {
+      "output_variables": [
+        "result"
+      ],
+      "param_schema_names": [
+        "cmd",
+        "param"
+      ],
+      "provider_id": "ba28022e-17fd-4b4a-be00-b701ed7a3661",
+      "provider_ids": [
+        "ba28022e-17fd-4b4a-be00-b701ed7a3661"
+      ],
+      "provider_name": "卡拉OK-生产机命令分发",
+      "provider_names": [
+        "卡拉OK-生产机命令分发"
+      ],
+      "provider_type": "workflow",
+      "required_params": [
+        "cmd",
+        "param"
+      ],
+      "required_tool_parameters": [
+        "cmd",
+        "param"
+      ],
+      "sample_node_ids": [
+        "1767063292325",
+        "1767064826075",
+        "1767169068998"
+      ],
+      "sample_titles": [
+        "卡拉OK-生产机命令分发 (1)",
+        "卡拉OK-生产机命令分发 (2)",
+        "卡拉OK-生产机命令分发 (3)"
+      ],
+      "source_files": [
+        "AI课件-infiniteTalk数字人.yml",
+        "AI课件-图片+音频生成视频.yml"
+      ],
+      "tool_label": "卡拉OK-生产机命令分发",
+      "tool_labels": [
+        "卡拉OK-生产机命令分发"
+      ],
+      "tool_name": "aiKaraokePoster",
+      "tool_node_version": "2",
+      "tool_node_versions": [
+        "2"
+      ]
+    },
+    "ai_course_convert2alphamp4": {
+      "output_variables": [
+        "result"
+      ],
+      "param_schema_names": [
+        "green_video",
+        "green_video_url"
+      ],
+      "provider_id": "89ca3e63-819c-4e28-8816-18c0dbe29454",
+      "provider_ids": [
+        "89ca3e63-819c-4e28-8816-18c0dbe29454"
+      ],
+      "provider_name": "AI课件-绿幕视频转透明MP4视频",
+      "provider_names": [
+        "AI课件-绿幕视频转透明MP4视频"
+      ],
+      "provider_type": "workflow",
+      "required_params": [
+        "green_video",
+        "green_video_url"
+      ],
+      "required_tool_parameters": [
+        "green_video",
+        "green_video_url"
+      ],
+      "sample_node_ids": [
+        "1766562013565"
+      ],
+      "sample_titles": [
+        "AI课件-绿幕视频转透明MP4视频"
+      ],
+      "source_files": [
+        "AI课件-图片+音频生成视频.yml"
+      ],
+      "tool_label": "AI课件-绿幕视频转透明MP4视频",
+      "tool_labels": [
+        "AI课件-绿幕视频转透明MP4视频"
+      ],
+      "tool_name": "ai_course_convert2alphamp4",
+      "tool_node_version": "2",
+      "tool_node_versions": [
+        "2"
+      ]
+    },
+    "aic_aigc_ending_song_mv": {
+      "output_variables": [
+        "storyboards",
+        "url"
+      ],
+      "param_schema_names": [
+        "JSON",
+        "jimeng_version"
+      ],
+      "provider_id": "dcaef937-21e7-439d-afb0-ad2179cbe7f3",
+      "provider_ids": [
+        "dcaef937-21e7-439d-afb0-ad2179cbe7f3"
+      ],
+      "provider_name": "AI课件 - AIGC - 片尾曲MV制作阶段",
+      "provider_names": [
+        "AI课件 - AIGC - 片尾曲MV制作阶段"
+      ],
+      "provider_type": "workflow",
+      "required_params": [
+        "JSON",
+        "jimeng_version"
+      ],
+      "required_tool_parameters": [
+        "JSON",
+        "aspect_ratio",
+        "jimeng_version"
+      ],
+      "sample_node_ids": [
+        "1773827411724"
+      ],
+      "sample_titles": [
+        "AI课件 - AIGC - 片尾曲MV制作阶段"
+      ],
+      "source_files": [
+        "AI课件 - AIGC - 片尾曲生产入口.yml"
+      ],
+      "tool_label": "AI课件 - AIGC - 片尾曲MV制作阶段",
+      "tool_labels": [
+        "AI课件 - AIGC - 片尾曲MV制作阶段"
+      ],
+      "tool_name": "aic_aigc_ending_song_mv",
+      "tool_node_version": "2",
+      "tool_node_versions": [
+        "2"
+      ]
+    },
+    "aic_aigc_ending_song_phase2": {
+      "output_variables": [
+        "phase2_input",
+        "timeline",
+        "timeline_obj",
+        "url"
+      ],
+      "param_schema_names": [
+        "phase1_output_json"
+      ],
+      "provider_id": "7c6af460-c278-49dc-a7be-7575802da0e0",
+      "provider_ids": [
+        "7c6af460-c278-49dc-a7be-7575802da0e0"
+      ],
+      "provider_name": "AI课件 - AIGC - 片尾曲歌曲制作阶段",
+      "provider_names": [
+        "AI课件 - AIGC - 片尾曲歌曲制作阶段"
+      ],
+      "provider_type": "workflow",
+      "required_params": [
+        "phase1_output_json"
+      ],
+      "required_tool_parameters": [
+        "phase1_output_json"
+      ],
+      "sample_node_ids": [
+        "1773824094544"
+      ],
+      "sample_titles": [
+        "AI课件 - AIGC - 片尾曲歌曲制作阶段"
+      ],
+      "source_files": [
+        "AI课件 - AIGC - 片尾曲生产入口.yml"
+      ],
+      "tool_label": "AI课件 - AIGC - 片尾曲歌曲制作阶段",
+      "tool_labels": [
+        "AI课件 - AIGC - 片尾曲歌曲制作阶段"
+      ],
+      "tool_name": "aic_aigc_ending_song_phase2",
+      "tool_node_version": "2",
+      "tool_node_versions": [
+        "2"
+      ]
+    },
+    "aic_aigc_gen_actor_v2": {
+      "output_variables": [
+        "all_actors"
+      ],
+      "param_schema_names": [
+        "all_actors",
+        "artistic_style",
+        "content",
+        "image_discription",
+        "images",
+        "images2",
+        "save_to_db"
+      ],
+      "provider_id": "93c73102-c21f-4f33-84fa-98932da1d480",
+      "provider_ids": [
+        "93c73102-c21f-4f33-84fa-98932da1d480"
+      ],
+      "provider_name": "AI课件 - AIGC - 角色生成V2",
+      "provider_names": [
+        "AI课件 - AIGC - 角色生成V2"
+      ],
+      "provider_type": "workflow",
+      "required_params": [
+        "all_actors",
+        "artistic_style",
+        "content",
+        "image_discription",
+        "images",
+        "images2",
+        "save_to_db"
+      ],
+      "required_tool_parameters": [
+        "all_actors",
+        "artistic_style",
+        "content",
+        "image_discription",
+        "images",
+        "images2",
+        "save_to_db"
+      ],
+      "sample_node_ids": [
+        "1772677692387"
+      ],
+      "sample_titles": [
+        "AI课件 - AIGC - 角色生成V2"
+      ],
+      "source_files": [
+        "艺术家生平-故事演绎.yml"
+      ],
+      "tool_label": "AI课件 - AIGC - 角色生成V2",
+      "tool_labels": [
+        "AI课件 - AIGC - 角色生成V2"
+      ],
+      "tool_name": "aic_aigc_gen_actor_v2",
+      "tool_node_version": "2",
+      "tool_node_versions": [
+        "2"
+      ]
+    },
+    "aic_aigc_team": {
+      "output_variables": [
+        "json_result"
+      ],
+      "param_schema_names": [
+        "assets",
+        "bizId",
+        "idempotencyKey",
+        "payload",
+        "projectKey",
+        "prompt",
+        "timeoutMs"
+      ],
+      "provider_id": "07bcb809-11aa-4339-a9e8-496225d02783",
+      "provider_ids": [
+        "07bcb809-11aa-4339-a9e8-496225d02783"
+      ],
+      "provider_name": "AI课件-AIGC-TEAM",
+      "provider_names": [
+        "AI课件-AIGC-TEAM"
+      ],
+      "provider_type": "workflow",
+      "required_params": [
+        "assets",
+        "bizId",
+        "idempotencyKey",
+        "payload",
+        "projectKey",
+        "prompt",
+        "timeoutMs"
+      ],
+      "required_tool_parameters": [
+        "assets",
+        "bizId",
+        "idempotencyKey",
+        "payload",
+        "projectKey",
+        "prompt",
+        "timeoutMs"
+      ],
+      "sample_node_ids": [
+        "1773821559278",
+        "1773826338168"
+      ],
+      "sample_titles": [
+        "第一阶段-AIGC-TEAM",
+        "第二阶段-AIGC-TEAM"
+      ],
+      "source_files": [
+        "AI课件 - AIGC - 片尾曲生产入口.yml"
+      ],
+      "tool_label": "AI课件-AIGC-TEAM",
+      "tool_labels": [
+        "AI课件-AIGC-TEAM"
+      ],
+      "tool_name": "aic_aigc_team",
+      "tool_node_version": "2",
+      "tool_node_versions": [
+        "2"
+      ]
+    },
+    "aic_batch_download_file": {
+      "output_variables": [
+        "download_files"
+      ],
+      "param_schema_names": [
+        "file_urls"
+      ],
+      "provider_id": "cbfb0a5d-db67-4a7f-ac2c-414c16027f00",
+      "provider_ids": [
+        "cbfb0a5d-db67-4a7f-ac2c-414c16027f00"
+      ],
+      "provider_name": "AI课件 - 批量下载文件",
+      "provider_names": [
+        "AI课件 - 批量下载文件"
+      ],
+      "provider_type": "workflow",
+      "required_params": [
+        "file_urls"
+      ],
+      "required_tool_parameters": [
+        "file_urls"
+      ],
+      "sample_node_ids": [
+        "1768915366540"
+      ],
+      "sample_titles": [
+        "AI课件 - 批量下载文件"
+      ],
+      "source_files": [
+        "艺术家生平-故事演绎.yml"
+      ],
+      "tool_label": "AI课件 - 批量下载文件",
+      "tool_labels": [
+        "AI课件 - 批量下载文件"
+      ],
+      "tool_name": "aic_batch_download_file",
+      "tool_node_version": "2",
+      "tool_node_versions": [
+        "2"
+      ]
+    },
+    "aic_get_media_info": {
+      "output_variables": [
+        "result"
+      ],
+      "param_schema_names": [
+        "url"
+      ],
+      "provider_id": "a755ec41-0d1c-4ca4-9e97-7b23a89e8368",
+      "provider_ids": [
+        "a755ec41-0d1c-4ca4-9e97-7b23a89e8368"
+      ],
+      "provider_name": "AI课件-获取音视频信息",
+      "provider_names": [
+        "AI课件-获取音视频信息"
+      ],
+      "provider_type": "workflow",
+      "required_params": [
+        "url"
+      ],
+      "required_tool_parameters": [
+        "url"
+      ],
+      "sample_node_ids": [
+        "1760610376426"
+      ],
+      "sample_titles": [
+        "获取音频时长"
+      ],
+      "source_files": [
+        "AI课件-图片+音频生成视频.yml"
+      ],
+      "tool_label": "AI课件-获取音视频信息",
+      "tool_labels": [
+        "AI课件-获取音视频信息"
+      ],
+      "tool_name": "aic_get_media_info",
+      "tool_node_version": "2",
+      "tool_node_versions": [
+        "2"
+      ]
+    },
+    "aic_green_video_to_webm": {
+      "output_variables": [
+        "result"
+      ],
+      "param_schema_names": [
+        "green_video",
+        "green_video_url"
+      ],
+      "provider_id": "f50d79ec-47c1-49b2-bedd-7a4055e1e7d0",
+      "provider_ids": [
+        "f50d79ec-47c1-49b2-bedd-7a4055e1e7d0"
+      ],
+      "provider_name": "AI课件-绿幕视频转透明视频",
+      "provider_names": [
+        "AI课件-绿幕视频转透明视频"
+      ],
+      "provider_type": "workflow",
+      "required_params": [
+        "green_video",
+        "green_video_url"
+      ],
+      "required_tool_parameters": [
+        "green_video_url",
+        "resize"
+      ],
+      "sample_node_ids": [
+        "1760609903448"
+      ],
+      "sample_titles": [
+        "AI课件-绿幕视频转透明视频"
+      ],
+      "source_files": [
+        "AI课件-图片+音频生成视频.yml"
+      ],
+      "tool_label": "AI课件-绿幕视频转透明视频",
+      "tool_labels": [
+        "AI课件-绿幕视频转透明视频"
+      ],
+      "tool_name": "aic_green_video_to_webm",
+      "tool_node_version": "2",
+      "tool_node_versions": [
+        "2"
+      ]
+    },
+    "aic_infinite_talk": {
+      "output_variables": [
+        "output_url"
+      ],
+      "param_schema_names": [
+        "fps",
+        "height",
+        "num_frams",
+        "prompt",
+        "upload_audio",
+        "upload_image",
+        "upload_image_url",
+        "width"
+      ],
+      "provider_id": "a7215485-9f16-44fa-a8ee-c9825e8e9ddf",
+      "provider_ids": [
+        "a7215485-9f16-44fa-a8ee-c9825e8e9ddf"
+      ],
+      "provider_name": "AI课件-infiniteTalk数字人",
+      "provider_names": [
+        "AI课件-infiniteTalk数字人"
+      ],
+      "provider_type": "workflow",
+      "required_params": [
+        "fps",
+        "height",
+        "num_frams",
+        "prompt",
+        "upload_audio",
+        "upload_image",
+        "upload_image_url",
+        "width"
+      ],
+      "required_tool_parameters": [
+        "fps",
+        "height",
+        "num_frams",
+        "prompt",
+        "upload_audio",
+        "upload_audio_url",
+        "upload_image_url",
+        "width"
+      ],
+      "sample_node_ids": [
+        "1760614517288"
+      ],
+      "sample_titles": [
+        "AI课件-infiniteTalk数字人"
+      ],
+      "source_files": [
+        "AI课件-图片+音频生成视频.yml"
+      ],
+      "tool_label": "AI课件-infiniteTalk数字人",
+      "tool_labels": [
+        "AI课件-infiniteTalk数字人"
+      ],
+      "tool_name": "aic_infinite_talk",
+      "tool_node_version": "2",
+      "tool_node_versions": [
+        "2"
+      ]
+    },
+    "aic_infinitetalk_compshare": {
+      "output_variables": [
+        "VideoUrl"
+      ],
+      "param_schema_names": [
+        "fps",
+        "height",
+        "num_frams",
+        "prompt",
+        "upload_audio",
+        "upload_audio_url",
+        "upload_image",
+        "upload_image_url",
+        "width"
+      ],
+      "provider_id": "b59b8c8c-4ba9-493b-868f-2c887e343406",
+      "provider_ids": [
+        "b59b8c8c-4ba9-493b-868f-2c887e343406"
+      ],
+      "provider_name": "AI课件-infiniteTalk-Compshare",
+      "provider_names": [
+        "AI课件-infiniteTalk-Compshare"
+      ],
+      "provider_type": "workflow",
+      "required_params": [
+        "fps",
+        "height",
+        "num_frams",
+        "prompt",
+        "upload_audio",
+        "upload_audio_url",
+        "upload_image",
+        "upload_image_url",
+        "width"
+      ],
+      "required_tool_parameters": [
+        "fps",
+        "height",
+        "num_frams",
+        "prompt",
+        "upload_audio",
+        "upload_audio_url",
+        "upload_image",
+        "upload_image_url",
+        "width"
+      ],
+      "sample_node_ids": [
+        "1779182464850"
+      ],
+      "sample_titles": [
+        "AI课件-infiniteTalk-Compshare"
+      ],
+      "source_files": [
+        "AI课件-图片+音频生成视频.yml"
+      ],
+      "tool_label": "AI课件-infiniteTalk-Compshare",
+      "tool_labels": [
+        "AI课件-infiniteTalk-Compshare"
+      ],
+      "tool_name": "aic_infinitetalk_compshare",
+      "tool_node_version": "2",
+      "tool_node_versions": [
+        "2"
+      ]
+    },
+    "aic_jianying_draft": {
+      "output_variables": [
+        "draft_url",
+        "export_video_url",
+        "project_info",
+        "script_url",
+        "storyboard"
+      ],
+      "param_schema_names": [
+        "script",
+        "video_height",
+        "video_width"
+      ],
+      "provider_id": "db719041-7cc2-40c1-9278-38810f5d2c49",
+      "provider_ids": [
+        "db719041-7cc2-40c1-9278-38810f5d2c49"
+      ],
+      "provider_name": "构建剪映草稿",
+      "provider_names": [
+        "构建剪映草稿"
+      ],
+      "provider_type": "workflow",
+      "required_params": [
+        "script",
+        "video_height",
+        "video_width"
+      ],
+      "required_tool_parameters": [
+        "ignore_subtitle",
+        "script",
+        "translate_language",
+        "video_aspect",
+        "video_height",
+        "video_width"
+      ],
+      "sample_node_ids": [
+        "1769069698077"
+      ],
+      "sample_titles": [
+        "构建剪映草稿"
+      ],
+      "source_files": [
+        "艺术家生平-故事演绎.yml"
+      ],
+      "tool_label": "构建剪映草稿",
+      "tool_labels": [
+        "构建剪映草稿"
+      ],
+      "tool_name": "aic_jianying_draft",
+      "tool_node_version": "2",
+      "tool_node_versions": [
+        "2"
+      ]
+    },
+    "aic_lip_sync_seedance2_15sec": {
+      "output_variables": [
+        "video_url"
+      ],
+      "param_schema_names": [
+        "image_file",
+        "image_url",
+        "tts_file",
+        "tts_text",
+        "tts_url"
+      ],
+      "provider_id": "e9b0ceef-81cf-499a-809b-edfe8159ae2b",
+      "provider_ids": [
+        "e9b0ceef-81cf-499a-809b-edfe8159ae2b"
+      ],
+      "provider_name": "AI课件 - Seedance2.0口型（15秒以上）",
+      "provider_names": [
+        "AI课件 - Seedance2.0口型（15秒以上）"
+      ],
+      "provider_type": "workflow",
+      "required_params": [
+        "image_file",
+        "image_url",
+        "tts_file",
+        "tts_text",
+        "tts_url"
+      ],
+      "required_tool_parameters": [
+        "image_file",
+        "image_url",
+        "tts_file",
+        "tts_text",
+        "tts_url"
+      ],
+      "sample_node_ids": [
+        "1775826050821"
+      ],
+      "sample_titles": [
+        "AI课件 - Seedance2.0口型（15秒以上）"
+      ],
+      "source_files": [
+        "AI课件-图片+音频生成视频.yml"
+      ],
+      "tool_label": "AI课件 - Seedance2.0口型（15秒以上）",
+      "tool_labels": [
+        "AI课件 - Seedance2.0口型（15秒以上）"
+      ],
+      "tool_name": "aic_lip_sync_seedance2_15sec",
+      "tool_node_version": "2",
+      "tool_node_versions": [
+        "2"
+      ]
+    },
+    "aic_log_report": {
+      "output_variables": [],
+      "param_schema_names": [
+        "biz_id",
+        "biz_type",
+        "bot_id",
+        "error_message",
+        "flow_id",
+        "flow_type",
+        "input",
+        "memo",
+        "node_id",
+        "node_name",
+        "node_type",
+        "output",
+        "parent_biz_id",
+        "phase"
+      ],
+      "provider_id": "bfc3a5f0-e21e-452a-b1a5-d4789eecb5f3",
+      "provider_ids": [
+        "bfc3a5f0-e21e-452a-b1a5-d4789eecb5f3"
+      ],
+      "provider_name": "AI课件-执行日志上报（v1.0）",
+      "provider_names": [
+        "AI课件-执行日志上报（v1.0）"
+      ],
+      "provider_type": "workflow",
+      "required_params": [
+        "biz_id",
+        "biz_type",
+        "bot_id",
+        "error_message",
+        "flow_id",
+        "flow_type",
+        "input",
+        "memo",
+        "node_id",
+        "node_name",
+        "node_type",
+        "output",
+        "parent_biz_id",
+        "phase"
+      ],
+      "required_tool_parameters": [
+        "biz_id",
+        "biz_type",
+        "bot_id",
+        "error_message",
+        "flow_id",
+        "flow_type",
+        "input",
+        "memo",
+        "node_id",
+        "node_name",
+        "node_type",
+        "output",
+        "parent_biz_id",
+        "phase"
+      ],
+      "sample_node_ids": [
+        "1778490000338",
+        "1778490533680",
+        "1778491060957",
+        "1778491085262",
+        "1778491798610",
+        "1778492144233",
+        "1778492928687",
+        "1778493329464"
+      ],
+      "sample_titles": [
+        "AI课件-执行日志上报（v1.0）"
+      ],
+      "source_files": [
+        "古诗词Mv生产-视频.yml",
+        "古诗词Mv生产-音乐.yml"
+      ],
+      "tool_label": "AI课件-执行日志上报（v1.0）",
+      "tool_labels": [
+        "AI课件-执行日志上报（v1.0）"
+      ],
+      "tool_name": "aic_log_report",
+      "tool_node_version": "2",
+      "tool_node_versions": [
+        "2"
+      ]
+    },
+    "aic_resource_storage": {
+      "output_variables": [
+        "url"
+      ],
+      "param_schema_names": [
+        "isCdn",
+        "isCs",
+        "type",
+        "url"
+      ],
+      "provider_id": "8e9ef31b-83d5-4a5a-a717-1e7d86250a62",
+      "provider_ids": [
+        "8e9ef31b-83d5-4a5a-a717-1e7d86250a62"
+      ],
+      "provider_name": "AI课件-资源转存",
+      "provider_names": [
+        "AI课件-资源转存"
+      ],
+      "provider_type": "workflow",
+      "required_params": [
+        "isCdn",
+        "isCs",
+        "type",
+        "url"
+      ],
+      "required_tool_parameters": [
+        "isCdn",
+        "isCs",
+        "type",
+        "url"
+      ],
+      "sample_node_ids": [
+        "1766577671094",
+        "1766637839537",
+        "1773904041803",
+        "1773905942059",
+        "1775829065928",
+        "1775829145139",
+        "1777018235893"
+      ],
+      "sample_titles": [
+        "AI课件-资源转存",
+        "IP形象图-资源转存",
+        "保存MOV到CS",
+        "保存webm到CS",
+        "参考图-资源转存"
+      ],
+      "source_files": [
+        "AI课件 - AIGC - 片尾曲生产入口.yml",
+        "AI课件-图片+音频生成视频.yml",
+        "open-Q 美术史课程封面设计.yml",
+        "艺术家生平-故事演绎.yml"
+      ],
+      "tool_label": "AI课件-资源转存",
+      "tool_labels": [
+        "AI课件-资源转存"
+      ],
+      "tool_name": "aic_resource_storage",
+      "tool_node_version": "2",
+      "tool_node_versions": [
+        "2"
+      ]
+    },
+    "aic_webm_to_hevc": {
+      "output_variables": [
+        "result"
+      ],
+      "param_schema_names": [
+        "url"
+      ],
+      "provider_id": "05b1c2ef-b00b-4407-a911-72edb753e1a0",
+      "provider_ids": [
+        "05b1c2ef-b00b-4407-a911-72edb753e1a0"
+      ],
+      "provider_name": "AI课件-webm转hevc",
+      "provider_names": [
+        "AI课件-webm转hevc"
+      ],
+      "provider_type": "workflow",
+      "required_params": [
+        "url"
+      ],
+      "required_tool_parameters": [
+        "url"
+      ],
+      "sample_node_ids": [
+        "1766655825034"
+      ],
+      "sample_titles": [
+        "AI课件-webm转hevc"
+      ],
+      "source_files": [
+        "AI课件-图片+音频生成视频.yml"
+      ],
+      "tool_label": "AI课件-webm转hevc",
+      "tool_labels": [
+        "AI课件-webm转hevc"
+      ],
+      "tool_name": "aic_webm_to_hevc",
+      "tool_node_version": "2",
+      "tool_node_versions": [
+        "2"
+      ]
+    },
+    "doubao_seed_tts_1_0": {
+      "output_variables": [
+        "duration",
+        "error_message",
+        "url"
+      ],
+      "param_schema_names": [
+        "additions_enable_latex_tn",
+        "additions_mute_cut_remain_ms",
+        "additions_mute_cut_threshold",
+        "audio_params_emotion",
+        "audio_params_emotion_scale",
+        "audio_params_format",
+        "audio_params_speech_rate",
+        "disable_markdown_filter",
+        "enable_language_detector",
+        "length_to_filter_parenthesis",
+        "speaker",
+        "text"
+      ],
+      "provider_id": "2405d153-9a5e-4285-8732-ac68bb7e902a",
+      "provider_ids": [
+        "2405d153-9a5e-4285-8732-ac68bb7e902a"
+      ],
+      "provider_name": "豆包TTS语音合成1.0",
+      "provider_names": [
+        "豆包TTS语音合成1.0"
+      ],
+      "provider_type": "workflow",
+      "required_params": [
+        "additions_enable_latex_tn",
+        "additions_mute_cut_remain_ms",
+        "additions_mute_cut_threshold",
+        "audio_params_emotion",
+        "audio_params_emotion_scale",
+        "audio_params_format",
+        "audio_params_speech_rate",
+        "disable_markdown_filter",
+        "enable_language_detector",
+        "length_to_filter_parenthesis",
+        "speaker",
+        "text"
+      ],
+      "required_tool_parameters": [
+        "additions_enable_latex_tn",
+        "additions_mute_cut_remain_ms",
+        "additions_mute_cut_threshold",
+        "audio_params_emotion",
+        "audio_params_emotion_scale",
+        "audio_params_format",
+        "audio_params_speech_rate",
+        "disable_markdown_filter",
+        "enable_language_detector",
+        "length_to_filter_parenthesis",
+        "speaker",
+        "text"
+      ],
+      "sample_node_ids": [
+        "1769510509007"
+      ],
+      "sample_titles": [
+        "豆包TTS语音合成1.0"
+      ],
+      "source_files": [
+        "艺术家生平-故事演绎.yml"
+      ],
+      "tool_label": "豆包TTS语音合成1.0",
+      "tool_labels": [
+        "豆包TTS语音合成1.0"
+      ],
+      "tool_name": "doubao_seed_tts_1_0",
+      "tool_node_version": "2",
+      "tool_node_versions": [
+        "2"
+      ]
+    },
+    "dreamina_image_generate_video_3_5_pro": {
+      "output_variables": [
+        "error_message",
+        "last_frame_url",
+        "url"
+      ],
+      "param_schema_names": [
+        "camerafixed",
+        "duration",
+        "generate_audio",
+        "image",
+        "prompt",
+        "ratio",
+        "resolution",
+        "return_last_frame",
+        "seed",
+        "watermark"
+      ],
+      "provider_id": "41d6c1fa-5cd4-460d-9f6d-65d728614438",
+      "provider_ids": [
+        "41d6c1fa-5cd4-460d-9f6d-65d728614438"
+      ],
+      "provider_name": "即梦图生视频-3.5 Pro",
+      "provider_names": [
+        "即梦图生视频-3.5 Pro"
+      ],
+      "provider_type": "workflow",
+      "required_params": [
+        "camerafixed",
+        "duration",
+        "generate_audio",
+        "image",
+        "prompt",
+        "ratio",
+        "resolution",
+        "return_last_frame",
+        "seed",
+        "watermark"
+      ],
+      "required_tool_parameters": [
+        "camerafixed",
+        "duration",
+        "generate_audio",
+        "image",
+        "prompt",
+        "ratio",
+        "resolution",
+        "return_last_frame",
+        "seed",
+        "watermark"
+      ],
+      "sample_node_ids": [
+        "1779099074767"
+      ],
+      "sample_titles": [
+        "即梦图生视频-3.5 Pro"
+      ],
+      "source_files": [
+        "艺术家生平-故事演绎.yml"
+      ],
+      "tool_label": "即梦图生视频-3.5 Pro",
+      "tool_labels": [
+        "即梦图生视频-3.5 Pro"
+      ],
+      "tool_name": "dreamina_image_generate_video_3_5_pro",
+      "tool_node_version": "2",
+      "tool_node_versions": [
+        "2"
+      ]
+    },
+    "jimeng_realman": {
+      "output_variables": [
+        "error_message",
+        "mask_url",
+        "video_url"
+      ],
+      "param_schema_names": [
+        "audio_url",
+        "image_url",
+        "pe_fast_mode",
+        "prompt",
+        "seed"
+      ],
+      "provider_id": "31e79e87-ac19-416d-a8fe-c36521c0d2b8",
+      "provider_ids": [
+        "31e79e87-ac19-416d-a8fe-c36521c0d2b8"
+      ],
+      "provider_name": "即梦数字人生成",
+      "provider_names": [
+        "即梦数字人生成"
+      ],
+      "provider_type": "workflow",
+      "required_params": [
+        "audio_url",
+        "image_url",
+        "pe_fast_mode",
+        "prompt",
+        "seed"
+      ],
+      "required_tool_parameters": [
+        "skip_subject_detection"
+      ],
+      "sample_node_ids": [
+        "1767611826573"
+      ],
+      "sample_titles": [
+        "即梦数字人生成"
+      ],
+      "source_files": [
+        "艺术家生平-故事演绎.yml"
+      ],
+      "tool_label": "即梦数字人生成",
+      "tool_labels": [
+        "即梦数字人生成"
+      ],
+      "tool_name": "jimeng_realman",
+      "tool_node_version": "2",
+      "tool_node_versions": [
+        "2"
+      ]
+    },
+    "jimeng_realman_video_generator": {
+      "output_variables": [
+        "error_message",
+        "video_url"
+      ],
+      "param_schema_names": [
+        "audio_url",
+        "image_url",
+        "mask_url",
+        "pe_fast_mode",
+        "prompt",
+        "seed"
+      ],
+      "provider_id": "a7b461d3-4db0-4418-9794-851bc1313678",
+      "provider_ids": [
+        "a7b461d3-4db0-4418-9794-851bc1313678"
+      ],
+      "provider_name": "即梦数字人-视频生成",
+      "provider_names": [
+        "即梦数字人-视频生成"
+      ],
+      "provider_type": "workflow",
+      "required_params": [
+        "audio_url",
+        "image_url",
+        "mask_url",
+        "pe_fast_mode",
+        "prompt",
+        "seed"
+      ],
+      "required_tool_parameters": [
+        "audio_url",
+        "image_url",
+        "mask_url",
+        "pe_fast_mode",
+        "prompt",
+        "seed"
+      ],
+      "sample_node_ids": [
+        "1773910783278"
+      ],
+      "sample_titles": [
+        "即梦数字人-视频生成"
+      ],
+      "source_files": [
+        "AI课件-图片+音频生成视频.yml"
+      ],
+      "tool_label": "即梦数字人-视频生成",
+      "tool_labels": [
+        "即梦数字人-视频生成"
+      ],
+      "tool_name": "jimeng_realman_video_generator",
+      "tool_node_version": "2",
+      "tool_node_versions": [
+        "2"
+      ]
+    },
+    "mv123": {
+      "output_variables": [
+        "web_result"
+      ],
+      "param_schema_names": [
+        "aspect",
+        "inline_subtitle",
+        "is_mxr",
+        "lyrics_array",
+        "music_duration",
+        "music_style",
+        "music_url",
+        "poem_content",
+        "style"
+      ],
+      "provider_id": "82037b86-481e-475c-80a1-37a996d020d0",
+      "provider_ids": [
+        "82037b86-481e-475c-80a1-37a996d020d0"
+      ],
+      "provider_name": "古诗词Mv生产",
+      "provider_names": [
+        "古诗词Mv生产"
+      ],
+      "provider_type": "workflow",
+      "required_params": [
+        "aspect",
+        "inline_subtitle",
+        "is_mxr",
+        "lyrics_array",
+        "music_duration",
+        "music_style",
+        "music_url",
+        "poem_content",
+        "style"
+      ],
+      "required_tool_parameters": [
+        "aspect",
+        "inline_subtitle",
+        "is_mxr",
+        "lyrics_array",
+        "lyrics_structure",
+        "music_duration",
+        "music_style",
+        "music_url",
+        "poem_content",
+        "style"
+      ],
+      "sample_node_ids": [
+        "1778219158793"
+      ],
+      "sample_titles": [
+        "古诗词Mv生产-视频"
+      ],
+      "source_files": [
+        "古诗词Mv生产-总.yml"
+      ],
+      "tool_label": "古诗词Mv生产",
+      "tool_labels": [
+        "古诗词Mv生产"
+      ],
+      "tool_name": "mv123",
+      "tool_node_version": "2",
+      "tool_node_versions": [
+        "2"
+      ]
+    },
+    "mv_music": {
+      "output_variables": [
+        "content",
+        "duration",
+        "lyrics_structure",
+        "music_style",
+        "web_result"
+      ],
+      "param_schema_names": [
+        "art_style",
+        "is_mxr",
+        "poem_content",
+        "poem_title",
+        "preffered_style",
+        "ratio",
+        "subtitle",
+        "target_user"
+      ],
+      "provider_id": "c54a84ad-9915-4788-82b8-965a2ad883f4",
+      "provider_ids": [
+        "c54a84ad-9915-4788-82b8-965a2ad883f4"
+      ],
+      "provider_name": "古诗词Mv生产-音乐",
+      "provider_names": [
+        "古诗词Mv生产-音乐"
+      ],
+      "provider_type": "workflow",
+      "required_params": [
+        "art_style",
+        "is_mxr",
+        "poem_content",
+        "poem_title",
+        "preffered_style",
+        "ratio",
+        "subtitle",
+        "target_user"
+      ],
+      "required_tool_parameters": [
+        "art_style",
+        "is_mxr",
+        "poem_content",
+        "poem_title",
+        "preffered_style",
+        "ratio",
+        "subtitle",
+        "target_user"
+      ],
+      "sample_node_ids": [
+        "1778242334822"
+      ],
+      "sample_titles": [
+        "古诗词Mv生产-音乐"
+      ],
+      "source_files": [
+        "古诗词Mv生产-总.yml"
+      ],
+      "tool_label": "古诗词Mv生产-音乐",
+      "tool_labels": [
+        "古诗词Mv生产-音乐"
+      ],
+      "tool_name": "mv_music",
+      "tool_node_version": "2",
+      "tool_node_versions": [
+        "2"
+      ]
+    },
+    "project_info_search": {
+      "output_variables": [
+        "content"
+      ],
+      "param_schema_names": [
+        "projectname"
+      ],
+      "provider_id": "d9f1ffeb-df53-4258-8de4-fd2fac040248",
+      "provider_ids": [
+        "d9f1ffeb-df53-4258-8de4-fd2fac040248"
+      ],
+      "provider_name": "project_info_search",
+      "provider_names": [
+        "project_info_search"
+      ],
+      "provider_type": "workflow",
+      "required_params": [
+        "projectname"
+      ],
+      "required_tool_parameters": [
+        "projectname"
+      ],
+      "sample_node_ids": [
+        "1776911707332",
+        "1778051736875"
+      ],
+      "sample_titles": [
+        "project_info_search"
+      ],
+      "source_files": [
+        "AI项目管理-周计划编写.yml",
+        "AI项目管理-核心价值编写.yml"
+      ],
+      "tool_label": "project_info_search",
+      "tool_labels": [
+        "project_info_search"
+      ],
+      "tool_name": "project_info_search",
+      "tool_node_version": "2",
+      "tool_node_versions": [
+        "2"
+      ]
+    },
+    "project_info_search_project_id": {
+      "output_variables": [
+        "content"
+      ],
+      "param_schema_names": [
+        "project_id",
+        "projectname"
+      ],
+      "provider_id": "2cc195aa-d0f0-4e98-bb23-946253030c37",
+      "provider_ids": [
+        "2cc195aa-d0f0-4e98-bb23-946253030c37"
+      ],
+      "provider_name": "project_info_search_project_id",
+      "provider_names": [
+        "project_info_search_project_id"
+      ],
+      "provider_type": "workflow",
+      "required_params": [
+        "project_id",
+        "projectname"
+      ],
+      "required_tool_parameters": [
+        "project_id",
+        "projectname"
+      ],
+      "sample_node_ids": [
+        "1778730493451"
+      ],
+      "sample_titles": [
+        "project_info_search_project_id"
+      ],
+      "source_files": [
+        "AI CEO-周版本终审验收.md"
+      ],
+      "tool_label": "project_info_search_project_id",
+      "tool_labels": [
+        "project_info_search_project_id"
+      ],
+      "tool_name": "project_info_search_project_id",
+      "tool_node_version": "2",
+      "tool_node_versions": [
+        "2"
+      ]
+    },
+    "seed_gen_audio": {
+      "output_variables": [
+        "duration",
+        "error_message",
+        "url"
+      ],
+      "param_schema_names": [
+        "audio_params_format",
+        "audio_params_speech_rate",
+        "enable_language_detector",
+        "speaker",
+        "text"
+      ],
+      "provider_id": "e2b4769f-5a09-444b-9066-5f4ca9967cc9",
+      "provider_ids": [
+        "e2b4769f-5a09-444b-9066-5f4ca9967cc9"
+      ],
+      "provider_name": "豆包TTS语音合成",
+      "provider_names": [
+        "豆包TTS语音合成"
+      ],
+      "provider_type": "workflow",
+      "required_params": [
+        "audio_params_format",
+        "audio_params_speech_rate",
+        "enable_language_detector",
+        "speaker",
+        "text"
+      ],
+      "required_tool_parameters": [
+        "audio_params_format",
+        "audio_params_speech_rate",
+        "enable_language_detector",
+        "speaker",
+        "text"
+      ],
+      "sample_node_ids": [
+        "1766579307542"
+      ],
+      "sample_titles": [
+        "豆包TTS语音合成"
+      ],
+      "source_files": [
+        "艺术家生平-故事演绎.yml"
+      ],
+      "tool_label": "豆包TTS语音合成",
+      "tool_labels": [
+        "豆包TTS语音合成"
+      ],
+      "tool_name": "seed_gen_audio",
+      "tool_node_version": "2",
+      "tool_node_versions": [
+        "2"
+      ]
+    },
+    "seedream_i2i_t2i_tool": {
+      "output_variables": [
+        "error_message",
+        "url_list"
+      ],
+      "param_schema_names": [
+        "custom_size",
+        "images",
+        "max_images",
+        "model",
+        "prompt",
+        "sequential_image_generation",
+        "size",
+        "watermark"
+      ],
+      "provider_id": "22632cc7-732a-4b68-94e7-5be7e1b48ba9",
+      "provider_ids": [
+        "22632cc7-732a-4b68-94e7-5be7e1b48ba9"
+      ],
+      "provider_name": "即梦-文/图生图-4.x版本",
+      "provider_names": [
+        "即梦-文/图生图-4.x版本"
+      ],
+      "provider_type": "workflow",
+      "required_params": [
+        "custom_size",
+        "images",
+        "max_images",
+        "model",
+        "prompt",
+        "sequential_image_generation",
+        "size",
+        "watermark"
+      ],
+      "required_tool_parameters": [
+        "custom_size",
+        "images",
+        "max_images",
+        "model",
+        "prompt",
+        "sequential_image_generation",
+        "size",
+        "watermark"
+      ],
+      "sample_node_ids": [
+        "1766574707339",
+        "1767711018753",
+        "1768978676761",
+        "1768987266787"
+      ],
+      "sample_titles": [
+        "即梦-文/图生图-4.x版本-不垫图",
+        "即梦-文/图生图-4.x版本-垫图",
+        "即梦扩图16:10",
+        "背景图设计16:10"
+      ],
+      "source_files": [
+        "open-Q 美术史课程封面设计.yml",
+        "艺术家生平-故事演绎.yml"
+      ],
+      "tool_label": "即梦-文/图生图-4.x版本",
+      "tool_labels": [
+        "即梦-文/图生图-4.x版本"
+      ],
+      "tool_name": "seedream_i2i_t2i_tool",
+      "tool_node_version": "2",
+      "tool_node_versions": [
+        "2"
+      ]
+    },
+    "suno_instrumental_tool": {
+      "output_variables": [
+        "error_message",
+        "suno_data"
+      ],
+      "param_schema_names": [
+        "audioWeight",
+        "instrumental",
+        "model",
+        "negativeTags",
+        "prompt",
+        "style",
+        "styleWeight",
+        "title",
+        "vocalGender",
+        "weirdnessConstraint"
+      ],
+      "provider_id": "b7eea029-31a8-4190-b08c-da1b21dffda3",
+      "provider_ids": [
+        "b7eea029-31a8-4190-b08c-da1b21dffda3"
+      ],
+      "provider_name": "suno音乐生成工具-自定义模式",
+      "provider_names": [
+        "suno音乐生成工具-自定义模式"
+      ],
+      "provider_type": "workflow",
+      "required_params": [
+        "audioWeight",
+        "instrumental",
+        "model",
+        "negativeTags",
+        "prompt",
+        "style",
+        "styleWeight",
+        "title",
+        "vocalGender",
+        "weirdnessConstraint"
+      ],
+      "required_tool_parameters": [
+        "audioWeight",
+        "instrumental",
+        "model",
+        "negativeTags",
+        "prompt",
+        "style",
+        "styleWeight",
+        "title",
+        "vocalGender",
+        "weirdnessConstraint"
+      ],
+      "sample_node_ids": [
+        "1775040894549"
+      ],
+      "sample_titles": [
+        "suno音乐生成工具-自定义模式"
+      ],
+      "source_files": [
+        "古诗词Mv生产-音乐.yml"
+      ],
+      "tool_label": "suno音乐生成工具-自定义模式",
+      "tool_labels": [
+        "suno音乐生成工具-自定义模式"
+      ],
+      "tool_name": "suno_instrumental_tool",
+      "tool_node_version": "2",
+      "tool_node_versions": [
+        "2"
+      ]
+    },
+    "volc_diaobo_videoconcat": {
+      "output_variables": [
+        "vid",
+        "video_url",
+        "web_result"
+      ],
+      "param_schema_names": [
+        "audio_params",
+        "height",
+        "is_web_project",
+        "subtitle_params",
+        "video_params",
+        "width"
+      ],
+      "provider_id": "e5d9c6cd-a06f-4b0f-9d42-09fa0f79b13b",
+      "provider_ids": [
+        "e5d9c6cd-a06f-4b0f-9d42-09fa0f79b13b"
+      ],
+      "provider_name": "火山视频点播-视频合成",
+      "provider_names": [
+        "火山视频点播-视频合成"
+      ],
+      "provider_type": "workflow",
+      "required_params": [
+        "audio_params",
+        "height",
+        "is_web_project",
+        "subtitle_params",
+        "video_params",
+        "width"
+      ],
+      "required_tool_parameters": [
+        "audio_params",
+        "height",
+        "is_web_project",
+        "subtitle_params",
+        "video_params",
+        "width"
+      ],
+      "sample_node_ids": [
+        "1775804956739"
+      ],
+      "sample_titles": [
+        "火山视频点播-视频合成"
+      ],
+      "source_files": [
+        "古诗词Mv生产-视频.yml"
+      ],
+      "tool_label": "火山视频点播-视频合成",
+      "tool_labels": [
+        "火山视频点播-视频合成"
+      ],
+      "tool_name": "volc_diaobo_videoconcat",
+      "tool_node_version": "2",
+      "tool_node_versions": [
+        "2"
+      ]
+    },
+    "webscraper": {
+      "output_variables": [],
+      "param_schema_names": [
+        "generate_summary",
+        "url",
+        "user_agent"
+      ],
+      "provider_id": "webscraper",
+      "provider_ids": [
+        "webscraper"
+      ],
+      "provider_name": "webscraper",
+      "provider_names": [
+        "webscraper"
+      ],
+      "provider_type": "builtin",
+      "required_params": [
+        "generate_summary",
+        "url",
+        "user_agent"
+      ],
+      "required_tool_parameters": [
+        "url"
+      ],
+      "sample_node_ids": [
+        "1775899717844"
+      ],
+      "sample_titles": [
+        "get json content"
+      ],
+      "source_files": [
+        "古诗词Mv生产-提取歌词.yml"
+      ],
+      "tool_label": "网页爬虫",
+      "tool_labels": [
+        "网页爬虫"
+      ],
+      "tool_name": "webscraper",
+      "tool_node_version": "2",
+      "tool_node_versions": [
+        "2"
+      ]
+    }
+  }
+}

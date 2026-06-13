@@ -1,0 +1,9 @@
+{
+  "id": "runtime-feedback-options",
+  "category": "interaction",
+  "input": "运行后发现没有生成视频链接，帮我继续优化",
+  "feedback": "没有生成视频链接",
+  "must_not_contain": ["多个问题", "你自己判断", "工具配置", "字段契约", "运行链路"],
+  "must_contain_all": ["稳定跑通", "生成结果", "我的推荐", "A.", "B."],
+  "expected_behavior": "Runtime feedback clarification should still use one recommended A/B question."
+}

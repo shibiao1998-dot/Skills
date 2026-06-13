@@ -1,0 +1,8 @@
+{
+  "id": "source-quality-gate-generation-confirmation",
+  "category": "interaction",
+  "input": "已完成澄清，请生成一个 AI Hub 工作流：联网检索公开来源并校验原文；找不到可信作者、朝代、原文和来源链接时，流程不继续生成；最后生成带人声歌曲音频和 MV 视频的完整作品。",
+  "must_not_contain": ["失败策略", "缺失依赖", "缺失组件", "缺少组件", "停止并提示", "直接停止", "允许降级", "是否降级", "朗诵配乐", "素材包", "音视频合成/拼接", "配音", "有没有可用", "有没有组件", "有没有工具"],
+  "must_contain_all": ["联网检索", "原文校验", "AI Hub", "原生 AIGC 节点", "直接按原生节点方案生成", "我的推荐", "A.", "B."],
+  "expected_behavior": "A source-quality gate inside a generation request should be preserved as workflow behavior and move to final alignment, not be misread as a command to pause or as an invitation to ask engineering contingency questions."
+}

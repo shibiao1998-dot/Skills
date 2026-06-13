@@ -1,0 +1,8 @@
+{
+  "id": "native-aigc-no-failure-strategy-question",
+  "category": "interaction",
+  "input": "已完成澄清，请生成联网检索公开来源并校验原文，最后生成带歌曲音频和 MV 视频的 AI Hub 工作流",
+  "must_not_contain": ["失败策略", "缺失依赖", "缺失组件", "缺少组件", "停止并提示", "直接停止", "允许降级", "是否降级", "朗诵配乐", "素材包", "音视频合成/拼接", "配音", "降级", "停止生成", "有没有可用", "工具"],
+  "must_contain_any": ["AI Hub 原生 AIGC 节点", "原生 AIGC 节点", "联网检索", "校验原文"],
+  "expected_behavior": "Do not ask business users to decide fallback or degradation strategy before generation; keep native AIGC and source-checking as the design direction."
+}

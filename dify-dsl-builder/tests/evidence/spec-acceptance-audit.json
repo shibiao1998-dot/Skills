@@ -1,0 +1,144 @@
+{
+  "criteria": [
+    {
+      "evidence": "SKILL.md line count=110 and loader sections present",
+      "id": 1,
+      "passed": true
+    },
+    {
+      "evidence": "SKILL.md requires core principles before DSL design or repair",
+      "id": 2,
+      "passed": true
+    },
+    {
+      "evidence": "new build and repair journey files are both mapped and distinct",
+      "id": 3,
+      "passed": true
+    },
+    {
+      "evidence": "Hard Loading Protocol uses conditional capability loading",
+      "id": 4,
+      "passed": true
+    },
+    {
+      "evidence": "all failure references contain required failure-analysis sections",
+      "id": 5,
+      "passed": true
+    },
+    {
+      "evidence": "OK",
+      "id": 6,
+      "passed": true
+    },
+    {
+      "evidence": "validator tests and structural fixtures exist and run",
+      "id": 7,
+      "passed": true
+    },
+    {
+      "evidence": "active path has no machine-specific local sample path or selector helper",
+      "id": 8,
+      "passed": true
+    },
+    {
+      "evidence": "active non-JSON path has no forbidden user-facing process labels",
+      "id": 9,
+      "passed": true
+    },
+    {
+      "evidence": "all interaction scenarios exit 3 without generated files before confirmation",
+      "id": 10,
+      "passed": true
+    },
+    {
+      "evidence": "active non-JSON path does not ask for visible mode choice",
+      "id": 11,
+      "passed": true
+    },
+    {
+      "evidence": "final alignment scenario renders concise plain-language decomposition",
+      "id": 12,
+      "passed": true
+    },
+    {
+      "evidence": "new-build journey defines README, versioned DSL, and .agent memory",
+      "id": 13,
+      "passed": true
+    },
+    {
+      "evidence": "55 runtime files covered by 77 manifest entries",
+      "id": 14,
+      "passed": true
+    },
+    {
+      "evidence": "manifest coverage plus forbidden active-path scan passed",
+      "id": 15,
+      "passed": true
+    },
+    {
+      "evidence": "55 runtime files covered by 77 manifest entries",
+      "id": 16,
+      "passed": true
+    },
+    {
+      "evidence": "55 runtime files covered by 77 manifest entries",
+      "id": 17,
+      "passed": true
+    },
+    {
+      "evidence": "converted/deprecated entries are checked against active loading text",
+      "id": 18,
+      "passed": true
+    },
+    {
+      "evidence": "new-build journey defines discovery sufficiency",
+      "id": 19,
+      "passed": true
+    },
+    {
+      "evidence": "dimension decomposition capability warns against overloaded LLM nodes",
+      "id": 20,
+      "passed": true
+    },
+    {
+      "evidence": "final-alignment interaction output includes plain decomposition",
+      "id": 21,
+      "passed": true
+    },
+    {
+      "evidence": "interaction scenarios plus structural fixture cover requested scenario classes",
+      "id": 22,
+      "passed": true
+    },
+    {
+      "evidence": "interaction and DSL structural regression directories are separate",
+      "id": 23,
+      "passed": true
+    },
+    {
+      "evidence": "manual evidence file exists and completion audit checks core gates",
+      "id": 24,
+      "passed": true
+    },
+    {
+      "evidence": "entrypoint redlines and progressive references exist",
+      "id": 25,
+      "passed": true
+    },
+    {
+      "evidence": "SKILL.md contains ordered loading protocol",
+      "id": 26,
+      "passed": true
+    },
+    {
+      "evidence": "required flat references present; nested refs=[]",
+      "id": 27,
+      "passed": true
+    },
+    {
+      "evidence": "legacy template folder absent and active path has no production template dependency",
+      "id": 28,
+      "passed": true
+    }
+  ]
+}

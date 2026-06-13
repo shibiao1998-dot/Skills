@@ -1,0 +1,43 @@
+kind: app
+version: 0.3.1
+app:
+  mode: workflow
+  name: Tool missing configuration fixture
+workflow:
+  conversation_variables: []
+  environment_variables: []
+  features: {}
+  graph:
+    nodes:
+      - id: start
+        data:
+          type: start
+          title: Start
+          variables:
+            - label: Query
+              required: true
+              type: text-input
+              variable: query
+      - id: tool_1
+        data:
+          type: tool
+          title: Missing tool configurations
+          provider_id: test-provider
+          tool_name: test_tool
+          tool_parameters: {}
+          outputs:
+            - variable: text
+              type: string
+      - id: end
+        data:
+          type: end
+          title: End
+          outputs:
+            - variable: result
+              value_selector: [tool_1, text]
+              value_type: string
+    edges:
+      - source: start
+        target: tool_1
+      - source: tool_1
+        target: end

@@ -1,101 +1,152 @@
 # Skills
 
-A small collection of reusable, shareable skills for Claude Code and compatible
-coding agents. Each skill is a self-contained directory you can drop into your
-agent's skills folder — no project-specific paths, accounts, or secrets baked in.
+A small collection of personal, reusable skills for Claude Code and compatible
+coding agents.
 
-## Skills in this collection
+Each skill lives in its own top-level directory and is maintained as an
+independent module. The modules do not share runtime state and do not need to be
+installed together.
 
-### `relay-loop`
+## Skills in this repository
 
-> Drive a background coding agent (canonically **Codex** via `codex exec`) through
-> repeated **plan → dispatch → verify → advance** cycles, with you — the strong
-> reasoning model — staying in the loop as the commander.
+| Skill | Purpose | Best for |
+| --- | --- | --- |
+| `relay-loop` | Orchestrates a commander/executor work loop for background coding agents. | Long-running implementation work where a strong model plans and verifies while a headless executor handles bounded batons of work. |
+| `dify-dsl-builder` | Designs, repairs, validates, and import-tests Dify / AI Hub Workflow and Chatflow DSL projects. | Building production DSL files, AIGC workflows, code-node contracts, validation reports, and AI Hub compatibility checks. |
 
-The idea: a strong model is great at planning and judging, but expensive to run for
-hours of grunt implementation; a cheaper headless agent is great at grinding, but
-forgets everything between runs and can wander without a contract. `relay-loop`
-splits the work along that seam.
+## `relay-loop`
 
-**The mental model**
+`relay-loop` is a workflow skill for driving a background coding agent through
+repeated plan, dispatch, verify, and advance cycles.
 
-- **Commander** (you, the strong model): plan, write the contract, dispatch,
-  verify (including real-browser visual checks), decide what's next. The only
-  participant with continuous memory.
-- **Executor** (a background `codex exec` run): a fresh, memoryless thread that does
-  one *baton* of work autonomously, then exits. It can't read the skill or remember
-  the last run — so the contract you send must be self-contained.
-- **Goal contract**: the self-contained kick-prompt — seven elements (outcome,
-  verification, constraints, boundaries, iteration, stop-when, pause-if) plus an
-  operating brief and the handoff format.
-- **Handoff**: the baton the executor writes when it finishes — the only thing that
-  crosses from one thread to the next, and the commander's input for verification.
+The strong reasoning model acts as the commander. It discovers the project,
+writes a self-contained Goal contract, dispatches a fresh executor run, receives
+the executor Handoff, verifies the result, and then decides the next baton.
 
-```
-1 plan + scope the baton        (commander)
-2 write the Goal contract       (commander)
-3 dispatch in the background     ───►   4 executor runs autonomously (memoryless)
-                                              │ writes a Handoff, echoes it
-7 advance: integrate + next   ◄──   6 verify  ◄──   5 receive Handoff
-        (new executor thread, carrying the prior Handoff's essence)
-```
+Use it when you want to:
 
-**Use it when** you want to drive Codex/a background agent through a build loop,
-write a Goal/kick-prompt/spec for an executor, hand off between agent threads, run a
-mostly-autonomous build with human-checked verification between steps, or save
-tokens by keeping planning + verification on the strong model.
+- hand a bounded implementation slice to `codex exec` or another headless agent;
+- keep long-running work moving without losing state between executor runs;
+- force every executor run to stop with explicit verification evidence and a
+  reusable Handoff;
+- save stronger-model tokens by reserving them for planning, review, and
+  verification.
 
-**What's inside**
+Module layout:
 
-```
+```text
 relay-loop/
-├── SKILL.md                       the commander's loop SOP (start here)
+├── SKILL.md
 ├── references/
-│   ├── goal-contract.md           the Goal template + inlined executor brief (the heart)
-│   ├── handoff.md                 two-part handoff protocol + template + naming
-│   ├── verify-and-visual.md       verification ladder, sandbox reachability, visual tiers
-│   ├── executor-dispatch.md       background dispatch, sandbox bypass, secret hygiene
-│   └── commander-recovery.md      rebuild state after your session restarts
+│   ├── commander-recovery.md
+│   ├── executor-dispatch.md
+│   ├── goal-contract.md
+│   ├── handoff.md
+│   └── verify-and-visual.md
 └── scripts/
-    └── lint_goal.py               sanity-check a Goal before dispatch
+    └── lint_goal.py
 ```
 
-## Installing a skill
+## `dify-dsl-builder`
 
-Skills are plain directories. To use one in Claude Code, place it where your agent
-discovers skills (commonly `~/.claude/skills/`):
+`dify-dsl-builder` is a Dify / AI Hub DSL production skill. It helps an agent
+turn workflow requirements into validated DSL deliverables, or repair existing
+DSL exports while preserving business semantics.
+
+Use it when you want to:
+
+- clarify and design a Dify Workflow or Chatflow DSL;
+- repair an existing DSL that fails static validation, import, canvas rendering,
+  code-node execution, tool-node shape, or AIGC runtime contracts;
+- build AI Hub AIGC production flows using native media-generation components;
+- produce project deliverables such as a versioned DSL, README, validation
+  report, and project memory;
+- run static validators and optional AI Hub preflight checks before claiming a
+  DSL is ready.
+
+Module layout:
+
+```text
+dify-dsl-builder/
+├── SKILL.md
+├── agents/
+├── assets/
+│   └── fixtures/
+├── references/
+├── scripts/
+└── tests/
+```
+
+## Installation
+
+Skills are plain directories. Install only the modules you need by copying or
+symlinking the top-level skill directory into the skills directory used by your
+agent.
+
+Clone the repository:
 
 ```bash
 git clone https://github.com/<owner>/Skills.git
-# Option A — copy:
-cp -r Skills/relay-loop ~/.claude/skills/relay-loop
-# Option B — symlink (so updates here flow through; good while iterating):
-ln -s "$(pwd)/Skills/relay-loop" ~/.claude/skills/relay-loop
+cd Skills
 ```
 
-Then just ask for the workflow in natural language — e.g. *"use relay-loop to drive
-codex through implementing X and verify its work."* The skill triggers from its
-description; you don't have to name it.
-
-> The executor side (Codex) needs **nothing** installed: `relay-loop` makes every
-> Goal self-contained, so the operating brief and handoff format travel inside the
-> Goal you dispatch. Only the commander side loads the skill.
-
-## Iterating
-
-The skill is built to evolve: `SKILL.md` holds the orchestration, `references/`
-holds load-on-demand depth (edit a reference without touching the SOP), and
-`scripts/lint_goal.py` encodes the quality bar for a Goal. Run the linter on a
-sample Goal after edits:
+Install for Claude Code, commonly under `~/.claude/skills/`:
 
 ```bash
-python3 relay-loop/scripts/lint_goal.py path/to/some-goal.txt
+mkdir -p ~/.claude/skills
+cp -R relay-loop ~/.claude/skills/relay-loop
+cp -R dify-dsl-builder ~/.claude/skills/dify-dsl-builder
 ```
 
-If you use the `skill-creator` skill, you can also run its eval harness against
-`relay-loop` to benchmark changes. Contributions and new skills welcome — keep them
-general (no personal paths, accounts, or secrets).
+Install for Codex, commonly under `~/.codex/skills/`:
+
+```bash
+mkdir -p ~/.codex/skills
+cp -R relay-loop ~/.codex/skills/relay-loop
+cp -R dify-dsl-builder ~/.codex/skills/dify-dsl-builder
+```
+
+During active development, symlink instead of copying so edits in this repository
+are picked up by the agent:
+
+```bash
+ln -s "$(pwd)/relay-loop" ~/.claude/skills/relay-loop
+ln -s "$(pwd)/dify-dsl-builder" ~/.claude/skills/dify-dsl-builder
+```
+
+Adjust the destination path if your agent uses a different skills directory.
+
+## Validation
+
+Each skill owns its own checks.
+
+For `relay-loop`, lint a Goal contract before dispatch:
+
+```bash
+python3 relay-loop/scripts/lint_goal.py path/to/goal.txt
+```
+
+For `dify-dsl-builder`, run the validator against a DSL file:
+
+```bash
+python3 dify-dsl-builder/scripts/validate_dify_dsl.py path/to/workflow.yml
+```
+
+The DSL Builder also includes focused tests and audit scripts under
+`dify-dsl-builder/scripts/` and `dify-dsl-builder/tests/`.
+
+## Maintenance
+
+Keep each skill self-contained:
+
+- put shared operating instructions in that skill's `SKILL.md`;
+- put load-on-demand depth in that skill's `references/`;
+- put reusable checks and helper commands in that skill's `scripts/`;
+- avoid project-specific paths, accounts, credentials, or private runtime state.
+
+Adding a new personal skill should mean adding a new top-level directory, not
+merging it into an existing module.
 
 ## License
 
-MIT — see [LICENSE](LICENSE).
+MIT. See [LICENSE](LICENSE).

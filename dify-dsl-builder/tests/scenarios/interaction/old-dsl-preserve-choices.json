@@ -1,0 +1,8 @@
+{
+  "id": "old-dsl-preserve-choices",
+  "category": "interaction",
+  "input": "我有一个旧 DSL，导入后报错，帮我修一下",
+  "must_not_contain": ["普通模式", "专业模式", "Mode Selection", "重新设计整个流程", "Build Plan"],
+  "must_contain_all": ["旧 DSL", "保持原输入输出", "我的推荐", "A.", "B."],
+  "expected_behavior": "Old DSL repair that is not explicitly narrow should still use one recommended A/B confirmation instead of an open-ended question."
+}

@@ -1,0 +1,9 @@
+{
+  "id": "vague-idiom-video",
+  "category": "interaction",
+  "input": "输入一个成语故事的形成，输出成语故事的短视频",
+  "must_not_contain": ["普通模式", "专业模式", "Mode Selection", "Gate", "Build Plan", "YAML", "video_url"],
+  "must_contain_all": ["我的推荐", "A.", "B."],
+  "must_contain_any": ["主要面向哪类", "目标用户", "使用场景", "希望看完后"],
+  "expected_behavior": "Ask one outcome-first question before DSL architecture or output-contract design."
+}

@@ -1,0 +1,8 @@
+{
+  "id": "old-dsl-narrow-repair",
+  "category": "interaction",
+  "input": "这个旧 DSL 导入后报 tool_configurations missing，只修这个导入错误，不改业务逻辑",
+  "must_not_contain": ["普通模式", "专业模式", "Mode Selection", "重新设计整个流程", "Build Plan", "请确认"],
+  "must_contain_any": ["先定位", "只修", "保持原输入输出", "不改业务逻辑", "导入错误"],
+  "expected_behavior": "Use narrow repair when the user requests a mechanical import fix and business semantics stay unchanged."
+}

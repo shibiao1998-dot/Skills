@@ -1,0 +1,8 @@
+{
+  "id": "recommended-single-question-options",
+  "category": "interaction",
+  "input": "帮我做一个自动生成诗词讲解短视频的工作流",
+  "must_not_contain": ["你自己决定", "随便", "多个问题"],
+  "must_contain_all": ["我的推荐", "A.", "B."],
+  "expected_behavior": "Clarification should be one question with recommended options, so non-technical users can answer easily."
+}

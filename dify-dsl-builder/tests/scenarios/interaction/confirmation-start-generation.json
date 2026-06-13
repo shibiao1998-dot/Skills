@@ -1,0 +1,8 @@
+{
+  "id": "confirmation-start-generation",
+  "category": "interaction",
+  "input": "确认，按这个方案开始生成 DSL",
+  "must_not_contain": ["还缺少", "最希望帮哪类使用者"],
+  "must_contain_all": ["我会", "拆成", "我的推荐", "A.", "B."],
+  "expected_behavior": "A natural confirmation to start generation should enter final alignment, not restart vague discovery."
+}

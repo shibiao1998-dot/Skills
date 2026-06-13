@@ -1,0 +1,706 @@
+app:
+  description: 输入 3D 资产需求和可选参考图 URL，生成可导入生产链路的 3D 模型资源 URL、资产规格包和诊断信息。
+  icon: 🧊
+  icon_background: '#E0F2FE'
+  icon_type: emoji
+  mode: workflow
+  name: AIGC 3D 资源生成 Workflow
+  use_icon_as_answer_icon: false
+dependencies:
+- current_identifier: null
+  type: package
+  value:
+    plugin_unique_identifier: aict/ai_hub:3.3.1@4e71d8262fbecb133fd6801e8b0a4c141f0bf4f0d6b68cec1b5c254a65365e96
+kind: app
+version: 0.3.1
+workflow:
+  conversation_variables: []
+  environment_variables: []
+  features:
+    file_upload:
+      allowed_file_extensions: []
+      allowed_file_types: []
+      allowed_file_upload_methods:
+      - local_file
+      - cs_file
+      audio:
+        enabled: false
+        number_limits: 1
+        transfer_methods:
+        - local_file
+      enabled: false
+      fileUploadConfig:
+        audio_file_size_limit: 100
+        batch_count_limit: 5
+        file_size_limit: 50
+        image_file_size_limit: 20
+        video_file_size_limit: 100
+        workflow_file_upload_limit: 10
+      image:
+        enabled: false
+        number_limits: 3
+        transfer_methods:
+        - local_file
+        - cs_file
+      number_limits: 3
+      video:
+        enabled: false
+        number_limits: 1
+        transfer_methods:
+        - local_file
+    opening_statement: ''
+    retriever_resource:
+      enabled: true
+    sensitive_word_avoidance:
+      enabled: false
+    speech_to_text:
+      enabled: false
+    suggested_questions: []
+    suggested_questions_after_answer:
+      enabled: false
+    text_to_speech:
+      enabled: false
+      language: ''
+      voice: ''
+  graph:
+    edges:
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: start
+        targetType: llm
+      id: start-source-plan_3d_asset-target
+      source: start
+      sourceHandle: source
+      target: plan_3d_asset
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: llm
+        targetType: code
+      id: plan_3d_asset-source-normalize_3d_request-target
+      source: plan_3d_asset
+      sourceHandle: source
+      target: normalize_3d_request
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: code
+        targetType: model-3d-generation
+      id: normalize_3d_request-source-generate_3d_asset-target
+      source: normalize_3d_request
+      sourceHandle: source
+      target: generate_3d_asset
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: model-3d-generation
+        targetType: code
+      id: generate_3d_asset-source-normalize_3d_output-target
+      source: generate_3d_asset
+      sourceHandle: source
+      target: normalize_3d_output
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: code
+        targetType: end
+      id: normalize_3d_output-source-end-target
+      source: normalize_3d_output
+      sourceHandle: source
+      target: end
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    nodes:
+    - data:
+        desc: 3D 资源生成的输入参数。reference_image_url 为空时走文生 3D；不为空时走图生 3D。
+        selected: false
+        title: Start
+        type: start
+        variables:
+        - label: asset_brief
+          max_length: 12000
+          options: []
+          required: true
+          type: paragraph
+          variable: asset_brief
+        - label: generation_mode
+          options:
+          - text_to_3d
+          - image_to_3d
+          required: false
+          type: select
+          variable: generation_mode
+        - label: reference_image_url
+          max_length: 2000
+          options: []
+          required: false
+          type: text-input
+          variable: reference_image_url
+        - label: output_format
+          options:
+          - GLB
+          - OBJ
+          - FBX
+          - USDZ
+          required: false
+          type: select
+          variable: output_format
+        - label: visual_style
+          max_length: 2000
+          options: []
+          required: false
+          type: text-input
+          variable: visual_style
+        - label: usage_context
+          max_length: 2000
+          options: []
+          required: false
+          type: text-input
+          variable: usage_context
+      height: 220
+      id: start
+      position:
+        x: 80
+        y: 260
+      positionAbsolute:
+        x: 80
+        y: 260
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        audio:
+          configs:
+            variable_selector: []
+          enabled: false
+        context:
+          enabled: false
+          variable_selector: []
+        desc: 将资产需求转成混元 3D 专业模型可用的结构化生成参数。
+        document:
+          configs:
+            variable_selector: []
+          enabled: false
+        model:
+          completion_params:
+            json_schema: "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"asset_name\": {\n      \"type\": \"string\"\
+              ,\n      \"description\": \"3D 资产名称，简短明确\"\n    },\n    \"generation_mode\": {\n      \"type\": \"string\",\n\
+              \      \"enum\": [\"text_to_3d\", \"image_to_3d\"],\n      \"description\": \"生成模式\"\n    },\n    \"generation_prompt\"\
+              : {\n      \"type\": \"string\",\n      \"description\": \"用于 3D 模型生成的完整提示词，包含主体、比例、结构、拓扑、材质、纹理、PBR、视角和用途\"\n\
+              \    },\n    \"negative_prompt\": {\n      \"type\": \"string\",\n      \"description\": \"需要避免的建模问题，例如破面、穿插、低清纹理、错误比例、噪声几何\"\
+              \n    },\n    \"output_format\": {\n      \"type\": \"string\",\n      \"enum\": [\"GLB\", \"OBJ\", \"FBX\"\
+              , \"USDZ\"],\n      \"description\": \"目标模型文件格式\"\n    },\n    \"pbr_enabled\": {\n      \"type\": \"string\"\
+              ,\n      \"enum\": [\"true\", \"false\"],\n      \"description\": \"是否要求 PBR 材质\"\n    },\n    \"white_model\"\
+              : {\n      \"type\": \"string\",\n      \"enum\": [\"true\", \"false\"],\n      \"description\": \"是否只生成几何白模\"\
+              \n    },\n    \"asset_spec_json\": {\n      \"type\": \"string\",\n      \"description\": \"JSON 字符串，描述资产用途、尺寸比例、材质、拓扑要求、多视图要求和验收标准\"\
+              \n    },\n    \"quality_checklist\": {\n      \"type\": \"string\",\n      \"description\": \"3D 资源生成后的质量检查清单\"\
+              \n    }\n  },\n  \"required\": [\n    \"asset_name\",\n    \"generation_mode\",\n    \"generation_prompt\",\n\
+              \    \"negative_prompt\",\n    \"output_format\",\n    \"pbr_enabled\",\n    \"white_model\",\n    \"asset_spec_json\"\
+              ,\n    \"quality_checklist\"\n  ],\n  \"additionalProperties\": false\n}\n"
+            max_completion_tokens: 4096
+            response_format: json_schema
+            temperature: 0.25
+          mode: chat
+          name: gpt-5.5-2026-04-24
+          provider: aict/ai_hub/ai_hub
+        prompt_template:
+        - id: system-prompt
+          role: system
+          text: '你是一个资深 3D 资产技术美术和 Dify 工作流参数设计师。
+
+
+            你的任务是把用户的 3D 资产需求转成可以直接传给 AI Hub 3D 模型生成组件的结构化参数。输出必须严格符合 JSON Schema。
+
+
+            质量要求：
+
+            - generation_prompt 必须包含主体、结构比例、关键造型、材质、纹理、拓扑、PBR、多视图/视角和用途。
+
+            - 如果用户提供参考图或 generation_mode 为 image_to_3d，要强调保持参考图主体结构和轮廓一致。
+
+            - 如果用户没有给出风格，默认选择高质量写实/半写实资产描述，不要使用“好看”“高级”等空泛词。
+
+            - asset_spec_json 必须是 JSON 字符串，不是对象，便于下游 Code 和 End 节点直接传递。
+
+            - 不要输出版权敏感 IP、品牌、艺术家或影视角色名称；用描述性造型语言替代。
+
+            '
+        - id: user-prompt
+          role: user
+          text: '请基于以下输入生成 3D 资源生产参数。
+
+
+            【资产需求】
+
+            {{#start.asset_brief#}}
+
+
+            【用户期望】
+
+            - 生成模式：{{#start.generation_mode#}}；如果为空，参考图 URL 不为空时使用 image_to_3d，否则使用 text_to_3d。
+
+            - 参考图 URL：{{#start.reference_image_url#}}
+
+            - 输出格式：{{#start.output_format#}}；如果为空，默认 GLB。
+
+            - 视觉风格：{{#start.visual_style#}}；如果为空，默认写实、PBR 材质、可用于游戏/课程/展示资产。
+
+            - 使用场景：{{#start.usage_context#}}；如果为空，默认可在 Web/教学/展示场景中复用。
+
+
+            输出 JSON Schema 字段说明：
+
+            - generation_prompt：传给 3D 生成组件的核心提示词。
+
+            - asset_spec_json：资产规格 JSON 字符串。
+
+            - quality_checklist：用于判断 3D 输出是否合格的检查清单。
+
+            '
+        structured_output:
+          schema:
+            type: object
+            properties:
+              asset_name:
+                type: string
+                description: 3D 资产名称，简短明确
+              generation_mode:
+                type: string
+                enum:
+                - text_to_3d
+                - image_to_3d
+                description: 生成模式
+              generation_prompt:
+                type: string
+                description: 用于 3D 模型生成的完整提示词，包含主体、比例、结构、拓扑、材质、纹理、PBR、视角和用途
+              negative_prompt:
+                type: string
+                description: 需要避免的建模问题，例如破面、穿插、低清纹理、错误比例、噪声几何
+              output_format:
+                type: string
+                enum:
+                - GLB
+                - OBJ
+                - FBX
+                - USDZ
+                description: 目标模型文件格式
+              pbr_enabled:
+                type: string
+                enum:
+                - 'true'
+                - 'false'
+                description: 是否要求 PBR 材质
+              white_model:
+                type: string
+                enum:
+                - 'true'
+                - 'false'
+                description: 是否只生成几何白模
+              asset_spec_json:
+                type: string
+                description: JSON 字符串，描述资产用途、尺寸比例、材质、拓扑要求、多视图要求和验收标准
+              quality_checklist:
+                type: string
+                description: 3D 资源生成后的质量检查清单
+            required:
+            - asset_name
+            - generation_mode
+            - generation_prompt
+            - negative_prompt
+            - output_format
+            - pbr_enabled
+            - white_model
+            - asset_spec_json
+            - quality_checklist
+            additionalProperties: false
+        structured_output_enabled: true
+        selected: false
+        title: 规划 3D 资产
+        type: llm
+        variables: []
+        video:
+          configs:
+            variable_selector: []
+          enabled: false
+        vision:
+          enabled: false
+      height: 160
+      id: plan_3d_asset
+      position:
+        x: 390
+        y: 260
+      positionAbsolute:
+        x: 390
+        y: 260
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        code: "function extractStructured(value) {\n  if (value === null || value === undefined) {\n    return {};\n  }\n\
+          \  if (typeof value === 'object') {\n    return value;\n  }\n  if (typeof value === 'string') {\n    try {\n   \
+          \   return JSON.parse(value);\n    } catch (error) {\n      return {};\n    }\n  }\n  return {};\n}\n\nfunction\
+          \ normalizeGenerationMode(requestedMode, referenceImageUrl, plannedMode) {\n  const allowed = new Set(['text_to_3d',\
+          \ 'image_to_3d']);\n  const explicit = String(requestedMode || '').trim();\n  if (allowed.has(explicit)) {\n   \
+          \ return explicit;\n  }\n  const planned = String(plannedMode || '').trim();\n  if (allowed.has(planned)) {\n  \
+          \  return planned;\n  }\n  return String(referenceImageUrl || '').trim() ? 'image_to_3d' : 'text_to_3d';\n}\n\n\
+          function normalizeOutputFormat(value, whiteModel) {\n  const allowed = new Set(['GLB', 'OBJ', 'FBX', 'USDZ']);\n\
+          \  const normalized = String(value || '').trim().toUpperCase();\n  const selected = allowed.has(normalized) ? normalized\
+          \ : 'GLB';\n  if (whiteModel === 'true' && selected === 'OBJ') {\n    return 'GLB';\n  }\n  return selected;\n}\n\
+          \nfunction normalizeBooleanString(value, fallback) {\n  const normalized = String(value || '').trim().toLowerCase();\n\
+          \  if (normalized === 'true' || normalized === 'false') {\n    return normalized;\n  }\n  return fallback;\n}\n\n\
+          function main({planned_asset_name, planned_generation_mode, planned_generation_prompt, planned_negative_prompt,\
+          \ planned_output_format, planned_pbr_enabled, planned_white_model, planned_asset_spec_json, planned_quality_checklist,\
+          \ asset_brief, generation_mode, reference_image_url, output_format}) {\n  const data = {\n    asset_name: planned_asset_name,\n\
+          \    generation_mode: planned_generation_mode,\n    generation_prompt: planned_generation_prompt,\n    negative_prompt:\
+          \ planned_negative_prompt,\n    output_format: planned_output_format,\n    pbr_enabled: planned_pbr_enabled,\n \
+          \   white_model: planned_white_model,\n    asset_spec_json: planned_asset_spec_json,\n    quality_checklist: planned_quality_checklist\n\
+          \  };\n  const imageUrl = String(reference_image_url || '').trim();\n  const mode = normalizeGenerationMode(generation_mode,\
+          \ imageUrl, data.generation_mode);\n  if (!asset_brief || !String(asset_brief).trim()) {\n    throw new Error('asset_brief\
+          \ is required');\n  }\n  if (mode === 'image_to_3d' && !imageUrl) {\n    throw new Error('reference_image_url is\
+          \ required when generation_mode is image_to_3d');\n  }\n\n  const issues = [];\n  let prompt = String(data.generation_prompt\
+          \ || '').trim();\n  if (!prompt) {\n    const brief = String(asset_brief || '3D 资源').trim();\n    prompt = [\n \
+          \     '为 AI Hub 3D 资源生成任务编写生产级提示词。',\n      '资源需求：' + brief.slice(0, 600),\n      '建模要求：主体结构清晰，比例合理，细节适中，适合后续业务复用。',\n\
+          \      mode === 'image_to_3d' ? '需要参考输入图片保持主要外观特征。' : '根据文本描述生成完整 3D 资产。'\n    ].join('\\n');\n    issues.push('planner_generation_prompt_missing_used_fallback');\n\
+          \  }\n\n  const whiteModel = normalizeBooleanString(data.white_model, 'false');\n  const pbrEnabled = whiteModel\
+          \ === 'true' ? 'false' : normalizeBooleanString(data.pbr_enabled, 'true');\n  const format = normalizeOutputFormat(output_format\
+          \ || data.output_format, whiteModel);\n  const assetSpecJson = String(data.asset_spec_json || '{}');\n  const diagnostics\
+          \ = {\n    status: issues.length ? 'fallback' : 'success',\n    issues,\n    selected_model: 'hunyuan-3d-3.1-pro-text',\n\
+          \    selected_model_note: 'AI Hub direct AIGC component model_info.model_id uses selector id hunyuan-3d-3.1-pro-text exported from the 文生3D模型 tab',\n\
+          \    selected_generation_mode: mode,\n    selected_output_format: format,\n    pbr_enabled: pbrEnabled,\n    white_model:\
+          \ whiteModel,\n    quality_checklist: data.quality_checklist || ''\n  };\n\n  return {\n    asset_name: String(data.asset_name\
+          \ || '3D asset'),\n    generation_mode: mode,\n    generation_prompt: prompt,\n    negative_prompt: String(data.negative_prompt\
+          \ || ''),\n    reference_image_url: imageUrl,\n    output_format: format,\n    pbr_enabled: pbrEnabled,\n    white_model:\
+          \ whiteModel,\n    asset_spec_json: assetSpecJson,\n    diagnostics: JSON.stringify(diagnostics, null, 2)\n  };\n\
+          }\n"
+        code_language: javascript
+        desc: 规范 LLM 输出，校验图生 3D 的参考图 URL，统一输出格式和诊断信息。
+        outputs:
+          asset_name:
+            children: null
+            type: string
+          asset_spec_json:
+            children: null
+            type: string
+          diagnostics:
+            children: null
+            type: string
+          generation_mode:
+            children: null
+            type: string
+          generation_prompt:
+            children: null
+            type: string
+          negative_prompt:
+            children: null
+            type: string
+          output_format:
+            children: null
+            type: string
+          pbr_enabled:
+            children: null
+            type: string
+          reference_image_url:
+            children: null
+            type: string
+          white_model:
+            children: null
+            type: string
+        selected: false
+        title: 规范 3D 生成参数
+        type: code
+        variables:
+        - value_selector:
+          - plan_3d_asset
+          - structured_output
+          - asset_name
+          value_type: string
+          variable: planned_asset_name
+        - value_selector:
+          - plan_3d_asset
+          - structured_output
+          - generation_mode
+          value_type: string
+          variable: planned_generation_mode
+        - value_selector:
+          - plan_3d_asset
+          - structured_output
+          - generation_prompt
+          value_type: string
+          variable: planned_generation_prompt
+        - value_selector:
+          - plan_3d_asset
+          - structured_output
+          - negative_prompt
+          value_type: string
+          variable: planned_negative_prompt
+        - value_selector:
+          - plan_3d_asset
+          - structured_output
+          - output_format
+          value_type: string
+          variable: planned_output_format
+        - value_selector:
+          - plan_3d_asset
+          - structured_output
+          - pbr_enabled
+          value_type: string
+          variable: planned_pbr_enabled
+        - value_selector:
+          - plan_3d_asset
+          - structured_output
+          - white_model
+          value_type: string
+          variable: planned_white_model
+        - value_selector:
+          - plan_3d_asset
+          - structured_output
+          - asset_spec_json
+          value_type: string
+          variable: planned_asset_spec_json
+        - value_selector:
+          - plan_3d_asset
+          - structured_output
+          - quality_checklist
+          value_type: string
+          variable: planned_quality_checklist
+        - value_selector:
+          - start
+          - asset_brief
+          value_type: string
+          variable: asset_brief
+        - value_selector:
+          - start
+          - generation_mode
+          value_type: string
+          variable: generation_mode
+        - value_selector:
+          - start
+          - reference_image_url
+          value_type: string
+          variable: reference_image_url
+        - value_selector:
+          - start
+          - output_format
+          value_type: string
+          variable: output_format
+      height: 260
+      id: normalize_3d_request
+      position:
+        x: 700
+        y: 260
+      positionAbsolute:
+        x: 700
+        y: 260
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        desc: 使用当前 AI Hub 可用的腾讯混元 3D 专业版 3.1 生成模型资源。
+        model_info:
+          config_version: v1
+          model_id: hunyuan-3d-3.1-pro-text
+          model_name: 混元3D 3.1 专业版
+          provider: hunyuan
+          provider_name: 腾讯混元
+        params:
+          EnablePBR:
+            type: constant
+            value: false
+          FaceCount:
+            type: constant
+            value: 500000
+          GenerateType:
+            type: constant
+            value: Normal
+          Prompt:
+            type: variable
+            value_selector:
+            - normalize_3d_request
+            - generation_prompt
+          ResultFormat:
+            type: constant
+            value: null
+          enable_cs_transfer:
+            type: constant
+            value: true
+        selected: false
+        title: 生成 3D 模型资源
+        type: model-3d-generation
+      height: 260
+      id: generate_3d_asset
+      position:
+        x: 1010
+        y: 260
+      positionAbsolute:
+        x: 1010
+        y: 260
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        code: "function toArray(value) {\n  if (Array.isArray(value)) {\n    return value;\n  }\n  if (value === null || value\
+          \ === undefined || value === '') {\n    return [];\n  }\n  return [value];\n}\n\nfunction firstUrlFrom(items) {\n\
+          \  for (const item of items) {\n    if (typeof item === 'string' && item.trim()) {\n      return item.trim();\n\
+          \    }\n    if (item && typeof item === 'object') {\n      const url = item.remote_url || item.url || item.download_url\
+          \ || item.preview_url || item.model_url || '';\n      if (String(url).trim()) {\n        return String(url).trim();\n\
+          \      }\n    }\n  }\n  return '';\n}\n\nfunction main({models, asset_name, asset_spec_json, diagnostics,\
+          \ output_format, generation_prompt}) {\n  const allResources = toArray(models);\n  const modelUrl = firstUrlFrom(allResources);\n  if (!modelUrl) {\n    throw new\
+          \ Error('model-3d-generation returned no usable model URL');\n  }\n\n  const assetPackage = {\n    asset_name,\n\
+          \    model_url: modelUrl,\n    output_format,\n    generation_prompt,\n    asset_spec_json,\n    diagnostics_json:\
+          \ diagnostics\n  };\n\n  return {\n    model_url: modelUrl,\n    status: 'success',\n    message: '3D resource generated\
+          \ by AI Hub model-3d-generation component',\n    output_format: String(output_format || ''),\n    asset_package_json:\
+          \ JSON.stringify(assetPackage, null, 2),\n    raw_response_json: JSON.stringify({resources: allResources}, null,\
+          \ 2)\n  };\n}\n"
+        code_language: javascript
+        desc: 提取 3D 模型 URL，并整理 End 节点需要返回的资产包和原始响应。
+        outputs:
+          asset_package_json:
+            children: null
+            type: string
+          message:
+            children: null
+            type: string
+          model_url:
+            children: null
+            type: string
+          output_format:
+            children: null
+            type: string
+          raw_response_json:
+            children: null
+            type: string
+          status:
+            children: null
+            type: string
+        selected: false
+        title: 整理 3D 输出
+        type: code
+        variables:
+        - value_selector:
+          - generate_3d_asset
+          - models
+          value_type: array[file]
+          variable: models
+        - value_selector:
+          - normalize_3d_request
+          - asset_name
+          value_type: string
+          variable: asset_name
+        - value_selector:
+          - normalize_3d_request
+          - asset_spec_json
+          value_type: string
+          variable: asset_spec_json
+        - value_selector:
+          - normalize_3d_request
+          - diagnostics
+          value_type: string
+          variable: diagnostics
+        - value_selector:
+          - normalize_3d_request
+          - output_format
+          value_type: string
+          variable: output_format
+        - value_selector:
+          - normalize_3d_request
+          - generation_prompt
+          value_type: string
+          variable: generation_prompt
+      height: 224
+      id: normalize_3d_output
+      position:
+        x: 1320
+        y: 260
+      positionAbsolute:
+        x: 1320
+        y: 260
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        desc: ''
+        outputs:
+        - value_selector:
+          - normalize_3d_output
+          - model_url
+          value_type: string
+          variable: model_url
+        - value_selector:
+          - normalize_3d_output
+          - status
+          value_type: string
+          variable: status
+        - value_selector:
+          - normalize_3d_output
+          - message
+          value_type: string
+          variable: message
+        - value_selector:
+          - normalize_3d_output
+          - output_format
+          value_type: string
+          variable: output_format
+        - value_selector:
+          - normalize_3d_output
+          - asset_package_json
+          value_type: string
+          variable: asset_package
+        - value_selector:
+          - normalize_3d_output
+          - raw_response_json
+          value_type: string
+          variable: raw_response_json
+        - value_selector:
+          - normalize_3d_request
+          - asset_spec_json
+          value_type: string
+          variable: asset_spec_json
+        - value_selector:
+          - normalize_3d_request
+          - diagnostics
+          value_type: string
+          variable: diagnostics
+        selected: false
+        title: End
+        type: end
+      height: 188
+      id: end
+      position:
+        x: 1630
+        y: 260
+      positionAbsolute:
+        x: 1630
+        y: 260
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    viewport:
+      x: 0
+      y: 0
+      zoom: 0.75

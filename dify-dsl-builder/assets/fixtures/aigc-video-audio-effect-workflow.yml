@@ -1,0 +1,605 @@
+app:
+  description: 输入视频 URL 和声音方向，使用 AI Hub 音频生成组件与可灵 K-V2A 自动生成匹配音效或配乐，并返回音频 URL、参数包和诊断信息。
+  icon: 🎧
+  icon_background: '#ECFDF5'
+  icon_type: emoji
+  mode: workflow
+  name: AIGC 视频生音效/BGM Workflow
+  use_icon_as_answer_icon: false
+dependencies:
+- current_identifier: null
+  type: package
+  value:
+    plugin_unique_identifier: aict/ai_hub:3.3.1@4e71d8262fbecb133fd6801e8b0a4c141f0bf4f0d6b68cec1b5c254a65365e96
+kind: app
+version: 0.3.1
+workflow:
+  conversation_variables: []
+  environment_variables: []
+  features:
+    file_upload:
+      allowed_file_extensions: []
+      allowed_file_types: []
+      allowed_file_upload_methods:
+      - local_file
+      - cs_file
+      audio:
+        enabled: false
+        number_limits: 1
+        transfer_methods:
+        - local_file
+      enabled: false
+      fileUploadConfig:
+        audio_file_size_limit: 100
+        batch_count_limit: 5
+        file_size_limit: 50
+        image_file_size_limit: 20
+        video_file_size_limit: 100
+        workflow_file_upload_limit: 10
+      image:
+        enabled: false
+        number_limits: 3
+        transfer_methods:
+        - local_file
+        - cs_file
+      number_limits: 3
+      video:
+        enabled: false
+        number_limits: 1
+        transfer_methods:
+        - local_file
+    opening_statement: ''
+    retriever_resource:
+      enabled: true
+    sensitive_word_avoidance:
+      enabled: false
+    speech_to_text:
+      enabled: false
+    suggested_questions: []
+    suggested_questions_after_answer:
+      enabled: false
+    text_to_speech:
+      enabled: false
+      language: ''
+      voice: ''
+  graph:
+    edges:
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: start
+        targetType: llm
+      id: start-source-plan_video_audio_effect-target
+      source: start
+      sourceHandle: source
+      target: plan_video_audio_effect
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: llm
+        targetType: code
+      id: plan_video_audio_effect-source-normalize_video_audio_request-target
+      source: plan_video_audio_effect
+      sourceHandle: source
+      target: normalize_video_audio_request
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: code
+        targetType: audio-generation
+      id: normalize_video_audio_request-source-generate_video_audio_effect-target
+      source: normalize_video_audio_request
+      sourceHandle: source
+      target: generate_video_audio_effect
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: audio-generation
+        targetType: code
+      id: generate_video_audio_effect-source-normalize_video_audio_output-target
+      source: generate_video_audio_effect
+      sourceHandle: source
+      target: normalize_video_audio_output
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: code
+        targetType: end
+      id: normalize_video_audio_output-source-end-target
+      source: normalize_video_audio_output
+      sourceHandle: source
+      target: end
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    nodes:
+    - data:
+        desc: 单次视频生音效/BGM 输入。视频 URL 应为 AI Hub 服务端可访问的公网或 CS URL，建议 3 到 20 秒。
+        selected: false
+        title: Start
+        type: start
+        variables:
+        - label: video_url
+          max_length: 2000
+          options: []
+          required: true
+          type: text-input
+          variable: video_url
+        - label: audio_goal
+          max_length: 1000
+          options: []
+          required: false
+          type: paragraph
+          variable: audio_goal
+        - label: sound_effect_direction
+          max_length: 1000
+          options: []
+          required: false
+          type: text-input
+          variable: sound_effect_direction
+        - label: bgm_direction
+          max_length: 1000
+          options: []
+          required: false
+          type: text-input
+          variable: bgm_direction
+        - label: asmr_mode
+          options:
+          - auto
+          - 'true'
+          - 'false'
+          required: false
+          type: select
+          variable: asmr_mode
+      height: 220
+      id: start
+      position:
+        x: 80
+        y: 260
+      positionAbsolute:
+        x: 80
+        y: 260
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        audio:
+          configs:
+            variable_selector: []
+          enabled: false
+        context:
+          enabled: false
+          variable_selector: []
+        desc: 生成 K-V2A 可直接使用的音效提示词、配乐提示词和 ASMR 模式。
+        document:
+          configs:
+            variable_selector: []
+          enabled: false
+        model:
+          completion_params:
+            json_schema: "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"sound_effect_prompt\": {\n      \"type\": \"string\",\n      \"description\": \"音效提示词，描述需要与视频动作同步的环境声、动作声、转场声和细节音效\"\n    },\n    \"bgm_prompt\": {\n      \"type\": \"string\",\n      \"description\": \"配乐提示词，描述音乐情绪、节奏、配器、强弱变化和不应盖过画面声音的要求\"\n    },\n    \"asmr_mode\": {\n      \"type\": \"string\",\n      \"enum\": [\"true\", \"false\"],\n      \"description\": \"是否启用 ASMR 模式，必须输出字符串 true 或 false\"\n    },\n    \"mixing_notes\": {\n      \"type\": \"string\",\n      \"description\": \"音效与配乐混音建议，说明主次、音量和节奏关系\"\n    },\n    \"quality_checklist\": {\n      \"type\": \"string\",\n      \"description\": \"用于判断视频音效/配乐是否合格的检查清单\"\n    }\n  },\n  \"required\": [\n    \"sound_effect_prompt\",\n    \"bgm_prompt\",\n    \"asmr_mode\",\n    \"mixing_notes\",\n    \"quality_checklist\"\n  ],\n  \"additionalProperties\": false\n}\n"
+            max_completion_tokens: 2048
+            response_format: json_schema
+            temperature: 0.3
+          mode: chat
+          name: gpt-5.5-2026-04-24
+          provider: aict/ai_hub/ai_hub
+        prompt_template:
+        - id: system-prompt
+          role: system
+          text: '你是资深声音设计师、影视声音剪辑师和 K-V2A 视频生音效提示词工程师。
+
+
+            你的任务是把用户的视频声音需求转成可以直接传给 AI Hub 可灵 K-V2A 的高质量参数。输出必须严格符合 JSON Schema。
+
+
+            质量要求：
+
+            - 音效提示词要描述画面动作对应的同步声、环境声、细节声和转场声。
+
+            - 配乐提示词要描述情绪、节奏、配器、段落起伏和不抢对白/主体音效的混音约束。
+
+            - 如果用户强调沉浸、近距离细节、轻声、触感或环境微声，可以启用 ASMR；否则默认关闭。
+
+            - 不要写无法从视频画面推断的台词内容，不要加入版权曲名、艺人名或品牌音乐风格。
+
+            - 不要输出解释文本，只输出 JSON Schema 对应字段。
+
+            '
+        - id: user-prompt
+          role: user
+          text: '请基于以下输入生成视频生音效/BGM 参数。
+
+
+            【视频 URL】
+
+            {{#start.video_url#}}
+
+
+            【声音目标】
+
+            {{#start.audio_goal#}}
+
+
+            【用户显式参数】
+
+            - 音效方向：{{#start.sound_effect_direction#}}；如果为空，请根据声音目标设计。
+
+            - 配乐方向：{{#start.bgm_direction#}}；如果为空，请生成与视频用途匹配的背景音乐描述。
+
+            - ASMR 模式：{{#start.asmr_mode#}}；auto 时根据声音目标判断。
+
+
+            输出 JSON Schema 字段说明：
+
+            - sound_effect_prompt：传给 K-V2A 的音效提示词。
+
+            - bgm_prompt：传给 K-V2A 的配乐提示词。
+
+            - asmr_mode：字符串 true 或 false。
+
+            - quality_checklist：用于判断生成音频是否合格。
+
+            '
+        structured_output:
+          schema:
+            type: object
+            properties:
+              sound_effect_prompt:
+                type: string
+                description: 音效提示词，描述需要与视频动作同步的环境声、动作声、转场声和细节音效
+              bgm_prompt:
+                type: string
+                description: 配乐提示词，描述音乐情绪、节奏、配器、强弱变化和不应盖过画面声音的要求
+              asmr_mode:
+                type: string
+                enum:
+                - 'true'
+                - 'false'
+                description: 是否启用 ASMR 模式，必须输出字符串 true 或 false
+              mixing_notes:
+                type: string
+                description: 音效与配乐混音建议，说明主次、音量和节奏关系
+              quality_checklist:
+                type: string
+                description: 用于判断视频音效/配乐是否合格的检查清单
+            required:
+            - sound_effect_prompt
+            - bgm_prompt
+            - asmr_mode
+            - mixing_notes
+            - quality_checklist
+            additionalProperties: false
+        structured_output_enabled: true
+        selected: false
+        title: 规划视频音频参数
+        type: llm
+        variables: []
+        video:
+          configs:
+            variable_selector: []
+          enabled: false
+        vision:
+          enabled: false
+      height: 184
+      id: plan_video_audio_effect
+      position:
+        x: 390
+        y: 260
+      positionAbsolute:
+        x: 390
+        y: 260
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        code: "function extractStructured(value) {\n  if (value === null || value === undefined) {\n    return {};\n  }\n  if (typeof value === 'object') {\n    return value;\n  }\n  if (typeof value === 'string') {\n    try {\n      return JSON.parse(value);\n    } catch (error) {\n      return {};\n    }\n  }\n  return {};\n}\n\nfunction normalizeAsmrMode(planned, requested, audioGoal) {\n  const raw = String(requested || '').trim().toLowerCase();\n  if (raw === 'true' || raw === 'false') {\n    return raw;\n  }\n  const plan = String(planned || '').trim().toLowerCase();\n  if (plan === 'true' || plan === 'false') {\n    return plan;\n  }\n  const goal = String(audioGoal || '').toLowerCase();\n  return /asmr|沉浸|近距离|轻声|耳语|触感|细节音/.test(goal) ? 'true' : 'false';\n}\n\nfunction main({planned_sound_effect_prompt, planned_bgm_prompt, planned_asmr_mode, planned_mixing_notes, planned_quality_checklist, video_url, audio_goal, sound_effect_direction, bgm_direction, asmr_mode}) {\n  const data =\
+          \ {\n    sound_effect_prompt: planned_sound_effect_prompt,\n    bgm_prompt: planned_bgm_prompt,\n    asmr_mode: planned_asmr_mode,\n    mixing_notes: planned_mixing_notes,\n    quality_checklist: planned_quality_checklist\n  };\n  const url = String(video_url || '').trim();\n  if (!url) {\n    throw new Error('video_url is required');\n  }\n  const lowerUrl = url.toLowerCase();\n  if (!lowerUrl.startsWith('http://') && !lowerUrl.startsWith('https://')) {\n    throw new Error('video_url must be an http(s) URL that AI Hub can fetch');\n  }\n\n  const soundEffectPrompt = String(sound_effect_direction || data.sound_effect_prompt || '').trim();\n  const bgmPrompt = String(bgm_direction || data.bgm_prompt || '').trim();\n  if (!soundEffectPrompt && !bgmPrompt) {\n    throw new Error('sound_effect_prompt or bgm_prompt is required');\n  }\n\n  const normalizedAsmr = normalizeAsmrMode(data.asmr_mode, asmr_mode, audio_goal);\n  const diagnostics = {\n    selected_model: 'kling-v2a',\n  \
+          \  selected_model_note: 'AI Hub direct AIGC component model_info.model_id uses selector id kling-v2a',\n    video_input_type: 'url',\n    asmr_mode: normalizedAsmr,\n    mixing_notes: data.mixing_notes || '',\n    quality_checklist: data.quality_checklist || ''\n  };\n\n  return {\n    video_input_type: 'url',\n    video_url: url,\n    sound_effect_prompt: soundEffectPrompt,\n    bgm_prompt: bgmPrompt,\n    asmr_mode: normalizedAsmr,\n    quality_checklist: String(data.quality_checklist || ''),\n    diagnostics: JSON.stringify(diagnostics, null, 2)\n  };\n}\n"
+        code_language: javascript
+        desc: 校验视频 URL，规范音效提示词、配乐提示词、ASMR 模式和诊断信息。
+        outputs:
+          asmr_mode:
+            children: null
+            type: string
+          bgm_prompt:
+            children: null
+            type: string
+          diagnostics:
+            children: null
+            type: string
+          quality_checklist:
+            children: null
+            type: string
+          sound_effect_prompt:
+            children: null
+            type: string
+          video_input_type:
+            children: null
+            type: string
+          video_url:
+            children: null
+            type: string
+        selected: false
+        title: 规范视频音频生成参数
+        type: code
+        variables:
+        - value_selector:
+          - plan_video_audio_effect
+          - structured_output
+          - sound_effect_prompt
+          value_type: string
+          variable: planned_sound_effect_prompt
+        - value_selector:
+          - plan_video_audio_effect
+          - structured_output
+          - bgm_prompt
+          value_type: string
+          variable: planned_bgm_prompt
+        - value_selector:
+          - plan_video_audio_effect
+          - structured_output
+          - asmr_mode
+          value_type: string
+          variable: planned_asmr_mode
+        - value_selector:
+          - plan_video_audio_effect
+          - structured_output
+          - mixing_notes
+          value_type: string
+          variable: planned_mixing_notes
+        - value_selector:
+          - plan_video_audio_effect
+          - structured_output
+          - quality_checklist
+          value_type: string
+          variable: planned_quality_checklist
+        - value_selector:
+          - start
+          - video_url
+          value_type: string
+          variable: video_url
+        - value_selector:
+          - start
+          - audio_goal
+          value_type: string
+          variable: audio_goal
+        - value_selector:
+          - start
+          - sound_effect_direction
+          value_type: string
+          variable: sound_effect_direction
+        - value_selector:
+          - start
+          - bgm_direction
+          value_type: string
+          variable: bgm_direction
+        - value_selector:
+          - start
+          - asmr_mode
+          value_type: string
+          variable: asmr_mode
+      height: 260
+      id: normalize_video_audio_request
+      position:
+        x: 700
+        y: 260
+      positionAbsolute:
+        x: 700
+        y: 260
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        desc: 使用 AI Hub 音频生成组件和可灵 K-V2A，根据视频生成匹配音效与配乐。
+        model_info:
+          config_version: v1
+          model_id: kling-v2a
+          model_name: 可灵 K-V2A
+          provider: kling
+          provider_name: 可灵
+        params:
+          asmr_mode:
+            type: variable
+            value_selector:
+            - normalize_video_audio_request
+            - asmr_mode
+          bgm_prompt:
+            type: variable
+            value_selector:
+            - normalize_video_audio_request
+            - bgm_prompt
+          enable_cs_transfer:
+            type: constant
+            value: true
+          sound_effect_prompt:
+            type: variable
+            value_selector:
+            - normalize_video_audio_request
+            - sound_effect_prompt
+          video_input_type:
+            type: variable
+            value_selector:
+            - normalize_video_audio_request
+            - video_input_type
+          video_url:
+            type: variable
+            value_selector:
+            - normalize_video_audio_request
+            - video_url
+        selected: false
+        title: 生成视频音效/BGM
+        type: audio-generation
+      height: 236
+      id: generate_video_audio_effect
+      position:
+        x: 1010
+        y: 260
+      positionAbsolute:
+        x: 1010
+        y: 260
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        code: "function toArray(value) {\n  if (Array.isArray(value)) {\n    return value;\n  }\n  if (value === null || value === undefined || value === '') {\n    return [];\n  }\n  return [value];\n}\n\nfunction firstAudio(items) {\n  for (const item of items) {\n    if (typeof item === 'string' && item.trim()) {\n      return {audio_url: item.trim()};\n    }\n    if (item && typeof item === 'object') {\n      const audioUrl = item.remote_url || item.url || item.download_url || item.audio_url || item.preview_url || '';\n      if (String(audioUrl).trim()) {\n        return {\n          audio_url: String(audioUrl).trim(),\n          duration: String(item.duration || item.audio_duration || ''),\n          mime_type: String(item.mime_type || item.content_type || '')\n        };\n      }\n    }\n  }\n  return {audio_url: ''};\n}\n\nfunction main({audios, video_url, sound_effect_prompt, bgm_prompt, asmr_mode, diagnostics, quality_checklist}) {\n  const allAudios = toArray(audios);\n  const\
+          \ audio = firstAudio(allAudios);\n  if (!audio.audio_url) {\n    throw new Error('audio-generation returned no usable audio_url for video audio effect');\n  }\n\n  const videoAudioPackage = {\n    audio_url: audio.audio_url,\n    duration: audio.duration || '',\n    mime_type: audio.mime_type || 'audio/mpeg',\n    source_video_url: video_url,\n    sound_effect_prompt,\n    bgm_prompt,\n    asmr_mode,\n    quality_checklist,\n    diagnostics_json: diagnostics\n  };\n\n  return {\n    audio_url: audio.audio_url,\n    status: 'success',\n    message: 'Video audio generated by AI Hub audio-generation component with Kling K-V2A',\n    duration: audio.duration || '',\n    mime_type: videoAudioPackage.mime_type,\n    video_audio_package_json: JSON.stringify(videoAudioPackage, null, 2),\n    raw_response_json: JSON.stringify({audios: allAudios}, null, 2)\n  };\n}\n"
+        code_language: javascript
+        desc: 提取生成音频 URL，并整理 End 节点需要返回的视频音频资产包和原始响应。
+        outputs:
+          audio_url:
+            children: null
+            type: string
+          duration:
+            children: null
+            type: string
+          message:
+            children: null
+            type: string
+          mime_type:
+            children: null
+            type: string
+          raw_response_json:
+            children: null
+            type: string
+          status:
+            children: null
+            type: string
+          video_audio_package_json:
+            children: null
+            type: string
+        selected: false
+        title: 整理视频音频输出
+        type: code
+        variables:
+        - value_selector:
+          - generate_video_audio_effect
+          - audios
+          value_type: array[file]
+          variable: audios
+        - value_selector:
+          - normalize_video_audio_request
+          - video_url
+          value_type: string
+          variable: video_url
+        - value_selector:
+          - normalize_video_audio_request
+          - sound_effect_prompt
+          value_type: string
+          variable: sound_effect_prompt
+        - value_selector:
+          - normalize_video_audio_request
+          - bgm_prompt
+          value_type: string
+          variable: bgm_prompt
+        - value_selector:
+          - normalize_video_audio_request
+          - asmr_mode
+          value_type: string
+          variable: asmr_mode
+        - value_selector:
+          - normalize_video_audio_request
+          - diagnostics
+          value_type: string
+          variable: diagnostics
+        - value_selector:
+          - normalize_video_audio_request
+          - quality_checklist
+          value_type: string
+          variable: quality_checklist
+      height: 240
+      id: normalize_video_audio_output
+      position:
+        x: 1320
+        y: 260
+      positionAbsolute:
+        x: 1320
+        y: 260
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        desc: ''
+        outputs:
+        - value_selector:
+          - normalize_video_audio_output
+          - audio_url
+          value_type: string
+          variable: audio_url
+        - value_selector:
+          - normalize_video_audio_output
+          - status
+          value_type: string
+          variable: status
+        - value_selector:
+          - normalize_video_audio_output
+          - message
+          value_type: string
+          variable: message
+        - value_selector:
+          - normalize_video_audio_output
+          - duration
+          value_type: string
+          variable: duration
+        - value_selector:
+          - normalize_video_audio_output
+          - mime_type
+          value_type: string
+          variable: mime_type
+        - value_selector:
+          - normalize_video_audio_output
+          - video_audio_package_json
+          value_type: string
+          variable: video_audio_package
+        - value_selector:
+          - normalize_video_audio_output
+          - raw_response_json
+          value_type: string
+          variable: raw_response_json
+        - value_selector:
+          - normalize_video_audio_request
+          - diagnostics
+          value_type: string
+          variable: diagnostics
+        selected: false
+        title: End
+        type: end
+      height: 204
+      id: end
+      position:
+        x: 1630
+        y: 260
+      positionAbsolute:
+        x: 1630
+        y: 260
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    viewport:
+      x: 0
+      y: 0
+      zoom: 0.75

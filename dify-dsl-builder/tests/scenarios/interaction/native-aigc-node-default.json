@@ -1,0 +1,8 @@
+{
+  "id": "native-aigc-node-default",
+  "category": "interaction",
+  "input": "已完成澄清，请生成一个 AI Hub 工作流：输入歌词和风格，直接生成歌曲音频和一段 MV 视频",
+  "must_not_contain": ["有没有工具", "现成工具", "导入工具", "工具可以导入", "给我工具名"],
+  "must_contain_all": ["AI Hub", "原生", "AIGC", "节点"],
+  "expected_behavior": "AIGC generation defaults to native AI Hub AIGC component nodes instead of asking the user to provide packaged tools."
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Dify DSL Builder"
+  short_description: "Build, repair, and validate production AI Hub Dify DSL workflows through one-question business discovery."
+  default_prompt: "帮我把一个业务想法澄清成可导入 AI Hub 的 Dify DSL 工作流。每轮只问一个业务问题，并提供“我的推荐：A. ... B. ...”选项；AIGC 默认使用 AI Hub 原生节点，确认边界后再生成。"

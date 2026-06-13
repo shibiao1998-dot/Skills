@@ -1,0 +1,664 @@
+app:
+  description: 输入口播文本和声音要求，使用 AI Hub 音频生成组件生成 TTS 音频，并返回音频 URL、状态、元数据和诊断信息。
+  icon: 🔊
+  icon_background: '#FCE7F3'
+  icon_type: emoji
+  mode: workflow
+  name: AIGC TTS 音频生成 Workflow
+  use_icon_as_answer_icon: false
+dependencies:
+- current_identifier: null
+  type: package
+  value:
+    plugin_unique_identifier: aict/ai_hub:3.3.1@4e71d8262fbecb133fd6801e8b0a4c141f0bf4f0d6b68cec1b5c254a65365e96
+kind: app
+version: 0.3.1
+workflow:
+  conversation_variables: []
+  environment_variables: []
+  features:
+    file_upload:
+      allowed_file_extensions: []
+      allowed_file_types: []
+      allowed_file_upload_methods:
+      - local_file
+      - cs_file
+      audio:
+        enabled: false
+        number_limits: 1
+        transfer_methods:
+        - local_file
+      enabled: false
+      fileUploadConfig:
+        audio_file_size_limit: 100
+        batch_count_limit: 5
+        file_size_limit: 50
+        image_file_size_limit: 20
+        video_file_size_limit: 100
+        workflow_file_upload_limit: 10
+      image:
+        enabled: false
+        number_limits: 3
+        transfer_methods:
+        - local_file
+        - cs_file
+      number_limits: 3
+      video:
+        enabled: false
+        number_limits: 1
+        transfer_methods:
+        - local_file
+    opening_statement: ''
+    retriever_resource:
+      enabled: true
+    sensitive_word_avoidance:
+      enabled: false
+    speech_to_text:
+      enabled: false
+    suggested_questions: []
+    suggested_questions_after_answer:
+      enabled: false
+    text_to_speech:
+      enabled: false
+      language: ''
+      voice: ''
+  graph:
+    edges:
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: start
+        targetType: llm
+      id: start-source-plan_tts_audio-target
+      source: start
+      sourceHandle: source
+      target: plan_tts_audio
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: llm
+        targetType: code
+      id: plan_tts_audio-source-normalize_tts_request-target
+      source: plan_tts_audio
+      sourceHandle: source
+      target: normalize_tts_request
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: code
+        targetType: audio-generation
+      id: normalize_tts_request-source-generate_tts_audio-target
+      source: normalize_tts_request
+      sourceHandle: source
+      target: generate_tts_audio
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: audio-generation
+        targetType: code
+      id: generate_tts_audio-source-normalize_tts_output-target
+      source: generate_tts_audio
+      sourceHandle: source
+      target: normalize_tts_output
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: code
+        targetType: end
+      id: normalize_tts_output-source-end-target
+      source: normalize_tts_output
+      sourceHandle: source
+      target: end
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    nodes:
+    - data:
+        desc: 单次 TTS 生成输入。文本建议不超过 900 字，过长内容应改用批量/迭代 TTS 工作流。
+        selected: false
+        title: Start
+        type: start
+        variables:
+        - label: narration_text
+          max_length: 900
+          options: []
+          required: true
+          type: paragraph
+          variable: narration_text
+        - label: speaker
+          max_length: 200
+          options: []
+          required: false
+          type: text-input
+          variable: speaker
+        - label: voice_style
+          max_length: 1000
+          options: []
+          required: false
+          type: text-input
+          variable: voice_style
+        - label: speech_rate
+          options: []
+          required: false
+          type: number
+          variable: speech_rate
+        - label: output_format
+          options:
+          - mp3
+          - wav
+          required: false
+          type: select
+          variable: output_format
+      height: 188
+      id: start
+      position:
+        x: 80
+        y: 260
+      positionAbsolute:
+        x: 80
+        y: 260
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        audio:
+          configs:
+            variable_selector: []
+          enabled: false
+        context:
+          enabled: false
+          variable_selector: []
+        desc: 清理口播文本，生成语音风格、语速和情绪辅助信息。
+        document:
+          configs:
+            variable_selector: []
+          enabled: false
+        model:
+          completion_params:
+            json_schema: "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"tts_text\": {\n      \"type\": \"string\",\n      \"description\": \"最终用于 TTS 的口播文本，保持原意，不添加解释\"\n    },\n    \"speaker\": {\n      \"type\": \"string\",\n      \"description\": \"发音人名称或音色标识，无法判断时使用默认值\"\n    },\n    \"speech_rate\": {\n      \"type\": \"number\",\n      \"description\": \"语速倍率，建议 0.8 到 1.2\"\n    },\n    \"output_format\": {\n      \"type\": \"string\",\n      \"enum\": [\"mp3\", \"wav\"],\n      \"description\": \"音频输出格式\"\n    },\n    \"emotion_tips_json\": {\n      \"type\": \"string\",\n      \"description\": \"JSON 字符串数组，描述语气、情绪和口播风格提示\"\n    },\n    \"quality_checklist\": {\n      \"type\": \"string\",\n      \"description\": \"TTS 音频质量检查清单\"\n    }\n  },\n  \"required\": [\n    \"tts_text\",\n    \"speaker\",\n    \"speech_rate\",\n    \"output_format\",\n    \"emotion_tips_json\",\n    \"quality_checklist\"\n  ],\n  \"additionalProperties\": false\n}\n"
+            max_completion_tokens: 2048
+            response_format: json_schema
+            temperature: 0.2
+          mode: chat
+          name: gpt-5.5-2026-04-24
+          provider: aict/ai_hub/ai_hub
+        prompt_template:
+        - id: system-prompt
+          role: system
+          text: '你是一个资深中文口播导演和 TTS 参数设计师。
+
+
+            你的任务是把用户输入整理成可以直接传给 AI Hub 音频生成组件的 TTS 参数。输出必须严格符合 JSON Schema。
+
+
+            质量要求：
+
+            - 保持用户原意，不扩写事实，不添加旁白之外的解释。
+
+            - 口播文本要适合朗读，去除明显 Markdown 噪声，但不要改写关键信息。
+
+            - 根据 voice_style 生成情绪、停顿、音量和语速建议。
+
+            - emotion_tips_json 必须是 JSON 字符串数组，例如 ["语气自然亲切", "关键词稍微放慢"]。
+
+            - 不输出 SSML，除非用户明确要求。
+
+            '
+        - id: user-prompt
+          role: user
+          text: '请基于以下输入生成 TTS 音频生产参数。
+
+
+            【口播文本】
+
+            {{#start.narration_text#}}
+
+
+            【用户期望】
+
+            - 发音人：{{#start.speaker#}}；如果为空，默认 zh_female_xueayi_saturn_bigtts。
+
+            - 语音风格：{{#start.voice_style#}}；如果为空，默认自然、清晰、亲切、适合内容讲解。
+
+            - 语速：{{#start.speech_rate#}}；如果为空，默认 1.0。
+
+            - 输出格式：{{#start.output_format#}}；如果为空，默认 mp3。
+
+
+            输出 JSON Schema 字段说明：
+
+            - tts_text：直接传入 TTS 的最终口播文本。
+
+            - emotion_tips_json：语气辅助信息 JSON 字符串数组。
+
+            - quality_checklist：用于判断生成音频是否合格的检查清单。
+
+            '
+        structured_output:
+          schema:
+            type: object
+            properties:
+              tts_text:
+                type: string
+                description: 最终用于 TTS 的口播文本，保持原意，不添加解释
+              speaker:
+                type: string
+                description: 发音人名称或音色标识，无法判断时使用默认值
+              speech_rate:
+                type: number
+                description: 语速倍率，建议 0.8 到 1.2
+              output_format:
+                type: string
+                enum:
+                - mp3
+                - wav
+                description: 音频输出格式
+              emotion_tips_json:
+                type: string
+                description: JSON 字符串数组，描述语气、情绪和口播风格提示
+              quality_checklist:
+                type: string
+                description: TTS 音频质量检查清单
+            required:
+            - tts_text
+            - speaker
+            - speech_rate
+            - output_format
+            - emotion_tips_json
+            - quality_checklist
+            additionalProperties: false
+        structured_output_enabled: true
+        selected: false
+        title: 规划 TTS 音频
+        type: llm
+        variables: []
+        video:
+          configs:
+            variable_selector: []
+          enabled: false
+        vision:
+          enabled: false
+      height: 160
+      id: plan_tts_audio
+      position:
+        x: 390
+        y: 260
+      positionAbsolute:
+        x: 390
+        y: 260
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        code: "function normalizeSpeechRate(value) {\n  const parsed = Number(value || 1);\n  if (!Number.isFinite(parsed)) {\n    return 1;\n  }\n  return Math.max(0.5, Math.min(2, Number(parsed.toFixed(2))));\n}\n\nfunction normalizeFormat(value) {\n  const normalized = String(value || '').trim().toLowerCase();\n  return normalized === 'wav' ? 'wav' : 'mp3';\n}\n\n\nfunction normalizeSpeaker(value) {\n  const raw = String(value || '').trim();\n  if (!raw) {\n    return 'zh_female_xueayi_saturn_bigtts';\n  }\n  if (/^[a-z]{2}_[a-z]+_[a-z0-9_]+_bigtts$/i.test(raw)) {\n    return raw;\n  }\n  return 'zh_female_xueayi_saturn_bigtts';\n}\n\nfunction normalizeEmotionTips(value) {\n  if (typeof value === 'string' && value.trim()) {\n    try {\n      const parsed = JSON.parse(value);\n      if (Array.isArray(parsed)) {\n        return JSON.stringify(parsed.map(String), null, 2);\n      }\n    } catch (error) {\n      return JSON.stringify([value.trim()], null, 2);\n    }\n  }\n  return JSON.stringify(['自然清晰',\
+          \ '语气亲切', '关键词稍微放慢'], null, 2);\n}\n\nfunction main({planned_tts_text, planned_speaker, planned_speech_rate, planned_output_format, planned_emotion_tips_json, planned_quality_checklist, narration_text, speaker, speech_rate, output_format}) {\n  const text = String(planned_tts_text || narration_text || '').trim();\n  if (!text) {\n    throw new Error('narration_text is required');\n  }\n  if (text.length > 900) {\n    throw new Error('tts_text is too long; split text with an iteration-based batch TTS workflow');\n  }\n\n  const selectedSpeaker = normalizeSpeaker(speaker || planned_speaker);\n  const selectedFormat = normalizeFormat(output_format || planned_output_format);\n  const selectedRate = normalizeSpeechRate(speech_rate || planned_speech_rate);\n  const emotionTips = normalizeEmotionTips(planned_emotion_tips_json);\n  const diagnostics = {\n    selected_model: 'seed-tts-2.0',\n    selected_model_note: 'AI Hub direct AIGC component model_info.model_id uses selector id seed-tts-2.0',\n\
+          \    text_length: text.length,\n    selected_speaker: selectedSpeaker,\n    selected_format: selectedFormat,\n    selected_speech_rate: selectedRate,\n    quality_checklist: planned_quality_checklist || ''\n  };\n\n  return {\n    tts_text: text,\n    speaker: selectedSpeaker,\n    speech_rate: selectedRate,\n    output_format: selectedFormat,\n    emotion_tips_json: emotionTips,\n    diagnostics: JSON.stringify(diagnostics, null, 2)\n  };\n}\n"
+        code_language: javascript
+        desc: 规范 TTS 参数，校验文本长度，输出音色、语速、格式和语气辅助信息。
+        outputs:
+          diagnostics:
+            children: null
+            type: string
+          emotion_tips_json:
+            children: null
+            type: string
+          output_format:
+            children: null
+            type: string
+          speaker:
+            children: null
+            type: string
+          speech_rate:
+            children: null
+            type: number
+          tts_text:
+            children: null
+            type: string
+        selected: false
+        title: 规范 TTS 参数
+        type: code
+        variables:
+        - value_selector:
+          - plan_tts_audio
+          - structured_output
+          - tts_text
+          value_type: string
+          variable: planned_tts_text
+        - value_selector:
+          - plan_tts_audio
+          - structured_output
+          - speaker
+          value_type: string
+          variable: planned_speaker
+        - value_selector:
+          - plan_tts_audio
+          - structured_output
+          - speech_rate
+          value_type: number
+          variable: planned_speech_rate
+        - value_selector:
+          - plan_tts_audio
+          - structured_output
+          - output_format
+          value_type: string
+          variable: planned_output_format
+        - value_selector:
+          - plan_tts_audio
+          - structured_output
+          - emotion_tips_json
+          value_type: string
+          variable: planned_emotion_tips_json
+        - value_selector:
+          - plan_tts_audio
+          - structured_output
+          - quality_checklist
+          value_type: string
+          variable: planned_quality_checklist
+        - value_selector:
+          - start
+          - narration_text
+          value_type: string
+          variable: narration_text
+        - value_selector:
+          - start
+          - speaker
+          value_type: string
+          variable: speaker
+        - value_selector:
+          - start
+          - speech_rate
+          value_type: number
+          variable: speech_rate
+        - value_selector:
+          - start
+          - output_format
+          value_type: string
+          variable: output_format
+      height: 220
+      id: normalize_tts_request
+      position:
+        x: 700
+        y: 260
+      positionAbsolute:
+        x: 700
+        y: 260
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        desc: 使用当前 AI Hub 可用的 Doubao Seed TTS 2.0 生成自然口播音频。
+        model_info:
+          config_version: v1
+          model_id: seed-tts-2.0
+          model_name: Doubao Seed TTS 2.0
+          provider: doubao
+          provider_name: 豆包
+        params:
+          audio_params_format:
+            type: variable
+            value_selector:
+            - normalize_tts_request
+            - output_format
+          audio_params_speech_rate:
+            type: variable
+            value_selector:
+            - normalize_tts_request
+            - speech_rate
+          disable_markdown_filter:
+            type: constant
+            value: 'false'
+          enable_cs_transfer:
+            type: constant
+            value: true
+          enable_language_detector:
+            type: constant
+            value: 'true'
+          length_to_filter_parenthesis:
+            type: constant
+            value: 'false'
+          speaker:
+            type: variable
+            value_selector:
+            - normalize_tts_request
+            - speaker
+          style_prompt:
+            type: variable
+            value_selector:
+            - normalize_tts_request
+            - emotion_tips_json
+          text:
+            type: variable
+            value_selector:
+            - normalize_tts_request
+            - tts_text
+        selected: false
+        title: 生成 TTS 音频
+        type: audio-generation
+      height: 236
+      id: generate_tts_audio
+      position:
+        x: 1010
+        y: 260
+      positionAbsolute:
+        x: 1010
+        y: 260
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        code: |
+          function toArray(value) {
+            if (Array.isArray(value)) {
+              return value;
+            }
+            if (value === null || value === undefined || value === '') {
+              return [];
+            }
+            return [value];
+          }
+
+          function firstAudio(items) {
+            for (const item of items) {
+              if (typeof item === 'string' && item.trim()) {
+                return {audio_url: item.trim()};
+              }
+              if (item && typeof item === 'object') {
+                const audioUrl = item.remote_url || item.url || item.download_url || item.audio_url || item.preview_url || (item.extra && item.extra.source_url) || '';
+                if (String(audioUrl).trim()) {
+                  return {
+                    audio_url: String(audioUrl).trim(),
+                    duration: String(item.duration || item.audio_duration || (item.extra && item.extra.duration) || ''),
+                    sample_rate: String(item.sample_rate || (item.extra && item.extra.sample_rate) || ''),
+                    mime_type: String(item.mime_type || item.content_type || '')
+                  };
+                }
+              }
+            }
+            return {audio_url: ''};
+          }
+
+          function main({audios, tts_text, speaker, diagnostics, output_format}) {
+            const allAudios = toArray(audios);
+            const audio = firstAudio(allAudios);
+            if (!audio.audio_url) {
+              throw new Error('audio-generation returned no usable audio_url');
+            }
+
+            const audioPackage = {
+              audio_url: audio.audio_url,
+              duration: audio.duration || '',
+              sample_rate: audio.sample_rate || '',
+              mime_type: audio.mime_type || (output_format === 'wav' ? 'audio/wav' : 'audio/mpeg'),
+              speaker,
+              tts_text,
+              diagnostics_json: diagnostics
+            };
+
+            return {
+              audio_url: audio.audio_url,
+              status: 'success',
+              message: 'TTS audio generated by AI Hub audio-generation component',
+              duration: audio.duration || '',
+              sample_rate: audio.sample_rate || '',
+              mime_type: audioPackage.mime_type,
+              audio_package_json: JSON.stringify(audioPackage, null, 2),
+              raw_response_json: JSON.stringify({audios: allAudios}, null, 2)
+            };
+          }
+        code_language: javascript
+        desc: 提取音频 URL，并整理 End 节点需要返回的音频元数据和原始响应。
+        outputs:
+          audio_package_json:
+            children: null
+            type: string
+          audio_url:
+            children: null
+            type: string
+          duration:
+            children: null
+            type: string
+          message:
+            children: null
+            type: string
+          mime_type:
+            children: null
+            type: string
+          raw_response_json:
+            children: null
+            type: string
+          sample_rate:
+            children: null
+            type: string
+          status:
+            children: null
+            type: string
+        selected: false
+        title: 整理 TTS 输出
+        type: code
+        variables:
+        - value_selector:
+          - generate_tts_audio
+          - audios
+          value_type: array[file]
+          variable: audios
+        - value_selector:
+          - normalize_tts_request
+          - tts_text
+          value_type: string
+          variable: tts_text
+        - value_selector:
+          - normalize_tts_request
+          - speaker
+          value_type: string
+          variable: speaker
+        - value_selector:
+          - normalize_tts_request
+          - diagnostics
+          value_type: string
+          variable: diagnostics
+        - value_selector:
+          - normalize_tts_request
+          - output_format
+          value_type: string
+          variable: output_format
+      height: 224
+      id: normalize_tts_output
+      position:
+        x: 1320
+        y: 260
+      positionAbsolute:
+        x: 1320
+        y: 260
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        desc: ''
+        outputs:
+        - value_selector:
+          - normalize_tts_output
+          - audio_url
+          value_type: string
+          variable: audio_url
+        - value_selector:
+          - normalize_tts_output
+          - status
+          value_type: string
+          variable: status
+        - value_selector:
+          - normalize_tts_output
+          - message
+          value_type: string
+          variable: message
+        - value_selector:
+          - normalize_tts_output
+          - duration
+          value_type: string
+          variable: duration
+        - value_selector:
+          - normalize_tts_output
+          - sample_rate
+          value_type: string
+          variable: sample_rate
+        - value_selector:
+          - normalize_tts_output
+          - mime_type
+          value_type: string
+          variable: mime_type
+        - value_selector:
+          - normalize_tts_output
+          - audio_package_json
+          value_type: string
+          variable: audio_package
+        - value_selector:
+          - normalize_tts_output
+          - raw_response_json
+          value_type: string
+          variable: raw_response_json
+        - value_selector:
+          - normalize_tts_request
+          - diagnostics
+          value_type: string
+          variable: diagnostics
+        selected: false
+        title: End
+        type: end
+      height: 204
+      id: end
+      position:
+        x: 1630
+        y: 260
+      positionAbsolute:
+        x: 1630
+        y: 260
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    viewport:
+      x: 0
+      y: 0
+      zoom: 0.75

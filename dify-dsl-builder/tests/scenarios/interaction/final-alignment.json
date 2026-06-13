@@ -1,0 +1,8 @@
+{
+  "id": "final-alignment",
+  "category": "interaction",
+  "input": "用户已完成澄清并请求生成 DSL",
+  "must_not_contain": ["Gate", "Brief", "Build Plan", "Grill with Docs", "provider_id", "node_id"],
+  "must_contain_all": ["我会", "拆成", "第一次运行", "我的推荐", "A.", "B."],
+  "expected_behavior": "Show one plain-language final alignment with dimension decomposition before writing DSL."
+}

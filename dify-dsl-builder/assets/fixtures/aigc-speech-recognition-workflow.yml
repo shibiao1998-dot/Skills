@@ -1,0 +1,526 @@
+app:
+  description: 输入 MP3 音频 URL，使用 AI Hub 语音识别组件和豆包语音识别转写文本，并返回全文、分段时间轴和诊断信息。
+  icon: 🎙️
+  icon_background: '#DBEAFE'
+  icon_type: emoji
+  mode: workflow
+  name: AIGC 语音识别 Workflow
+  use_icon_as_answer_icon: false
+dependencies:
+  - current_identifier: null
+    type: package
+    value:
+      plugin_unique_identifier: aict/ai_hub:3.3.1@4e71d8262fbecb133fd6801e8b0a4c141f0bf4f0d6b68cec1b5c254a65365e96
+kind: app
+version: 0.3.1
+workflow:
+  conversation_variables: []
+  environment_variables: []
+  features:
+    file_upload:
+      allowed_file_extensions: []
+      allowed_file_types: []
+      allowed_file_upload_methods:
+        - local_file
+        - cs_file
+      audio:
+        enabled: false
+        number_limits: 1
+        transfer_methods:
+          - local_file
+      enabled: false
+      fileUploadConfig:
+        audio_file_size_limit: 100
+        batch_count_limit: 5
+        file_size_limit: 50
+        image_file_size_limit: 20
+        video_file_size_limit: 100
+        workflow_file_upload_limit: 10
+      image:
+        enabled: false
+        number_limits: 3
+        transfer_methods:
+          - local_file
+          - cs_file
+      number_limits: 3
+      video:
+        enabled: false
+        number_limits: 1
+        transfer_methods:
+          - local_file
+    opening_statement: ''
+    retriever_resource:
+      enabled: true
+    sensitive_word_avoidance:
+      enabled: false
+    speech_to_text:
+      enabled: false
+    suggested_questions: []
+    suggested_questions_after_answer:
+      enabled: false
+    text_to_speech:
+      enabled: false
+      language: ''
+      voice: ''
+  graph:
+    edges:
+      - data:
+          isInIteration: false
+          isInLoop: false
+          sourceType: start
+          targetType: code
+        id: start-source-normalize_asr_request-target
+        source: start
+        sourceHandle: source
+        target: normalize_asr_request
+        targetHandle: target
+        type: custom
+        zIndex: 0
+      - data:
+          isInIteration: false
+          isInLoop: false
+          sourceType: code
+          targetType: speech-recognition
+        id: normalize_asr_request-source-recognize_audio-target
+        source: normalize_asr_request
+        sourceHandle: source
+        target: recognize_audio
+        targetHandle: target
+        type: custom
+        zIndex: 0
+      - data:
+          isInIteration: false
+          isInLoop: false
+          sourceType: speech-recognition
+          targetType: code
+        id: recognize_audio-source-normalize_asr_output-target
+        source: recognize_audio
+        sourceHandle: source
+        target: normalize_asr_output
+        targetHandle: target
+        type: custom
+        zIndex: 0
+      - data:
+          isInIteration: false
+          isInLoop: false
+          sourceType: code
+          targetType: end
+        id: normalize_asr_output-source-end-target
+        source: normalize_asr_output
+        sourceHandle: source
+        target: end
+        targetHandle: target
+        type: custom
+        zIndex: 0
+    nodes:
+      - data:
+          desc: 单次语音识别输入。音频 URL 应能被 AI Hub 服务端访问。
+          selected: false
+          title: Start
+          type: start
+          variables:
+            - label: audio_url
+              max_length: 2000
+              options: []
+              required: true
+              type: text-input
+              variable: audio_url
+            - label: audio_format
+              options:
+                - mp3
+                - wav
+                - m4a
+                - aac
+                - flac
+                - ogg
+              required: false
+              type: select
+              variable: audio_format
+            - label: language
+              options:
+                - auto
+                - zh
+                - en
+                - ja
+                - ko
+                - yue
+                - minnan
+                - sh
+                - sichuan
+                - shaanxi
+                - es
+                - pt
+                - de
+                - fr
+                - th
+                - ar
+              required: false
+              type: select
+              variable: language
+        height: 156
+        id: start
+        position:
+          x: 80
+          y: 260
+        positionAbsolute:
+          x: 80
+          y: 260
+        selected: false
+        sourcePosition: right
+        targetPosition: left
+        type: custom
+        width: 244
+      - data:
+          code: |
+            function normalizeAudioFormat(value, audioUrl) {
+              const raw = String(value || '').trim().toLowerCase();
+              const allowed = new Set(['mp3', 'wav', 'm4a', 'aac', 'flac', 'ogg']);
+              if (allowed.has(raw)) {
+                return raw;
+              }
+              const match = String(audioUrl || '').toLowerCase().match(/\\.([a-z0-9]+)(?:\\?|#|$)/);
+              if (match && allowed.has(match[1])) {
+                return match[1];
+              }
+              return 'mp3';
+            }
+
+            function normalizeLanguage(value) {
+              const raw = String(value || '').trim().toLowerCase();
+              const map = {
+                'auto': 'auto',
+                'zh': 'zh',
+                'cn': 'zh',
+                'zh-cn': 'zh',
+                'en': 'en',
+                'ja': 'ja',
+                'jp': 'ja',
+                'ko': 'ko',
+                'yue': 'yue',
+                'cantonese': 'yue',
+                'minnan': 'minnan',
+                'sh': 'sh',
+                'sichuan': 'sichuan',
+                'shaanxi': 'shaanxi',
+                'es': 'es',
+                'pt': 'pt',
+                'de': 'de',
+                'fr': 'fr',
+                'th': 'th',
+                'ar': 'ar'
+              };
+              return map[raw] || 'auto';
+            }
+
+            function main({audio_url, audio_format, language}) {
+              const url = String(audio_url || '').trim();
+              if (!url) {
+                throw new Error('audio_url is required');
+              }
+              const lowerUrl = url.toLowerCase();
+              if (!lowerUrl.startsWith('http://') && !lowerUrl.startsWith('https://')) {
+                throw new Error('audio_url must be an http(s) URL that AI Hub can fetch');
+              }
+
+              const format = normalizeAudioFormat(audio_format, url);
+              const normalizedLanguage = normalizeLanguage(language);
+              const diagnostics = {
+                selected_model: 'doubao-asr-speech2text',
+                selected_model_note: 'AI Hub exported canvas selector for 豆包语音识别',
+                audio_source: 'url',
+                audio_format: format,
+                language: normalizedLanguage
+              };
+
+              return {
+                audio_url: url,
+                audio_format: format,
+                language: normalizedLanguage,
+                diagnostics: JSON.stringify(diagnostics, null, 2)
+              };
+            }
+          code_language: javascript
+          desc: 校验音频 URL，并规范音频格式、识别语言和诊断信息。
+          outputs:
+            audio_format:
+              children: null
+              type: string
+            audio_url:
+              children: null
+              type: string
+            diagnostics:
+              children: null
+              type: string
+            language:
+              children: null
+              type: string
+          selected: false
+          title: 规范语音识别参数
+          type: code
+          variables:
+            - value_selector:
+                - start
+                - audio_url
+              value_type: string
+              variable: audio_url
+            - value_selector:
+                - start
+                - audio_format
+              value_type: string
+              variable: audio_format
+            - value_selector:
+                - start
+                - language
+              value_type: string
+              variable: language
+        height: 224
+        id: normalize_asr_request
+        position:
+          x: 390
+          y: 260
+        positionAbsolute:
+          x: 390
+          y: 260
+        selected: false
+        sourcePosition: right
+        targetPosition: left
+        type: custom
+        width: 244
+      - data:
+          desc: 使用 AI Hub 语音识别组件和豆包语音识别将音频转成文本与分段时间轴。
+          model_info:
+            config_version: v1
+            model_id: doubao-asr-speech2text
+            model_name: 豆包语音识别
+            provider: doubao
+            provider_name: 豆包
+          params:
+            audio_file:
+              type: constant
+              value: null
+            audio_format:
+              type: constant
+              value: mp3
+            audio_source:
+              type: constant
+              value: url
+            audio_url:
+              type: variable
+              value_selector:
+                - normalize_asr_request
+                - audio_url
+            language:
+              type: constant
+              value: ''
+          selected: false
+          title: 识别音频文本
+          type: speech-recognition
+        height: 220
+        id: recognize_audio
+        position:
+          x: 700
+          y: 260
+        positionAbsolute:
+          x: 700
+          y: 260
+        selected: false
+        sourcePosition: right
+        targetPosition: left
+        type: custom
+        width: 244
+      - data:
+          code: |
+            function safeString(value) {
+              if (value === null || value === undefined) {
+                return '';
+              }
+              if (typeof value === 'string') {
+                return value;
+              }
+              return String(value);
+            }
+
+            function normalizeUtterances(value) {
+              if (Array.isArray(value)) {
+                return value;
+              }
+              if (value === null || value === undefined || value === '') {
+                return [];
+              }
+              if (typeof value === 'string') {
+                try {
+                  const parsed = JSON.parse(value);
+                  return Array.isArray(parsed) ? parsed : [];
+                } catch (error) {
+                  return [];
+                }
+              }
+              return [];
+            }
+
+            function main({text, duration, utterances, diagnostics, audio_url, audio_format, language}) {
+              const transcriptText = safeString(text).trim();
+              const timeline = normalizeUtterances(utterances);
+              if (!transcriptText && timeline.length === 0) {
+                throw new Error('speech-recognition returned no text or utterances');
+              }
+
+              const transcriptPackage = {
+                transcript_text: transcriptText,
+                duration: String(duration || ''),
+                utterances: timeline,
+                audio_url,
+                audio_format,
+                language,
+                diagnostics_json: diagnostics
+              };
+
+              return {
+                transcript_text: transcriptText,
+                status: 'success',
+                message: 'Audio recognized by AI Hub speech-recognition component with 豆包语音识别',
+                duration: String(duration || ''),
+                utterances_json: JSON.stringify(timeline, null, 2),
+                transcript_package_json: JSON.stringify(transcriptPackage, null, 2),
+                raw_response_json: JSON.stringify({text: transcriptText, duration, utterances: timeline}, null, 2)
+              };
+            }
+          code_language: javascript
+          desc: 整理识别结果，把分段时间轴序列化为字符串，避免下游 LLM 直接引用 array[object]。
+          outputs:
+            duration:
+              children: null
+              type: string
+            message:
+              children: null
+              type: string
+            raw_response_json:
+              children: null
+              type: string
+            status:
+              children: null
+              type: string
+            transcript_package_json:
+              children: null
+              type: string
+            transcript_text:
+              children: null
+              type: string
+            utterances_json:
+              children: null
+              type: string
+          selected: false
+          title: 整理语音识别输出
+          type: code
+          variables:
+            - value_selector:
+                - recognize_audio
+                - text
+              value_type: string
+              variable: text
+            - value_selector:
+                - recognize_audio
+                - duration
+              value_type: number
+              variable: duration
+            - value_selector:
+                - recognize_audio
+                - utterances
+              value_type: array[object]
+              variable: utterances
+            - value_selector:
+                - normalize_asr_request
+                - diagnostics
+              value_type: string
+              variable: diagnostics
+            - value_selector:
+                - normalize_asr_request
+                - audio_url
+              value_type: string
+              variable: audio_url
+            - value_selector:
+                - normalize_asr_request
+                - audio_format
+              value_type: string
+              variable: audio_format
+            - value_selector:
+                - normalize_asr_request
+                - language
+              value_type: string
+              variable: language
+        height: 260
+        id: normalize_asr_output
+        position:
+          x: 1010
+          y: 260
+        positionAbsolute:
+          x: 1010
+          y: 260
+        selected: false
+        sourcePosition: right
+        targetPosition: left
+        type: custom
+        width: 244
+      - data:
+          desc: ''
+          outputs:
+            - value_selector:
+                - normalize_asr_output
+                - transcript_text
+              value_type: string
+              variable: transcript_text
+            - value_selector:
+                - normalize_asr_output
+                - status
+              value_type: string
+              variable: status
+            - value_selector:
+                - normalize_asr_output
+                - message
+              value_type: string
+              variable: message
+            - value_selector:
+                - normalize_asr_output
+                - duration
+              value_type: string
+              variable: duration
+            - value_selector:
+                - normalize_asr_output
+                - utterances_json
+              value_type: string
+              variable: utterances_json
+            - value_selector:
+                - normalize_asr_output
+                - transcript_package_json
+              value_type: string
+              variable: transcript_package
+            - value_selector:
+                - normalize_asr_output
+                - raw_response_json
+              value_type: string
+              variable: raw_response_json
+            - value_selector:
+                - normalize_asr_request
+                - diagnostics
+              value_type: string
+              variable: diagnostics
+          selected: false
+          title: End
+          type: end
+        height: 204
+        id: end
+        position:
+          x: 1320
+          y: 260
+        positionAbsolute:
+          x: 1320
+          y: 260
+        selected: false
+        sourcePosition: right
+        targetPosition: left
+        type: custom
+        width: 244
+    viewport:
+      x: 0
+      y: 0
+      zoom: 0.75

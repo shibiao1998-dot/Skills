@@ -1,0 +1,937 @@
+{
+  "component_count": 5,
+  "components": {
+    "model-3d-generation": {
+      "minimum_required_params": [
+        "Prompt"
+      ],
+      "model_param_shapes": {
+        "hunyuan-3d-3.1-pro-text": {
+          "accepted_param_variants": [
+            {
+              "required_params": [
+                "EnablePBR",
+                "FaceCount",
+                "GenerateType",
+                "Prompt",
+                "ResultFormat",
+                "enable_cs_transfer"
+              ],
+              "sample_node_ids": [
+                "generate_3d_asset"
+              ],
+              "sample_titles": [
+                "生成 3D 模型资源"
+              ],
+              "source_files": [
+                "aigc-3d-resource-workflow.yml"
+              ],
+              "source_kinds": [
+                "live-aihub-export"
+              ]
+            }
+          ],
+          "model_id": "hunyuan-3d-3.1-pro-text",
+          "model_names": [
+            "混元3D 3.1 专业版"
+          ],
+          "observed_model_ids": [
+            "hunyuan-3d-3.1-pro-text"
+          ],
+          "providers": [
+            "hunyuan"
+          ],
+          "observed_output_selectors": {
+            "files": "string",
+            "models": "array[file]",
+            "resources": "string"
+          },
+          "downstream_selector_rule": "Use models as array[file] for downstream Code/End nodes. Do not bind resources or files in generated DSL until a fresh run/export proves they are accepted; the 2026-05-27 canvas marked those bindings invalid in variable check.",
+          "required_params": [
+            "EnablePBR",
+            "FaceCount",
+            "GenerateType",
+            "Prompt",
+            "ResultFormat",
+            "enable_cs_transfer"
+          ],
+          "sample_node_ids": [
+            "generate_3d_asset"
+          ],
+          "sample_titles": [
+            "生成 3D 模型资源"
+          ],
+          "source_files": [
+            "aigc-3d-resource-workflow.yml"
+          ],
+          "source_kinds": [
+            "live-aihub-export"
+          ]
+        }
+      },
+      "node_type": "model-3d-generation"
+    },
+    "audio-generation": {
+      "minimum_required_params": [],
+      "model_param_shapes": {
+        "kling-v2a": {
+          "accepted_param_variants": [
+            {
+              "required_params": [
+                "asmr_mode",
+                "bgm_prompt",
+                "enable_cs_transfer",
+                "sound_effect_prompt",
+                "video_input_type",
+                "video_url"
+              ],
+              "sample_node_ids": [
+                "generate_video_audio_effect"
+              ],
+              "sample_titles": [
+                "生成视频音效/BGM"
+              ],
+              "source_files": [
+                "aigc-video-audio-effect-workflow.yml"
+              ],
+              "source_kinds": [
+                "template"
+              ]
+            }
+          ],
+          "model_id": "kling-v2a",
+          "model_names": [],
+          "observed_model_ids": [
+            "kling-v2a"
+          ],
+          "providers": [
+            "kling"
+          ],
+          "required_params": [
+            "asmr_mode",
+            "bgm_prompt",
+            "enable_cs_transfer",
+            "sound_effect_prompt",
+            "video_input_type",
+            "video_url"
+          ],
+          "sample_node_ids": [
+            "generate_video_audio_effect"
+          ],
+          "sample_titles": [
+            "生成视频音效/BGM"
+          ],
+          "source_files": [
+            "aigc-video-audio-effect-workflow.yml"
+          ],
+          "source_kinds": [
+            "template"
+          ]
+        },
+        "seed-tts-2.0": {
+          "accepted_param_variants": [
+            {
+              "required_params": [
+                "audio_params_format",
+                "audio_params_speech_rate",
+                "disable_markdown_filter",
+                "enable_cs_transfer",
+                "enable_language_detector",
+                "length_to_filter_parenthesis",
+                "speaker",
+                "style_prompt",
+                "text"
+              ],
+              "sample_node_ids": [
+                "generate_tts_audio"
+              ],
+              "sample_titles": [
+                "生成 TTS 音频"
+              ],
+              "source_files": [
+                "aigc-tts-audio-workflow.yml"
+              ],
+              "source_kinds": [
+                "template"
+              ]
+            }
+          ],
+          "model_id": "seed-tts-2.0",
+          "model_names": [],
+          "observed_model_ids": [
+            "seed-tts-2.0"
+          ],
+          "providers": [
+            "doubao"
+          ],
+          "required_params": [
+            "audio_params_format",
+            "audio_params_speech_rate",
+            "disable_markdown_filter",
+            "enable_cs_transfer",
+            "enable_language_detector",
+            "length_to_filter_parenthesis",
+            "speaker",
+            "style_prompt",
+            "text"
+          ],
+          "sample_node_ids": [
+            "generate_tts_audio"
+          ],
+          "sample_titles": [
+            "生成 TTS 音频"
+          ],
+          "source_files": [
+            "aigc-tts-audio-workflow.yml"
+          ],
+          "source_kinds": [
+            "template"
+          ]
+        },
+        "suno-v5-music_generate": {
+          "accepted_param_variants": [
+            {
+              "required_params": [
+                "audioWeight",
+                "customMode",
+                "enable_cs_transfer",
+                "instrumental",
+                "negativeTags",
+                "promptDescription",
+                "promptLyrics",
+                "style",
+                "styleWeight",
+                "title",
+                "vocalGender",
+                "weirdnessConstraint"
+              ],
+              "sample_node_ids": [
+                "generate_music_audio"
+              ],
+              "sample_titles": [
+                "生成音乐音频"
+              ],
+              "source_files": [
+                "aigc-music-audio-workflow.yml"
+              ],
+              "source_kinds": [
+                "template",
+                "aihub-canvas-export-2026-05-27"
+              ]
+            }
+          ],
+          "model_id": "suno-v5-music_generate",
+          "model_names": [
+            "Suno V5"
+          ],
+          "observed_model_ids": [
+            "Suno V5",
+            "suno-v5"
+          ],
+          "providers": [
+            "suno"
+          ],
+          "param_contracts": {
+            "instrumental": {
+              "binding_type": "constant",
+              "value_type": "boolean",
+              "normalizer": "Do not bind to Code output; AI Hub CodeNodeData cannot declare boolean outputs. Split with IF/ELSE if dynamic instrumental/vocal selection is required."
+            },
+            "vocalGender": {
+              "binding_type": "constant",
+              "allowed_values": [
+                "",
+                "m",
+                "f"
+              ],
+              "value_type": "string",
+              "normalizer": "Map Chinese or business words before the native node: 男/男声/male -> m, 女/女声/female -> f, instrumental/no vocal -> empty string. Never pass Chinese values directly."
+            }
+          },
+          "required_params": [
+            "audioWeight",
+            "customMode",
+            "enable_cs_transfer",
+            "instrumental",
+            "negativeTags",
+            "promptDescription",
+            "promptLyrics",
+            "style",
+            "styleWeight",
+            "title",
+            "vocalGender",
+            "weirdnessConstraint"
+          ],
+          "sample_node_ids": [
+            "generate_music_audio"
+          ],
+          "sample_titles": [
+            "生成音乐音频"
+          ],
+          "source_files": [
+            "aigc-music-audio-workflow.yml"
+          ],
+          "source_kinds": [
+            "template",
+            "aihub-canvas-export-2026-05-27"
+          ]
+        }
+      },
+      "node_type": "audio-generation",
+      "alias_to_model_id": {
+        "suno-v5": "suno-v5-music_generate",
+        "Suno V5": "suno-v5-music_generate"
+      }
+    },
+    "image-generation": {
+      "minimum_required_params": [
+        "prompt"
+      ],
+      "model_param_shapes": {
+        "gpt-image-2-t2i": {
+          "accepted_param_variants": [
+            {
+              "required_params": [
+                "background",
+                "enable_cs_transfer",
+                "n",
+                "output_compression",
+                "output_format",
+                "prompt",
+                "quality",
+                "size"
+              ],
+              "sample_node_ids": [
+                "1776187614988",
+                "1778482590738",
+                "generate_image_asset",
+                "generate_keyframe"
+              ],
+              "sample_titles": [
+                "图像生成 2",
+                "生图",
+                "生成图像资产",
+                "生成首帧图像"
+              ],
+              "source_files": [
+                "aigc-image-asset-workflow.yml",
+                "aigc-story-video-workflow.yml",
+                "古诗词Mv生产-视频.yml"
+              ],
+              "source_kinds": [
+                "local_sample",
+                "template"
+              ]
+            }
+          ],
+          "model_id": "gpt-image-2-t2i",
+          "model_names": [
+            "GPT Image 2.0 文生图"
+          ],
+          "observed_model_ids": [
+            "openai-gpt-image-2",
+            "gpt-image-2",
+            "gpt-image-2-t2i"
+          ],
+          "providers": [
+            "openai"
+          ],
+          "required_params": [
+            "background",
+            "enable_cs_transfer",
+            "n",
+            "output_compression",
+            "output_format",
+            "prompt",
+            "quality",
+            "size"
+          ],
+          "sample_node_ids": [
+            "1776187614988",
+            "1778482590738",
+            "generate_image_asset",
+            "generate_keyframe"
+          ],
+          "sample_titles": [
+            "图像生成 2",
+            "生图",
+            "生成图像资产",
+            "生成首帧图像"
+          ],
+          "source_files": [
+            "aigc-image-asset-workflow.yml",
+            "aigc-story-video-workflow.yml",
+            "古诗词Mv生产-视频.yml"
+          ],
+          "source_kinds": [
+            "local_sample",
+            "template"
+          ]
+        },
+        "jimeng-seedream-4.5-img2img": {
+          "accepted_param_variants": [
+            {
+              "required_params": [
+                "custom_size",
+                "enable_cs_transfer",
+                "images",
+                "max_images",
+                "prompt",
+                "sequential_image_generation",
+                "size",
+                "watermark"
+              ],
+              "sample_node_ids": [
+                "1776959096482"
+              ],
+              "sample_titles": [
+                "图像生成"
+              ],
+              "source_files": [
+                "open-Q 美术史课程封面设计.yml"
+              ],
+              "source_kinds": [
+                "local_sample"
+              ]
+            }
+          ],
+          "model_id": "jimeng-seedream-4.5-img2img",
+          "model_names": [
+            "即梦 SeedDream 4.5 图生图"
+          ],
+          "observed_model_ids": [
+            "jimeng-seedream-4.5-img2img",
+            "jimeng-img-5.0",
+            "doubao-seedream-5-0-260128"
+          ],
+          "providers": [
+            "jimeng"
+          ],
+          "required_params": [
+            "custom_size",
+            "enable_cs_transfer",
+            "images",
+            "max_images",
+            "prompt",
+            "sequential_image_generation",
+            "size",
+            "watermark"
+          ],
+          "sample_node_ids": [
+            "1776959096482"
+          ],
+          "sample_titles": [
+            "图像生成"
+          ],
+          "source_files": [
+            "open-Q 美术史课程封面设计.yml"
+          ],
+          "source_kinds": [
+            "local_sample"
+          ]
+        }
+      },
+      "node_type": "image-generation"
+    },
+    "speech-recognition": {
+      "alias_to_model_id": {
+        "Doubao Seed ASR": "doubao-asr-speech2text",
+        "volc.seedasr.auc": "doubao-asr-speech2text",
+        "豆包语音识别": "doubao-asr-speech2text"
+      },
+      "minimum_required_params": [
+        "audio_url"
+      ],
+      "model_param_shapes": {
+        "doubao-asr-speech2text": {
+          "accepted_param_variants": [
+            {
+              "required_params": [
+                "audio_file",
+                "audio_format",
+                "audio_source",
+                "audio_url",
+                "language"
+              ],
+              "sample_node_ids": [
+                "recognize_audio"
+              ],
+              "sample_titles": [
+                "识别音频文本"
+              ],
+              "source_files": [
+                "AIGC 语音识别 Workflow.yml",
+                "aigc-speech-recognition-workflow.yml"
+              ],
+              "source_kinds": [
+                "saved_canvas_export",
+                "template"
+              ]
+            }
+          ],
+          "model_id": "doubao-asr-speech2text",
+          "model_names": [
+            "豆包语音识别"
+          ],
+          "observed_model_ids": [
+            "doubao-asr-speech2text"
+          ],
+          "providers": [
+            "doubao"
+          ],
+          "required_params": [
+            "audio_file",
+            "audio_format",
+            "audio_source",
+            "audio_url",
+            "language"
+          ],
+          "sample_node_ids": [
+            "recognize_audio"
+          ],
+          "sample_titles": [
+            "识别音频文本"
+          ],
+          "source_files": [
+            "AIGC 语音识别 Workflow.yml",
+            "aigc-speech-recognition-workflow.yml"
+          ],
+          "source_kinds": [
+            "saved_canvas_export",
+            "template"
+          ]
+        },
+        "volc.seedasr.auc": {
+          "accepted_param_variants": [
+            {
+              "required_params": [
+                "audio_format",
+                "audio_input_type",
+                "audio_url",
+                "language"
+              ],
+              "sample_node_ids": [
+                "recognize_audio"
+              ],
+              "sample_titles": [
+                "识别音频文本"
+              ],
+              "source_files": [
+                "aigc-speech-recognition-workflow.yml"
+              ],
+              "source_kinds": [
+                "template"
+              ]
+            }
+          ],
+          "model_id": "volc.seedasr.auc",
+          "model_names": [],
+          "observed_model_ids": [
+            "volc.seedasr.auc"
+          ],
+          "permission_status": "target_workspace_metadata_load_failed_after_import; exported canvas replacement is doubao-asr-speech2text",
+          "replacement_model_name": "豆包语音识别",
+          "replacement_selector": "doubao-asr-speech2text",
+          "providers": [
+            "doubao"
+          ],
+          "required_params": [
+            "audio_format",
+            "audio_input_type",
+            "audio_url",
+            "language"
+          ],
+          "sample_node_ids": [
+            "recognize_audio"
+          ],
+          "sample_titles": [
+            "识别音频文本"
+          ],
+          "source_files": [
+            "aigc-speech-recognition-workflow.yml"
+          ],
+          "source_kinds": [
+            "template"
+          ]
+        }
+      },
+      "node_type": "speech-recognition"
+    },
+    "video-generation": {
+      "minimum_required_params": [
+        "prompt"
+      ],
+      "model_param_shapes": {
+        "jimeng-3.0-pro-image2video": {
+          "accepted_param_variants": [
+            {
+              "required_params": [
+                "duration",
+                "enable_cs_transfer",
+                "prompt",
+                "ratio",
+                "reference_images",
+                "resolution",
+                "return_last_frame",
+                "seed",
+                "watermark"
+              ],
+              "sample_node_ids": [],
+              "sample_titles": [],
+              "source_files": [],
+              "source_kinds": [
+                "live_canvas_checked",
+                "target_import_metadata_failed"
+              ]
+            }
+          ],
+          "model_id": "jimeng-3.0-pro-image2video",
+          "model_names": [
+            "即梦 3.0 参考图生视频"
+          ],
+          "observed_model_ids": [
+            "jimeng-3.0-pro",
+            "jimeng-3.0-pro-image2video"
+          ],
+          "permission_status": "target_workspace_metadata_load_failed_in_recent_import; use only with fresh export evidence",
+          "providers": [
+            "jimeng"
+          ],
+          "required_params": [
+            "duration",
+            "enable_cs_transfer",
+            "prompt",
+            "ratio",
+            "reference_images",
+            "resolution",
+            "return_last_frame",
+            "seed",
+            "watermark"
+          ],
+          "sample_node_ids": [],
+          "sample_titles": [],
+          "source_files": [],
+          "source_kinds": [
+            "live_canvas_checked",
+            "target_import_metadata_failed"
+          ]
+        },
+        "jimeng-3.5-pro-text2video": {
+          "accepted_param_variants": [
+            {
+              "required_params": [
+                "camerafixed",
+                "duration",
+                "enable_cs_transfer",
+                "generate_audio",
+                "prompt",
+                "ratio",
+                "resolution",
+                "return_last_frame",
+                "seed",
+                "watermark"
+              ],
+              "sample_node_ids": [],
+              "sample_titles": [],
+              "source_files": [],
+              "source_kinds": [
+                "live_canvas_checked",
+                "target_import_metadata_failed"
+              ]
+            }
+          ],
+          "model_id": "jimeng-3.5-pro-text2video",
+          "model_names": [
+            "即梦 3.5 Pro 文生视频"
+          ],
+          "observed_model_ids": [
+            "jimeng-3.5-pro",
+            "jimeng-3.5-pro-text2video"
+          ],
+          "permission_status": "target_import_metadata_failed_in_recent_live_import; visible in the node dropdown but not production-safe until a fresh saved export re-imports and opens without 模型信息加载失败",
+          "providers": [
+            "jimeng"
+          ],
+          "required_params": [
+            "camerafixed",
+            "duration",
+            "enable_cs_transfer",
+            "generate_audio",
+            "prompt",
+            "ratio",
+            "resolution",
+            "return_last_frame",
+            "seed",
+            "watermark"
+          ],
+          "sample_node_ids": [],
+          "sample_titles": [],
+          "source_files": [],
+          "source_kinds": [
+            "live_canvas_checked",
+            "target_import_metadata_failed"
+          ]
+        },
+        "jimeng-seedance-1.5-pro-text2video": {
+          "accepted_param_variants": [
+            {
+              "required_params": [
+                "camera_fixed",
+                "duration",
+                "enable_cs_transfer",
+                "generate_audio",
+                "prompt",
+                "ratio",
+                "resolution",
+                "return_last_frame",
+                "seed",
+                "watermark"
+              ],
+              "sample_node_ids": [
+                "generate_video_asset"
+              ],
+              "sample_titles": [
+                "生成视频资产"
+              ],
+              "source_files": [
+                "E2E-成语故事短视频-原生节点-v3 (19).yml"
+              ],
+              "source_kinds": [
+                "saved_canvas_export"
+              ]
+            }
+          ],
+          "model_id": "jimeng-seedance-1.5-pro-text2video",
+          "model_names": [
+            "即梦 3.5 Pro 文生视频"
+          ],
+          "observed_model_ids": [
+            "jimeng-seedance-1.5-pro-text2video"
+          ],
+          "permission_status": "saved_canvas_exported_2026-05-27; reimport_open_run_pending",
+          "providers": [
+            "jimeng"
+          ],
+          "param_contracts": {
+            "duration": {
+              "binding_type": "constant",
+              "allowed_values": [
+                -1,
+                "4",
+                "5",
+                "6",
+                "7",
+                "8",
+                "9",
+                "10",
+                "11",
+                "12"
+              ],
+              "value_type": "string_or_integer",
+              "normalizer": "Video duration is a model runtime enum, not a business duration variable. For 45-60 seconds, split into five 12-second segments or an equivalent max_segment_duration=12 plan; never pass 18."
+            },
+            "prompt": {
+              "binding_type": "constant_or_variable",
+              "value_type": "string",
+              "normalizer": "Allow variable binding from a prompt-normalization Code node or a safe constant prompt."
+            },
+            "ratio": {
+              "binding_type": "constant",
+              "allowed_values": [
+                "adaptive",
+                "16:9",
+                "9:16",
+                "1:1",
+                "4:3"
+              ],
+              "value_type": "string",
+              "normalizer": "Normalize channel/aspect choices before the native node. Do not bind ratio as a variable."
+            },
+            "resolution": {
+              "binding_type": "constant",
+              "allowed_values": [
+                "540p",
+                "720p",
+                "1080p"
+              ],
+              "value_type": "string",
+              "normalizer": "Normalize resolution before the native node. Do not bind resolution as a variable."
+            }
+          },
+          "required_params": [
+            "camera_fixed",
+            "duration",
+            "enable_cs_transfer",
+            "generate_audio",
+            "prompt",
+            "ratio",
+            "resolution",
+            "return_last_frame",
+            "seed",
+            "watermark"
+          ],
+          "sample_node_ids": [
+            "generate_video_asset"
+          ],
+          "sample_titles": [
+            "生成视频资产"
+          ],
+          "source_files": [
+            "E2E-成语故事短视频-原生节点-v3 (19).yml"
+          ],
+          "source_kinds": [
+            "saved_canvas_export"
+          ]
+        },
+        "jimeng-seedance-2-0-t2v": {
+          "accepted_param_variants": [
+            {
+              "required_params": [
+                "duration",
+                "enable_cs_transfer",
+                "enable_web_search",
+                "generate_audio",
+                "prompt",
+                "ratio",
+                "resolution",
+                "seed",
+                "watermark"
+              ],
+              "sample_node_ids": [
+                "1778488520258"
+              ],
+              "sample_titles": [
+                "无参考图"
+              ],
+              "source_files": [
+                "古诗词Mv生产-视频.yml"
+              ],
+              "source_kinds": [
+                "local_sample"
+              ]
+            }
+          ],
+          "model_id": "jimeng-seedance-2-0-t2v",
+          "model_names": [
+            "即梦 Seedance 2.0 文生视频"
+          ],
+          "observed_model_ids": [
+            "doubao-seedance-2-0-260128",
+            "jimeng-seedance-2-0-t2v"
+          ],
+          "permission_status": "locked_in_current_workspace",
+          "replacement_model_name": null,
+          "replacement_selector": null,
+          "providers": [
+            "jimeng"
+          ],
+          "required_params": [
+            "duration",
+            "enable_cs_transfer",
+            "enable_web_search",
+            "generate_audio",
+            "prompt",
+            "ratio",
+            "resolution",
+            "seed",
+            "watermark"
+          ],
+          "sample_node_ids": [
+            "1778488520258"
+          ],
+          "sample_titles": [
+            "无参考图"
+          ],
+          "source_files": [
+            "古诗词Mv生产-视频.yml"
+          ],
+          "source_kinds": [
+            "local_sample"
+          ]
+        },
+        "jimeng-seedance-2-0-r2v": {
+          "accepted_param_variants": [
+            {
+              "required_params": [
+                "duration",
+                "enable_cs_transfer",
+                "generate_audio",
+                "image_asset_ids",
+                "image_input_type",
+                "image_urls",
+                "prompt",
+                "ratio",
+                "reference_images",
+                "resolution",
+                "seed",
+                "watermark"
+              ],
+              "sample_node_ids": [
+                "1778328331140",
+                "generate_video"
+              ],
+              "sample_titles": [
+                "有参考图",
+                "生成故事短视频"
+              ],
+              "source_files": [
+                "aigc-story-video-workflow.yml",
+                "古诗词Mv生产-视频.yml"
+              ],
+              "source_kinds": [
+                "local_sample",
+                "template"
+              ]
+            }
+          ],
+          "model_id": "jimeng-seedance-2-0-r2v",
+          "model_names": [
+            "即梦 Seedance 2.0 参考帧生视频"
+          ],
+          "observed_model_ids": [
+            "doubao-seedance-2-0-260128",
+            "jimeng-seedance-2-0-r2v"
+          ],
+          "permission_status": "locked_in_current_workspace",
+          "replacement_model_name": "即梦 3.0 参考图生视频",
+          "replacement_selector": "jimeng-3.0-pro-image2video",
+          "providers": [
+            "jimeng"
+          ],
+          "required_params": [
+            "duration",
+            "enable_cs_transfer",
+            "enable_web_search",
+            "generate_audio",
+            "image_asset_ids",
+            "image_input_type",
+            "image_urls",
+            "prompt",
+            "ratio",
+            "reference_images",
+            "resolution",
+            "seed",
+            "watermark"
+          ],
+          "sample_node_ids": [
+            "1778328331140",
+            "generate_video"
+          ],
+          "sample_titles": [
+            "有参考图",
+            "生成故事短视频"
+          ],
+          "source_files": [
+            "aigc-story-video-workflow.yml",
+            "古诗词Mv生产-视频.yml"
+          ],
+          "source_kinds": [
+            "local_sample",
+            "template"
+          ]
+        }
+      },
+      "node_type": "video-generation"
+    }
+  }
+}

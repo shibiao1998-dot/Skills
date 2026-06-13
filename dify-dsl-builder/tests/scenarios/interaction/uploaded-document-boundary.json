@@ -1,0 +1,8 @@
+{
+  "id": "uploaded-document-boundary",
+  "category": "interaction",
+  "input": "我上传了一份已经写清楚的需求文档，帮我生成 AI Hub 工作流",
+  "must_not_contain": ["普通模式", "专业模式", "Mode Selection", "Gate", "Build Plan", "YAML", "provider_id", "node_id"],
+  "must_contain_all": ["我先确认", "这份文档", "目标", "输入输出", "我的推荐", "A.", "B."],
+  "expected_behavior": "Even clear uploaded material still gets one plain-language boundary confirmation before DSL generation."
+}

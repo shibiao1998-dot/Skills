@@ -1,0 +1,796 @@
+app:
+  description: 输入图片、海报、封面或视觉资产需求，使用 AI Hub 图像生成组件和 GPT Image 2 生成高质量图片，并返回图片 URL、参数包和诊断信息。
+  icon: 🖼️
+  icon_background: '#E0F2FE'
+  icon_type: emoji
+  mode: workflow
+  name: AIGC 图像资产生成 Workflow
+  use_icon_as_answer_icon: false
+dependencies:
+- current_identifier: null
+  type: package
+  value:
+    plugin_unique_identifier: aict/ai_hub:3.3.1@4e71d8262fbecb133fd6801e8b0a4c141f0bf4f0d6b68cec1b5c254a65365e96
+kind: app
+version: 0.3.1
+workflow:
+  conversation_variables: []
+  environment_variables: []
+  features:
+    file_upload:
+      allowed_file_extensions: []
+      allowed_file_types: []
+      allowed_file_upload_methods:
+      - local_file
+      - cs_file
+      audio:
+        enabled: false
+        number_limits: 1
+        transfer_methods:
+        - local_file
+      enabled: false
+      fileUploadConfig:
+        audio_file_size_limit: 100
+        batch_count_limit: 5
+        file_size_limit: 50
+        image_file_size_limit: 20
+        video_file_size_limit: 100
+        workflow_file_upload_limit: 10
+      image:
+        enabled: false
+        number_limits: 3
+        transfer_methods:
+        - local_file
+        - cs_file
+      number_limits: 3
+      video:
+        enabled: false
+        number_limits: 1
+        transfer_methods:
+        - local_file
+    opening_statement: ''
+    retriever_resource:
+      enabled: true
+    sensitive_word_avoidance:
+      enabled: false
+    speech_to_text:
+      enabled: false
+    suggested_questions: []
+    suggested_questions_after_answer:
+      enabled: false
+    text_to_speech:
+      enabled: false
+      language: ''
+      voice: ''
+  graph:
+    edges:
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: start
+        targetType: llm
+      id: start-source-plan_image_asset-target
+      source: start
+      sourceHandle: source
+      target: plan_image_asset
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: llm
+        targetType: code
+      id: plan_image_asset-source-normalize_image_request-target
+      source: plan_image_asset
+      sourceHandle: source
+      target: normalize_image_request
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: code
+        targetType: image-generation
+      id: normalize_image_request-source-generate_image_asset-target
+      source: normalize_image_request
+      sourceHandle: source
+      target: generate_image_asset
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: image-generation
+        targetType: code
+      id: generate_image_asset-source-normalize_image_output-target
+      source: generate_image_asset
+      sourceHandle: source
+      target: normalize_image_output
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: code
+        targetType: end
+      id: normalize_image_output-source-end-target
+      source: normalize_image_output
+      sourceHandle: source
+      target: end
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    nodes:
+    - data:
+        desc: 单次图像资产生成输入。适合封面、海报、插画、素材图、首帧图和社媒视觉，不适合批量图集。
+        selected: false
+        title: Start
+        type: start
+        variables:
+        - label: image_brief
+          max_length: 2000
+          options: []
+          required: true
+          type: paragraph
+          variable: image_brief
+        - label: output_use
+          max_length: 300
+          options: []
+          required: false
+          type: text-input
+          variable: output_use
+        - label: visual_style
+          max_length: 600
+          options: []
+          required: false
+          type: text-input
+          variable: visual_style
+        - label: aspect_size
+          options:
+          - auto
+          - square
+          - landscape
+          - portrait
+          - wide
+          - '1:1'
+          - '16:9'
+          - '9:16'
+          - '4:3'
+          - '3:4'
+          required: false
+          type: select
+          variable: aspect_size
+        - label: text_elements
+          max_length: 500
+          options: []
+          required: false
+          type: text-input
+          variable: text_elements
+        - label: image_count
+          options: []
+          required: false
+          type: number
+          variable: image_count
+        - label: output_format
+          options:
+          - png
+          - jpeg
+          - webp
+          required: false
+          type: select
+          variable: output_format
+      height: 260
+      id: start
+      position:
+        x: 80
+        y: 260
+      positionAbsolute:
+        x: 80
+        y: 260
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        audio:
+          configs:
+            variable_selector: []
+          enabled: false
+        context:
+          enabled: false
+          variable_selector: []
+        desc: 生成 GPT Image 2 可直接使用的高质量图片提示词、尺寸、格式和质量标准。
+        document:
+          configs:
+            variable_selector: []
+          enabled: false
+        model:
+          completion_params:
+            json_schema: "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"image_prompt\": {\n      \"type\": \"string\"\
+              ,\n      \"description\": \"传给图像生成组件的完整英文或中英混合提示词，包含视觉主体、构图、光线、材质、风格、文字要求和排除项\"\n    },\n    \"size\": {\n \
+              \     \"type\": \"string\",\n      \"enum\": [\n        \"auto\",\n        \"1024x1024\",\n        \"1536x1024\"\
+              ,\n        \"1024x1536\",\n        \"2048x2048\",\n        \"2048x1536\",\n        \"1536x2048\"\n      ],\n\
+              \      \"description\": \"图像尺寸\"\n    },\n    \"output_format\": {\n      \"type\": \"string\",\n      \"enum\"\
+              : [\n        \"png\",\n        \"jpeg\",\n        \"webp\"\n      ],\n      \"description\": \"输出格式\"\n    },\n\
+              \    \"image_count\": {\n      \"type\": \"number\",\n      \"description\": \"生成数量，建议 1 到 4\"\n    },\n   \
+              \ \"background\": {\n      \"type\": \"string\",\n      \"enum\": [\n        \"auto\",\n        \"transparent\"\
+              ,\n        \"opaque\"\n      ],\n      \"description\": \"背景模式\"\n    },\n    \"quality_notes\": {\n      \"\
+              type\": \"string\",\n      \"description\": \"图像质量要求，说明构图、主体、文本、风格和用途\"\n    },\n    \"quality_checklist\":\
+              \ {\n      \"type\": \"string\",\n      \"description\": \"用于判断生成图片是否合格的检查清单\"\n    }\n  },\n  \"required\"\
+              : [\n    \"image_prompt\",\n    \"size\",\n    \"output_format\",\n    \"image_count\",\n    \"background\"\
+              ,\n    \"quality_notes\",\n    \"quality_checklist\"\n  ],\n  \"additionalProperties\": false\n}"
+            max_completion_tokens: 4096
+            response_format: json_schema
+            temperature: 0.3
+          mode: chat
+          name: gpt-5.5-2026-04-24
+          provider: aict/ai_hub/ai_hub
+        prompt_template:
+        - id: system-prompt
+          role: system
+          text: '你是资深视觉设计总监、海报/封面设计师和 GPT Image 2 提示词工程师。
+
+
+            你的任务是把用户需求转成可以直接传给 AI Hub 图像生成组件的高质量图像参数。输出必须严格符合 JSON Schema。
+
+
+            质量要求：
+
+            - 适用于封面、海报、插画、社媒视觉、课程封面、产品概念图或视频首帧。
+
+            - image_prompt 必须包含视觉主体、构图、镜头/视角、光线、色彩、材质、背景、风格、用途和不可出现的元素。
+
+            - 如果用户要求画面中文字，必须清楚写出文字内容、排版层级和可读性要求；不要使用百分比描述版面。
+
+            - 如果用户未指定风格，选择更适合产出高质量成品的专业风格，而不是泛泛的“精美图片”。
+
+            - 不要输出解释文本，只输出 JSON Schema 对应字段。
+
+            '
+        - id: user-prompt
+          role: user
+          text: '请基于以下输入生成图像资产生产参数。
+
+
+            【图像需求】
+
+            {{#start.image_brief#}}
+
+
+            【用户显式参数】
+
+            - 用途：{{#start.output_use#}}；如果为空，请从需求中判断。
+
+            - 视觉风格：{{#start.visual_style#}}；如果为空，请选择最适合目标用途的高质量风格。
+
+            - 画幅/尺寸：{{#start.aspect_size#}}；如果为空或 auto，请根据用途和需求正文判断。需求中出现 16:9、9:16、1:1、4:3、3:4、封面、课件投屏、横版、竖屏等信息时，不要输出 auto，要选择最接近的具体尺寸。
+
+            - 画面文字：{{#start.text_elements#}}；如果为空，默认不生成文字。
+
+            - 生成数量：{{#start.image_count#}}；如果为空，默认 1。
+
+            - 输出格式：{{#start.output_format#}}；如果为空，默认 png。
+
+
+            输出 JSON Schema 字段说明：
+
+            - image_prompt：传给 GPT Image 2 的最终提示词。
+
+            - size：根据用途选择 auto、1024x1024、1536x1024、1024x1536、2048x2048、2048x1536 或 1536x2048；自然语言中已经说明画幅或渠道时，优先输出具体尺寸。
+
+            - quality_checklist：用于人工或下游节点判断图片是否合格。
+
+            '
+        structured_output:
+          schema:
+            type: object
+            properties:
+              image_prompt:
+                type: string
+                description: 传给图像生成组件的完整英文或中英混合提示词，包含视觉主体、构图、光线、材质、风格、文字要求和排除项
+              size:
+                type: string
+                enum:
+                - auto
+                - 1024x1024
+                - 1536x1024
+                - 1024x1536
+                - 2048x2048
+                - 2048x1536
+                - 1536x2048
+                description: 图像尺寸
+              output_format:
+                type: string
+                enum:
+                - png
+                - jpeg
+                - webp
+                description: 输出格式
+              image_count:
+                type: number
+                description: 生成数量，建议 1 到 4
+              background:
+                type: string
+                enum:
+                - auto
+                - transparent
+                - opaque
+                description: 背景模式
+              quality_notes:
+                type: string
+                description: 图像质量要求，说明构图、主体、文本、风格和用途
+              quality_checklist:
+                type: string
+                description: 用于判断生成图片是否合格的检查清单
+            required:
+            - image_prompt
+            - size
+            - output_format
+            - image_count
+            - background
+            - quality_notes
+            - quality_checklist
+            additionalProperties: false
+        structured_output_enabled: true
+        selected: false
+        title: 规划图像生成参数
+        type: llm
+        variables: []
+        video:
+          configs:
+            variable_selector: []
+          enabled: false
+        vision:
+          enabled: false
+      height: 184
+      id: plan_image_asset
+      position:
+        x: 390
+        y: 260
+      positionAbsolute:
+        x: 390
+        y: 260
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        code: |
+          const SIZE_MAP = {
+            square: '1024x1024',
+            '1:1': '1024x1024',
+            landscape: '1536x1024',
+            '4:3': '1536x1024',
+            portrait: '1024x1536',
+            '3:4': '1024x1536',
+            wide: '1536x1024',
+            '16:9': '1536x1024',
+            '9:16': '1024x1536',
+            auto: 'auto'
+          };
+
+          function normalizeToken(value) {
+            const raw = String(value || '').trim().toLowerCase().replace('：', ':');
+            if (!raw) {
+              return '';
+            }
+            if (SIZE_MAP[raw]) {
+              return SIZE_MAP[raw];
+            }
+            if (/^\d{3,4}x\d{3,4}$/.test(raw)) {
+              return raw;
+            }
+            return '';
+          }
+
+          function inferSizeFromBrief(imageBrief, outputUse) {
+            const text = [imageBrief, outputUse].map(value => String(value || '').toLowerCase()).join(' ');
+            const normalized = text.replace(/：/g, ':');
+            if (/(^|[^0-9])9\s*:\s*16([^0-9]|$)/.test(normalized) || /竖屏|竖版|抖音|快手|reels|story|stories/.test(normalized)) {
+              return '1024x1536';
+            }
+            if (/(^|[^0-9])1\s*:\s*1([^0-9]|$)/.test(normalized) || /方图|正方形|头像|logo/.test(normalized)) {
+              return '1024x1024';
+            }
+            if (/(^|[^0-9])3\s*:\s*4([^0-9]|$)/.test(normalized)) {
+              return '1024x1536';
+            }
+            if (/(^|[^0-9])(16\s*:\s*9|4\s*:\s*3)([^0-9]|$)/.test(normalized) || /横版|封面|课件|投屏|ppt|keynote|海报横版/.test(normalized)) {
+              return '1536x1024';
+            }
+            return '';
+          }
+
+          function normalizeSize(planned, requested, imageBrief, outputUse) {
+            const requestedSize = normalizeToken(requested);
+            if (requestedSize && requestedSize !== 'auto') {
+              return {size: requestedSize, source: 'explicit'};
+            }
+            const plannedSize = normalizeToken(planned);
+            if (plannedSize && plannedSize !== 'auto') {
+              return {size: plannedSize, source: 'planned'};
+            }
+            const inferredSize = inferSizeFromBrief(imageBrief, outputUse);
+            if (inferredSize) {
+              return {size: inferredSize, source: 'brief_inferred'};
+            }
+            return {size: 'auto', source: requestedSize === 'auto' ? 'explicit_auto' : 'auto'};
+          }
+
+          function normalizeImageCount(value) {
+            const parsed = Number(value || 1);
+            if (!Number.isFinite(parsed)) {
+              return 1;
+            }
+            return Math.max(1, Math.min(4, Math.round(parsed)));
+          }
+
+          function normalizeFormat(value) {
+            const normalized = String(value || '').trim().toLowerCase();
+            return ['png', 'jpeg', 'webp'].includes(normalized) ? normalized : 'png';
+          }
+
+          function main({planned_image_prompt, planned_size, planned_output_format, planned_image_count, planned_background, planned_quality_notes, planned_quality_checklist, image_brief, output_use, aspect_size, image_count, output_format}) {
+            const issues = [];
+            let prompt = String(planned_image_prompt || '').trim();
+            if (!prompt) {
+              const brief = String(image_brief || output_use || '业务图片资产').trim();
+              prompt = [
+                '为 AI Hub 图片生成任务编写高质量中文提示词。',
+                '主体和用途：' + brief.slice(0, 600),
+                '要求：主体清晰，构图完整，风格稳定，适合生产级复用，无文字水印。'
+              ].join('\n');
+              issues.push('planner_image_prompt_missing_used_fallback');
+            }
+
+            const sizeDecision = normalizeSize(planned_size, aspect_size, image_brief, output_use);
+            const size = sizeDecision.size;
+            const count = normalizeImageCount(image_count || planned_image_count);
+            const format = normalizeFormat(output_format || planned_output_format);
+            const background = String(planned_background || 'auto').trim();
+            const diagnostics = {
+              status: issues.length ? 'fallback' : 'success',
+              issues,
+              selected_model: 'gpt-image-2-t2i',
+              selected_model_note: 'AI Hub direct image-generation component model_info.model_id uses the canvas selector id gpt-image-2-t2i; LLM nodes use detail-card 模型版本 strings separately',
+              output_use: String(output_use || ''),
+              source_brief_length: String(image_brief || '').length,
+              size,
+              size_source: sizeDecision.source,
+              image_count: count,
+              output_format: format,
+              background,
+              quality_notes: planned_quality_notes || '',
+              quality_checklist: planned_quality_checklist || ''
+            };
+
+            return {
+              image_prompt: prompt,
+              size,
+              image_count: count,
+              output_format: format,
+              background,
+              quality_checklist: String(planned_quality_checklist || ''),
+              diagnostics: JSON.stringify(diagnostics, null, 2)
+            };
+          }
+        code_language: javascript
+        desc: 规范 GPT Image 2 参数，校验提示词、尺寸、数量、格式和诊断信息。
+        outputs:
+          background:
+            children: null
+            type: string
+          diagnostics:
+            children: null
+            type: string
+          image_count:
+            children: null
+            type: number
+          image_prompt:
+            children: null
+            type: string
+          output_format:
+            children: null
+            type: string
+          quality_checklist:
+            children: null
+            type: string
+          size:
+            children: null
+            type: string
+        selected: false
+        title: 规范图像生成参数
+        type: code
+        variables:
+        - value_selector:
+          - plan_image_asset
+          - structured_output
+          - image_prompt
+          value_type: string
+          variable: planned_image_prompt
+        - value_selector:
+          - plan_image_asset
+          - structured_output
+          - size
+          value_type: string
+          variable: planned_size
+        - value_selector:
+          - plan_image_asset
+          - structured_output
+          - output_format
+          value_type: string
+          variable: planned_output_format
+        - value_selector:
+          - plan_image_asset
+          - structured_output
+          - image_count
+          value_type: number
+          variable: planned_image_count
+        - value_selector:
+          - plan_image_asset
+          - structured_output
+          - background
+          value_type: string
+          variable: planned_background
+        - value_selector:
+          - plan_image_asset
+          - structured_output
+          - quality_notes
+          value_type: string
+          variable: planned_quality_notes
+        - value_selector:
+          - plan_image_asset
+          - structured_output
+          - quality_checklist
+          value_type: string
+          variable: planned_quality_checklist
+        - value_selector:
+          - start
+          - image_brief
+          value_type: string
+          variable: image_brief
+        - value_selector:
+          - start
+          - output_use
+          value_type: string
+          variable: output_use
+        - value_selector:
+          - start
+          - aspect_size
+          value_type: string
+          variable: aspect_size
+        - value_selector:
+          - start
+          - image_count
+          value_type: number
+          variable: image_count
+        - value_selector:
+          - start
+          - output_format
+          value_type: string
+          variable: output_format
+      height: 236
+      id: normalize_image_request
+      position:
+        x: 700
+        y: 260
+      positionAbsolute:
+        x: 700
+        y: 260
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        desc: 使用当前 AI Hub 可用的 GPT Image 2 生成高质量图像资产。
+        model_info:
+          config_version: v1
+          model_id: gpt-image-2-t2i
+          model_name: GPT Image 2.0 文生图
+          provider: openai
+          provider_name: OpenAI
+        params:
+          background:
+            type: variable
+            value_selector:
+            - normalize_image_request
+            - background
+          enable_cs_transfer:
+            type: constant
+            value: true
+          n:
+            type: variable
+            value_selector:
+            - normalize_image_request
+            - image_count
+          output_compression:
+            type: constant
+            value: 100
+          output_format:
+            type: variable
+            value_selector:
+            - normalize_image_request
+            - output_format
+          prompt:
+            type: variable
+            value_selector:
+            - normalize_image_request
+            - image_prompt
+          quality:
+            type: constant
+            value: high
+          size:
+            type: variable
+            value_selector:
+            - normalize_image_request
+            - size
+        selected: false
+        title: 生成图像资产
+        type: image-generation
+      height: 220
+      id: generate_image_asset
+      position:
+        x: 1010
+        y: 260
+      positionAbsolute:
+        x: 1010
+        y: 260
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        code: "function toArray(value) {\n  if (Array.isArray(value)) {\n    return value;\n  }\n  if (value === null || value\
+          \ === undefined || value === '') {\n    return [];\n  }\n  return [value];\n}\n\nfunction imageUrl(item) {\n  if\
+          \ (typeof item === 'string') {\n    return item.trim();\n  }\n  if (!item || typeof item !== 'object') {\n    return\
+          \ '';\n  }\n  return String(item.remote_url || item.url || item.download_url || item.image_url || item.preview_url\
+          \ || '').trim();\n}\n\nfunction main({images, image_prompt, size, output_format, diagnostics, quality_checklist})\
+          \ {\n  const allImages = toArray(images);\n  const urls = allImages.map(imageUrl).filter(Boolean);\n  if (!urls.length)\
+          \ {\n    throw new Error('image-generation returned no usable image_url');\n  }\n\n  const imagePackage = {\n  \
+          \  image_url: urls[0],\n    image_urls: urls,\n    size,\n    output_format,\n    image_prompt,\n    quality_checklist,\n\
+          \    diagnostics_json: diagnostics\n  };\n\n  return {\n    image_url: urls[0],\n    image_urls_json: JSON.stringify(urls,\
+          \ null, 2),\n    status: 'success',\n    message: 'Image asset generated by AI Hub image-generation component with\
+          \ GPT Image 2.0 文生图',\n    images_json: JSON.stringify(allImages, null, 2),\n    image_package_json: JSON.stringify(imagePackage,\
+          \ null, 2),\n    raw_response_json: JSON.stringify({images: allImages}, null, 2)\n  };\n}\n"
+        code_language: javascript
+        desc: 提取图像 URL，并整理 End 节点需要返回的图片资产包和原始响应。
+        outputs:
+          image_package_json:
+            children: null
+            type: string
+          image_url:
+            children: null
+            type: string
+          image_urls_json:
+            children: null
+            type: string
+          images_json:
+            children: null
+            type: string
+          message:
+            children: null
+            type: string
+          raw_response_json:
+            children: null
+            type: string
+          status:
+            children: null
+            type: string
+        selected: false
+        title: 整理图像输出
+        type: code
+        variables:
+        - value_selector:
+          - generate_image_asset
+          - images
+          value_type: array[file]
+          variable: images
+        - value_selector:
+          - normalize_image_request
+          - image_prompt
+          value_type: string
+          variable: image_prompt
+        - value_selector:
+          - normalize_image_request
+          - size
+          value_type: string
+          variable: size
+        - value_selector:
+          - normalize_image_request
+          - output_format
+          value_type: string
+          variable: output_format
+        - value_selector:
+          - normalize_image_request
+          - diagnostics
+          value_type: string
+          variable: diagnostics
+        - value_selector:
+          - normalize_image_request
+          - quality_checklist
+          value_type: string
+          variable: quality_checklist
+      height: 224
+      id: normalize_image_output
+      position:
+        x: 1320
+        y: 260
+      positionAbsolute:
+        x: 1320
+        y: 260
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        desc: ''
+        outputs:
+        - value_selector:
+          - normalize_image_output
+          - image_url
+          value_type: string
+          variable: image_url
+        - value_selector:
+          - normalize_image_output
+          - image_urls_json
+          value_type: string
+          variable: image_urls_json
+        - value_selector:
+          - normalize_image_output
+          - status
+          value_type: string
+          variable: status
+        - value_selector:
+          - normalize_image_output
+          - message
+          value_type: string
+          variable: message
+        - value_selector:
+          - normalize_image_output
+          - image_package_json
+          value_type: string
+          variable: image_package
+        - value_selector:
+          - normalize_image_output
+          - images_json
+          value_type: string
+          variable: images_json
+        - value_selector:
+          - normalize_image_output
+          - raw_response_json
+          value_type: string
+          variable: raw_response_json
+        - value_selector:
+          - normalize_image_request
+          - diagnostics
+          value_type: string
+          variable: diagnostics
+        selected: false
+        title: End
+        type: end
+      height: 204
+      id: end
+      position:
+        x: 1630
+        y: 260
+      positionAbsolute:
+        x: 1630
+        y: 260
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    viewport:
+      x: 0
+      y: 0
+      zoom: 0.75

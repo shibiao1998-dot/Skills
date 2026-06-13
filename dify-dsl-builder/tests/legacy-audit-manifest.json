@@ -1,0 +1,641 @@
+{
+  "version": 1,
+  "active_root": "$CODEX_HOME/skills/dify-dsl-builder",
+  "allowed_decisions": ["migrated", "rewritten", "converted", "deprecated"],
+  "runtime_inventory": {
+    "include_globs": [
+      "SKILL.md",
+      "agents/*.yaml",
+      "references/**/*.md",
+      "references/**/*.json",
+      "scripts/*.py",
+      "assets/**/*.md",
+      "assets/**/*.yml",
+      "assets/**/*.yaml",
+      "assets/**/*.json"
+    ],
+    "exclude_globs": [
+      "scripts/__pycache__/**",
+      "tests/**"
+    ],
+    "must_be_classified": true
+  },
+  "entries": [
+    {
+      "path": "SKILL.md",
+      "current_role": "entrypoint",
+      "decision": "rewritten",
+      "new_home": "SKILL.md",
+      "conflict_removed": "visible mode picker, template-first routing, heavy inline knowledge, old multi-approval labels",
+      "verification": "SKILL.md redline scan, required snippet scan, interaction regression"
+    },
+    {
+      "path": "agents/openai.yaml",
+      "current_role": "skill UI metadata",
+      "decision": "rewritten",
+      "new_home": "agents/openai.yaml",
+      "conflict_removed": "metadata implying template generation or visible mode choice",
+      "verification": "metadata forbidden text scan"
+    },
+    {
+      "path": "references/core-design-principles.md",
+      "current_role": "required core principles",
+      "decision": "rewritten",
+      "new_home": "references/core-design-principles.md",
+      "conflict_removed": "old product-source packet as active loading dependency",
+      "verification": "required flat reference scan"
+    },
+    {
+      "path": "references/journey-new-build.md",
+      "current_role": "new build journey",
+      "decision": "rewritten",
+      "new_home": "references/journey-new-build.md",
+      "conflict_removed": "visible mode gate and early architecture output for vague requests",
+      "verification": "interaction regression for vague and uploaded-document scenarios"
+    },
+    {
+      "path": "references/journey-repair-iteration.md",
+      "current_role": "repair and iteration journey",
+      "decision": "rewritten",
+      "new_home": "references/journey-repair-iteration.md",
+      "conflict_removed": "full redesign for narrow mechanical repair",
+      "verification": "interaction regression for old DSL narrow repair"
+    },
+    {
+      "path": "references/capability-workflow-chatflow-architecture.md",
+      "current_role": "workflow/chatflow architecture rules",
+      "decision": "rewritten",
+      "new_home": "references/capability-workflow-chatflow-architecture.md",
+      "conflict_removed": "AIGC as separate app branch instead of capability domain",
+      "verification": "required flat reference scan"
+    },
+    {
+      "path": "references/capability-dify-node-composition.md",
+      "current_role": "Dify node composition rules",
+      "decision": "rewritten",
+      "new_home": "references/capability-dify-node-composition.md",
+      "conflict_removed": "template-copy-first workflow construction",
+      "verification": "required flat reference scan"
+    },
+    {
+      "path": "references/capability-domain-expert-generation.md",
+      "current_role": "domain expert prompt mode",
+      "decision": "rewritten",
+      "new_home": "references/capability-domain-expert-generation.md",
+      "conflict_removed": "generic thin prompts without expert role, task, contract, quality criteria, diagnostics",
+      "verification": "required flat reference scan"
+    },
+    {
+      "path": "references/capability-dimension-aware-decomposition.md",
+      "current_role": "dimension decomposition rules",
+      "decision": "rewritten",
+      "new_home": "references/capability-dimension-aware-decomposition.md",
+      "conflict_removed": "overloaded one-LLM designs for production workflows",
+      "verification": "required flat reference scan and final-alignment regression"
+    },
+    {
+      "path": "references/capability-code-schema-variable-contracts.md",
+      "current_role": "code/schema/selector contracts",
+      "decision": "rewritten",
+      "new_home": "references/capability-code-schema-variable-contracts.md",
+      "conflict_removed": "object selector misuse, unsafe schema, brittle Code node behavior",
+      "verification": "validator unit tests"
+    },
+    {
+      "path": "references/capability-aihub-compatibility.md",
+      "current_role": "AI Hub compatibility rules",
+      "decision": "rewritten",
+      "new_home": "references/capability-aihub-compatibility.md",
+      "conflict_removed": "invented private provider IDs, selectors, permissions, and runtime facts",
+      "verification": "required flat reference scan"
+    },
+    {
+      "path": "references/capability-aigc-production-lines.md",
+      "current_role": "AIGC production-line rules",
+      "decision": "rewritten",
+      "new_home": "references/capability-aigc-production-lines.md",
+      "conflict_removed": "AIGC treated as a third app type and fragile single-node media generation",
+      "verification": "required flat reference scan"
+    },
+    {
+      "path": "references/capability-aihub-native-aigc-components.md",
+      "current_role": "AI Hub native AIGC component rules",
+      "decision": "rewritten",
+      "new_home": "references/capability-aihub-native-aigc-components.md",
+      "conflict_removed": "asking users for packaged tools when native AIGC component nodes can implement the workflow",
+      "verification": "native AIGC interaction regression and required flat reference scan"
+    },
+    {
+      "path": "references/capability-aihub-api-validation.md",
+      "current_role": "AI Hub API validation rules",
+      "decision": "rewritten",
+      "new_home": "references/capability-aihub-api-validation.md",
+      "conflict_removed": "treating browser-only checks as enough when API evidence is available, or leaking runtime secrets into reports",
+      "verification": "required flat reference scan and API preflight unit test"
+    },
+    {
+      "path": "references/capability-validation-delivery.md",
+      "current_role": "validation and delivery rules",
+      "decision": "rewritten",
+      "new_home": "references/capability-validation-delivery.md",
+      "conflict_removed": "claiming live readiness from static validation alone",
+      "verification": "completion audit and evidence log"
+    },
+    {
+      "path": "references/failure-canvas-rendering.md",
+      "current_role": "canvas rendering failure case",
+      "decision": "rewritten",
+      "new_home": "references/failure-canvas-rendering.md",
+      "conflict_removed": "untracked child canvas and malformed graph failures",
+      "verification": "failure reference heading scan"
+    },
+    {
+      "path": "references/failure-runtime-code-node.md",
+      "current_role": "runtime Code node failure case",
+      "decision": "rewritten",
+      "new_home": "references/failure-runtime-code-node.md",
+      "conflict_removed": "Code node hard throws and parser crashes without diagnostics",
+      "verification": "validator unit tests and failure reference heading scan"
+    },
+    {
+      "path": "references/failure-tool-node-shape.md",
+      "current_role": "tool node shape failure case",
+      "decision": "rewritten",
+      "new_home": "references/failure-tool-node-shape.md",
+      "conflict_removed": "missing tool_configurations and hallucinated tool contract fields",
+      "verification": "tool-missing-config fixture and validator unit test"
+    },
+    {
+      "path": "references/failure-generated-interaction.md",
+      "current_role": "generated interaction failure case",
+      "decision": "rewritten",
+      "new_home": "references/failure-generated-interaction.md",
+      "conflict_removed": "cold process labels, too many questions, and premature workflow design",
+      "verification": "interaction regression"
+    },
+    {
+      "path": "references/failure-aigc-runtime-contract.md",
+      "current_role": "AIGC runtime contract failure case",
+      "decision": "rewritten",
+      "new_home": "references/failure-aigc-runtime-contract.md",
+      "conflict_removed": "claiming runtime readiness from static validation, ReAct fallback, process-field media bindings, workflow-backed AIGC tools, and blocking keyframe generation",
+      "verification": "AIGC validator unit tests and required flat reference scan"
+    },
+    {
+      "path": "references/external-capability-cards",
+      "current_role": "large extracted capability evidence folder",
+      "decision": "converted",
+      "new_home": "not active; distilled into vNext capability references",
+      "conflict_removed": "raw extracted names and source-specific templates leaking into user-facing design",
+      "verification": "not referenced from SKILL.md or flat active references"
+    },
+    {
+      "path": "references/product-source-documents",
+      "current_role": "historical product decision packet",
+      "decision": "converted",
+      "new_home": "not active; distilled into core-design-principles and journey references",
+      "conflict_removed": "old visible mode gate and document-packet behavior",
+      "verification": "not referenced from SKILL.md or flat active references"
+    },
+    {
+      "path": "references/aigc-media-workflow-patterns.md",
+      "current_role": "legacy AIGC pattern reference",
+      "decision": "migrated",
+      "new_home": "references/capability-aigc-production-lines.md",
+      "conflict_removed": "template-first media workflow generation",
+      "verification": "required flat reference scan"
+    },
+    {
+      "path": "references/aihub-tool-design-philosophy.md",
+      "current_role": "legacy AI Hub tool philosophy",
+      "decision": "migrated",
+      "new_home": "references/core-design-principles.md",
+      "conflict_removed": "historical wording without vNext loading protocol",
+      "verification": "required flat reference scan"
+    },
+    {
+      "path": "references/brainstorm-to-dsl-generation-plan.md",
+      "current_role": "legacy brainstorm and generation process",
+      "decision": "deprecated",
+      "new_home": "none",
+      "conflict_removed": "old plan label and multi-stage approval behavior",
+      "verification": "not referenced from active loading path"
+    },
+    {
+      "path": "references/dify-architect-rules.md",
+      "current_role": "legacy architect rules",
+      "decision": "migrated",
+      "new_home": "references/capability-workflow-chatflow-architecture.md",
+      "conflict_removed": "unbounded architecture detail in entry path",
+      "verification": "required flat reference scan"
+    },
+    {
+      "path": "references/dify-dsl-patterns.md",
+      "current_role": "legacy DSL patterns",
+      "decision": "migrated",
+      "new_home": "references/capability-dify-node-composition.md",
+      "conflict_removed": "runtime dependency on local samples or templates",
+      "verification": "required flat reference scan"
+    },
+    {
+      "path": "references/dify-workflow-design-constitution.md",
+      "current_role": "legacy workflow design constitution",
+      "decision": "migrated",
+      "new_home": "references/core-design-principles.md",
+      "conflict_removed": "duplicate source of truth outside vNext protocol",
+      "verification": "required flat reference scan"
+    },
+    {
+      "path": "references/domain-aihub-aigc-production-patterns.md",
+      "current_role": "legacy domain pattern reference",
+      "decision": "migrated",
+      "new_home": "references/capability-aigc-production-lines.md",
+      "conflict_removed": "domain reference loaded as active default",
+      "verification": "required flat reference scan"
+    },
+    {
+      "path": "references/domain-audio-video-tooling-patterns.md",
+      "current_role": "legacy media tooling reference",
+      "decision": "migrated",
+      "new_home": "references/capability-aigc-production-lines.md",
+      "conflict_removed": "tool-specific details loaded outside relevant AIGC context",
+      "verification": "required flat reference scan"
+    },
+    {
+      "path": "references/domain-dsl-routing-rules.md",
+      "current_role": "legacy routing rules",
+      "decision": "deprecated",
+      "new_home": "none",
+      "conflict_removed": "old visible mode routing and plan-gate behavior",
+      "verification": "not referenced from active loading path"
+    },
+    {
+      "path": "references/domain-interactive-game-patterns.md",
+      "current_role": "legacy domain pattern reference",
+      "decision": "converted",
+      "new_home": "not active; future scenario-specific evidence only",
+      "conflict_removed": "non-default domain detail in core loading path",
+      "verification": "not referenced from active loading path"
+    },
+    {
+      "path": "references/domain-skill-upload-and-tooling-patterns.md",
+      "current_role": "legacy domain pattern reference",
+      "decision": "converted",
+      "new_home": "not active; future scenario-specific evidence only",
+      "conflict_removed": "source-specific upload skill details in core loading path",
+      "verification": "not referenced from active loading path"
+    },
+    {
+      "path": "references/domain-style-and-asset-patterns.md",
+      "current_role": "legacy style and asset reference",
+      "decision": "migrated",
+      "new_home": "references/capability-domain-expert-generation.md",
+      "conflict_removed": "style prompt details without expert node contract",
+      "verification": "required flat reference scan"
+    },
+    {
+      "path": "references/domain-teaching-workflow-patterns.md",
+      "current_role": "legacy teaching workflow reference",
+      "decision": "converted",
+      "new_home": "not active; future scenario-specific evidence only",
+      "conflict_removed": "domain-specific teaching detail in default loading path",
+      "verification": "not referenced from active loading path"
+    },
+    {
+      "path": "references/dsl-surgery-rules.md",
+      "current_role": "legacy DSL repair rules",
+      "decision": "migrated",
+      "new_home": "references/journey-repair-iteration.md",
+      "conflict_removed": "repair rules not separated from new-build journey",
+      "verification": "required flat reference scan"
+    },
+    {
+      "path": "references/external-skill-ingestion-index.md",
+      "current_role": "historical ingestion index",
+      "decision": "converted",
+      "new_home": "not active; historical evidence only",
+      "conflict_removed": "raw source inventory loaded as generation guidance",
+      "verification": "not referenced from active loading path"
+    },
+    {
+      "path": "references/local-dsl-sample-learnings.md",
+      "current_role": "local sample learning notes",
+      "decision": "converted",
+      "new_home": "not active; distilled into portable references",
+      "conflict_removed": "local sample folder as runtime dependency",
+      "verification": "no local sample path required by SKILL.md"
+    },
+    {
+      "path": "references/ndhy-ai-hub-component-catalog.md",
+      "current_role": "observed AI Hub component catalog",
+      "decision": "migrated",
+      "new_home": "references/capability-aihub-compatibility.md",
+      "conflict_removed": "component facts loaded without compatibility boundary",
+      "verification": "required flat reference scan"
+    },
+    {
+      "path": "references/ndhy-ai-hub-model-card-checks-2026-05-22.json",
+      "current_role": "observed AI Hub model evidence",
+      "decision": "converted",
+      "new_home": "not active; validator evidence only",
+      "conflict_removed": "stale model evidence treated as current runtime fact",
+      "verification": "not referenced from active loading path"
+    },
+    {
+      "path": "references/ndhy-ai-hub-model-list-2026-05-22.json",
+      "current_role": "observed AI Hub model list",
+      "decision": "converted",
+      "new_home": "not active; validator evidence only",
+      "conflict_removed": "stale model list treated as current runtime fact",
+      "verification": "not referenced from active loading path"
+    },
+    {
+      "path": "references/ndhy-aigc-component-fingerprints.json",
+      "current_role": "active AI Hub native AIGC model-level parameter contract",
+      "decision": "migrated",
+      "new_home": "active reference and validator evidence source",
+      "conflict_removed": "fingerprints exposed as user-facing design detail instead of internal model-level DSL contract",
+      "verification": "referenced from AIGC capability docs and enforced by validate_dify_dsl.py"
+    },
+    {
+      "path": "references/ndhy-aigc-dsl-node-shapes.md",
+      "current_role": "observed AIGC node shapes",
+      "decision": "migrated",
+      "new_home": "references/capability-aigc-production-lines.md",
+      "conflict_removed": "raw node shape examples as active template source",
+      "verification": "required flat reference scan"
+    },
+    {
+      "path": "references/ndhy-aigc-tool-fingerprints.json",
+      "current_role": "observed AIGC tool fingerprints",
+      "decision": "converted",
+      "new_home": "not active; validator evidence only",
+      "conflict_removed": "tool fingerprints exposed as user-facing design detail",
+      "verification": "not referenced from active loading path"
+    },
+    {
+      "path": "references/netdragon-project-workflow-patterns.md",
+      "current_role": "legacy workflow patterns",
+      "decision": "migrated",
+      "new_home": "references/capability-dify-node-composition.md",
+      "conflict_removed": "company-specific names exposed as assembly source",
+      "verification": "required flat reference scan"
+    },
+    {
+      "path": "references/product-implementation-contract.json",
+      "current_role": "old product implementation contract",
+      "decision": "deprecated",
+      "new_home": "tests/spec-acceptance-vnext.json",
+      "conflict_removed": "old mode gate and template references in acceptance contract",
+      "verification": "spec acceptance audit"
+    },
+    {
+      "path": "references/production-pattern-cards.md",
+      "current_role": "legacy production pattern cards",
+      "decision": "migrated",
+      "new_home": "references/capability-dimension-aware-decomposition.md",
+      "conflict_removed": "pattern cards as copy source instead of design logic",
+      "verification": "required flat reference scan"
+    },
+    {
+      "path": "references/rag-adapter-contract.md",
+      "current_role": "legacy RAG adapter contract",
+      "decision": "converted",
+      "new_home": "not active; future scenario-specific evidence only",
+      "conflict_removed": "RAG-specific contract loaded for non-RAG tasks",
+      "verification": "not referenced from active loading path"
+    },
+    {
+      "path": "references/requirement-clarification-and-reference-routing.md",
+      "current_role": "legacy clarification and routing rules",
+      "decision": "deprecated",
+      "new_home": "references/journey-new-build.md",
+      "conflict_removed": "visible mode selection and old plan label",
+      "verification": "forbidden-text scan"
+    },
+    {
+      "path": "references/skillhub-design-principles.md",
+      "current_role": "legacy SkillHub design principles",
+      "decision": "migrated",
+      "new_home": "references/core-design-principles.md",
+      "conflict_removed": "duplicate principle source outside vNext protocol",
+      "verification": "required flat reference scan"
+    },
+    {
+      "path": "references/workflow-harness-product-principles.md",
+      "current_role": "legacy product principles",
+      "decision": "migrated",
+      "new_home": "references/core-design-principles.md",
+      "conflict_removed": "visible mode and document packet behavior",
+      "verification": "required flat reference scan"
+    },
+    {
+      "path": "scripts/audit_goal_acceptance.py",
+      "current_role": "old goal acceptance audit",
+      "decision": "deprecated",
+      "new_home": "scripts/audit_vnext_completion.py",
+      "conflict_removed": "old product contract with visible mode expectations",
+      "verification": "not referenced from active loading path"
+    },
+    {
+      "path": "scripts/audit_local_sample_coverage.py",
+      "current_role": "local sample coverage audit",
+      "decision": "deprecated",
+      "new_home": "none",
+      "conflict_removed": "local sample folder as quality gate",
+      "verification": "not referenced from active loading path"
+    },
+    {
+      "path": "scripts/audit_product_implementation_contract.py",
+      "current_role": "old product contract audit",
+      "decision": "deprecated",
+      "new_home": "scripts/audit_vnext_completion.py",
+      "conflict_removed": "old mode gate and template acceptance contract",
+      "verification": "not referenced from active loading path"
+    },
+    {
+      "path": "scripts/audit_vnext_completion.py",
+      "current_role": "vNext completion audit",
+      "decision": "rewritten",
+      "new_home": "scripts/audit_vnext_completion.py",
+      "conflict_removed": "weak existence-only completion checks",
+      "verification": "vNext audit command"
+    },
+    {
+      "path": "scripts/audit_project_delivery.py",
+      "current_role": "formal project delivery surface audit",
+      "decision": "rewritten",
+      "new_home": "scripts/audit_project_delivery.py",
+      "conflict_removed": "claiming a formal DSL project is delivered with only a YAML file and no README or .agent memory",
+      "verification": "vNext audit command builds a sample project and runs the delivery audit"
+    },
+    {
+      "path": "scripts/confirm_aihub_export.py",
+      "current_role": "AI Hub export evidence helper",
+      "decision": "rewritten",
+      "new_home": "scripts/confirm_aihub_export.py",
+      "conflict_removed": "treating Chrome manual save prompts as failed automatic downloads",
+      "verification": "python3 -m unittest test_confirm_aihub_export.py"
+    },
+    {
+      "path": "scripts/verify_aihub_api_preflight.py",
+      "current_role": "AI Hub API validation preflight helper",
+      "decision": "rewritten",
+      "new_home": "scripts/verify_aihub_api_preflight.py",
+      "conflict_removed": "running API QA without a masked credential preflight and identity check",
+      "verification": "python3 -m unittest test_aihub_api_preflight.py"
+    },
+    {
+      "path": "scripts/verify_aihub_console_import.py",
+      "current_role": "AI Hub console import preflight helper",
+      "decision": "rewritten",
+      "new_home": "scripts/verify_aihub_console_import.py",
+      "conflict_removed": "depending only on browser file upload when direct console import can be preflighted safely",
+      "verification": "python3 -m unittest test_aihub_console_import_preflight.py"
+    },
+    {
+      "path": "scripts/test_confirm_aihub_export.py",
+      "current_role": "AI Hub export evidence helper tests",
+      "decision": "rewritten",
+      "new_home": "scripts/test_confirm_aihub_export.py",
+      "conflict_removed": "missing regression coverage for manual-save export confirmation",
+      "verification": "python3 -m unittest test_confirm_aihub_export.py"
+    },
+    {
+      "path": "scripts/test_aigc_image_fixture.py",
+      "current_role": "native image-generation fixture tests",
+      "decision": "rewritten",
+      "new_home": "scripts/test_aigc_image_fixture.py",
+      "conflict_removed": "image workflows passing auto size despite clear aspect-ratio requirements in the business brief",
+      "verification": "python3 -m unittest test_aigc_image_fixture.py"
+    },
+    {
+      "path": "scripts/test_aigc_music_fixture.py",
+      "current_role": "native music audio-generation fixture tests",
+      "decision": "rewritten",
+      "new_home": "scripts/test_aigc_music_fixture.py",
+      "conflict_removed": "music workflows falling back to packaged Suno tools instead of verified native AI Hub audio-generation components",
+      "verification": "python3 -m unittest test_aigc_music_fixture.py"
+    },
+    {
+      "path": "scripts/test_aihub_api_preflight.py",
+      "current_role": "AI Hub API validation preflight tests",
+      "decision": "rewritten",
+      "new_home": "scripts/test_aihub_api_preflight.py",
+      "conflict_removed": "uncovered API validation path, unmasked credential reports, and undocumented Skill loading contract",
+      "verification": "python3 -m unittest test_aihub_api_preflight.py"
+    },
+    {
+      "path": "scripts/test_aihub_console_import_preflight.py",
+      "current_role": "AI Hub console import preflight tests",
+      "decision": "rewritten",
+      "new_home": "scripts/test_aihub_console_import_preflight.py",
+      "conflict_removed": "uncovered direct import diagnostic path and unsafe token or YAML reporting",
+      "verification": "python3 -m unittest test_aihub_console_import_preflight.py"
+    },
+    {
+      "path": "scripts/generate_from_requirement.py",
+      "current_role": "conversation and deterministic helper",
+      "decision": "rewritten",
+      "new_home": "scripts/generate_from_requirement.py",
+      "conflict_removed": "visible mode selection, template-first generation, multi-approval path",
+      "verification": "interaction regression"
+    },
+    {
+      "path": "scripts/refresh_aihub_model_list.py",
+      "current_role": "model evidence refresh helper",
+      "decision": "converted",
+      "new_home": "not active; optional maintenance helper",
+      "conflict_removed": "model evidence refresh as runtime dependency",
+      "verification": "not referenced from active loading path"
+    },
+    {
+      "path": "scripts/render_user_response.py",
+      "current_role": "user-facing response renderer",
+      "decision": "rewritten",
+      "new_home": "scripts/render_user_response.py",
+      "conflict_removed": "old process labels and visible mode wording",
+      "verification": "interaction regression"
+    },
+    {
+      "path": "scripts/run_user_turn.py",
+      "current_role": "single-turn response helper",
+      "decision": "rewritten",
+      "new_home": "scripts/run_user_turn.py",
+      "conflict_removed": "old approval flags as primary runtime path",
+      "verification": "interaction regression"
+    },
+    {
+      "path": "scripts/select_local_samples.py",
+      "current_role": "local sample selector",
+      "decision": "deprecated",
+      "new_home": "none",
+      "conflict_removed": "local sample folder as runtime quality dependency",
+      "verification": "not referenced from active loading path"
+    },
+    {
+      "path": "scripts/select_references.py",
+      "current_role": "reference selector",
+      "decision": "rewritten",
+      "new_home": "scripts/select_references.py",
+      "conflict_removed": "visible mode selection and old plan labels",
+      "verification": "forbidden script text scan"
+    },
+    {
+      "path": "scripts/test_validate_dify_dsl.py",
+      "current_role": "validator unit tests",
+      "decision": "rewritten",
+      "new_home": "scripts/test_validate_dify_dsl.py",
+      "conflict_removed": "missing regression coverage for recent structural failures",
+      "verification": "python3 -m unittest test_validate_dify_dsl.py"
+    },
+    {
+      "path": "scripts/test_aigc_3d_fixture.py",
+      "current_role": "native 3D fixture regression tests",
+      "decision": "rewritten",
+      "new_home": "scripts/test_aigc_3d_fixture.py",
+      "conflict_removed": "stale 3D node type, selector, and lowercase param assumptions",
+      "verification": "python3 -m unittest test_aigc_3d_fixture.py"
+    },
+    {
+      "path": "scripts/test_aigc_asr_fixture.py",
+      "current_role": "native speech recognition fixture regression tests",
+      "decision": "rewritten",
+      "new_home": "scripts/test_aigc_asr_fixture.py",
+      "conflict_removed": "uncovered ASR node selector and runtime output contract",
+      "verification": "python3 -m unittest test_aigc_asr_fixture.py"
+    },
+    {
+      "path": "scripts/validate_dify_dsl.py",
+      "current_role": "static DSL validator",
+      "decision": "migrated",
+      "new_home": "scripts/validate_dify_dsl.py",
+      "conflict_removed": "known failure classes not checked before delivery",
+      "verification": "validator unit tests and structural fixture"
+    },
+    {
+      "path": "scripts/validate_dsl_quality_plan.py",
+      "current_role": "legacy quality plan validator",
+      "decision": "rewritten",
+      "new_home": "scripts/validate_dsl_quality_plan.py",
+      "conflict_removed": "old plan label and approval terminology",
+      "verification": "forbidden script text scan"
+    },
+    {
+      "path": "assets/templates",
+      "current_role": "production template folder",
+      "decision": "converted",
+      "new_home": "assets/fixtures",
+      "conflict_removed": "production DSL generation by copying templates",
+      "verification": "assets/templates absent; active scripts do not reference it"
+    },
+    {
+      "path": "assets/fixtures",
+      "current_role": "test fixtures and non-runtime examples",
+      "decision": "converted",
+      "new_home": "assets/fixtures",
+      "conflict_removed": "fixture files treated as production templates",
+      "verification": "fixture-only reference scan"
+    }
+  ]
+}

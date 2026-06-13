@@ -1,0 +1,667 @@
+app:
+  description: 输入参考图片和改图需求，使用 AI Hub 图生图组件 SeedDream 4.5 生成高质量改图结果，并返回图片 URL、参数包和诊断信息。
+  icon: 🖼️
+  icon_background: '#DCFCE7'
+  icon_type: emoji
+  mode: workflow
+  name: AIGC 图生图改图 Workflow
+  use_icon_as_answer_icon: false
+dependencies:
+- current_identifier: null
+  type: package
+  value:
+    plugin_unique_identifier: aict/ai_hub:3.3.1@4e71d8262fbecb133fd6801e8b0a4c141f0bf4f0d6b68cec1b5c254a65365e96
+kind: app
+version: 0.3.1
+workflow:
+  conversation_variables: []
+  environment_variables: []
+  features:
+    file_upload:
+      allowed_file_extensions: []
+      allowed_file_types:
+      - image
+      allowed_file_upload_methods:
+      - local_file
+      - cs_file
+      audio:
+        enabled: false
+        number_limits: 1
+        transfer_methods:
+        - local_file
+      enabled: true
+      fileUploadConfig:
+        audio_file_size_limit: 100
+        batch_count_limit: 5
+        file_size_limit: 50
+        image_file_size_limit: 20
+        video_file_size_limit: 100
+        workflow_file_upload_limit: 10
+      image:
+        enabled: true
+        number_limits: 1
+        transfer_methods:
+        - local_file
+        - cs_file
+      number_limits: 1
+      video:
+        enabled: false
+        number_limits: 1
+        transfer_methods:
+        - local_file
+    opening_statement: ''
+    retriever_resource:
+      enabled: true
+    sensitive_word_avoidance:
+      enabled: false
+    speech_to_text:
+      enabled: false
+    suggested_questions: []
+    suggested_questions_after_answer:
+      enabled: false
+    text_to_speech:
+      enabled: false
+      language: ''
+      voice: ''
+  graph:
+    edges:
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: start
+        targetType: llm
+      id: start-source-plan_image_edit-target
+      source: start
+      sourceHandle: source
+      target: plan_image_edit
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: llm
+        targetType: code
+      id: plan_image_edit-source-normalize_image_edit_request-target
+      source: plan_image_edit
+      sourceHandle: source
+      target: normalize_image_edit_request
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: code
+        targetType: image-generation
+      id: normalize_image_edit_request-source-generate_image_edit-target
+      source: normalize_image_edit_request
+      sourceHandle: source
+      target: generate_image_edit
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: image-generation
+        targetType: code
+      id: generate_image_edit-source-normalize_image_edit_output-target
+      source: generate_image_edit
+      sourceHandle: source
+      target: normalize_image_edit_output
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: code
+        targetType: end
+      id: normalize_image_edit_output-source-end-target
+      source: normalize_image_edit_output
+      sourceHandle: source
+      target: end
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    nodes:
+    - data:
+        desc: 单次参考图改图输入。reference_image 是 Dify 图片文件变量，LLM 节点不直接读取该 File；图生图组件会直接消费该图片变量。
+        selected: false
+        title: Start
+        type: start
+        variables:
+        - allowed_file_extensions: []
+          allowed_file_types:
+          - image
+          allowed_file_upload_methods:
+          - local_file
+          - cs_file
+          label: reference_image
+          max_length: 500
+          options: []
+          required: true
+          type: file
+          variable: reference_image
+        - label: edit_brief
+          max_length: 2000
+          options: []
+          required: true
+          type: paragraph
+          variable: edit_brief
+        - label: output_use
+          max_length: 300
+          options: []
+          required: false
+          type: text-input
+          variable: output_use
+        - label: visual_style
+          max_length: 600
+          options: []
+          required: false
+          type: text-input
+          variable: visual_style
+        - label: aspect_size
+          options:
+          - auto
+          - '16:9'
+          - '9:16'
+          - '1:1'
+          - '4:3'
+          - '3:4'
+          - 2560x1440
+          - 1440x2560
+          - 2048x2048
+          required: false
+          type: select
+          variable: aspect_size
+        - label: text_elements
+          max_length: 500
+          options: []
+          required: false
+          type: text-input
+          variable: text_elements
+        - label: image_count
+          options: []
+          required: false
+          type: number
+          variable: image_count
+      height: 300
+      id: start
+      position:
+        x: 80
+        y: 260
+      positionAbsolute:
+        x: 80
+        y: 260
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        audio:
+          configs:
+            variable_selector: []
+          enabled: false
+        context:
+          enabled: false
+          variable_selector: []
+        desc: 生成 SeedDream 图生图组件可直接使用的改图提示词、尺寸和质量检查标准。
+        document:
+          configs:
+            variable_selector: []
+          enabled: false
+        model:
+          completion_params:
+            json_schema: "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"image_prompt\": {\n      \"type\": \"string\"\
+              ,\n      \"description\": \"传给图生图组件的完整提示词，说明保留参考图哪些元素、修改哪些元素、目标构图、风格、文字要求和排除项\"\n    },\n    \"size\": {\n \
+              \     \"type\": \"string\",\n      \"enum\": [\"auto\", \"2560x1440\", \"1440x2560\", \"2048x2048\", \"2048x1536\"\
+              , \"1536x2048\", \"1280x800\"],\n      \"description\": \"图生图输出尺寸\"\n    },\n    \"max_images\": {\n      \"\
+              type\": \"number\",\n      \"description\": \"生成数量，建议 1 到 4\"\n    },\n    \"style_summary\": {\n      \"type\"\
+              : \"string\",\n      \"description\": \"目标视觉风格摘要\"\n    },\n    \"quality_checklist\": {\n      \"type\": \"\
+              string\",\n      \"description\": \"判断改图结果是否合格的检查清单\"\n    },\n    \"risk_notes\": {\n      \"type\": \"string\"\
+              ,\n      \"description\": \"参考图质量、文字、人物或构图可能带来的效果风险\"\n    }\n  },\n  \"required\": [\n    \"image_prompt\"\
+              ,\n    \"size\",\n    \"max_images\",\n    \"style_summary\",\n    \"quality_checklist\",\n    \"risk_notes\"\
+              \n  ],\n  \"additionalProperties\": false\n}\n"
+            max_completion_tokens: 4096
+            response_format: json_schema
+            temperature: 0.3
+          mode: chat
+          name: gpt-5.5-2026-04-24
+          provider: aict/ai_hub/ai_hub
+        prompt_template:
+        - id: system-prompt
+          role: system
+          text: '你是资深视觉设计总监、课程封面设计师和 SeedDream 图生图提示词工程师。
+
+
+            你的任务是把用户的参考图改图需求转成可以直接传给 AI Hub `image-generation` 图生图组件的高质量参数。输出必须严格符合 JSON Schema。
+
+
+            质量要求：
+
+            - reference_image 是上游 Dify File 变量，会由图生图组件直接读取；你不要声称已经看见图片细节，只根据用户文本要求编写改图指令。
+
+            - image_prompt 必须明确“参考图作为主要视觉依据”，并说明保留哪些结构、修改哪些元素、目标风格、构图、光线、色彩、材质、用途和禁忌。
+
+            - 如果用户要求封面或海报，必须补齐标题区、主体区、留白、可读性和画幅适配要求。
+
+            - 如果用户要求画面中文字，必须清楚写出文字内容、排版层级和可读性要求；不要使用百分比描述版面。
+
+            - 避免版权 IP、具体在世人物肖像替换、过度磨皮、怪异手部或容易破坏参考图主体身份的一次性大改。
+
+            - 不要输出解释文本，只输出 JSON Schema 对应字段。
+
+            '
+        - id: user-prompt
+          role: user
+          text: '请基于以下输入生成参考图改图参数。
+
+
+            【改图需求】
+
+            {{#start.edit_brief#}}
+
+
+            【用户显式参数】
+
+            - 用途：{{#start.output_use#}}；如果为空，请从改图需求中判断。
+
+            - 视觉风格：{{#start.visual_style#}}；如果为空，请选择最适合目标用途的高质量风格。
+
+            - 画幅/尺寸：{{#start.aspect_size#}}；如果为空或 auto，请根据用途判断。
+
+            - 画面文字：{{#start.text_elements#}}；如果为空，默认不新增文字。
+
+            - 生成数量：{{#start.image_count#}}；如果为空，默认 1。
+
+
+            输出 JSON Schema 字段说明：
+
+            - image_prompt：传给 SeedDream 图生图组件的最终提示词。
+
+            - size：根据用途选择 auto、2560x1440、1440x2560、2048x2048、2048x1536、1536x2048 或 1280x800。
+
+            - quality_checklist：用于人工或下游节点判断图片是否合格。
+
+            '
+        structured_output:
+          schema:
+            type: object
+            properties:
+              image_prompt:
+                type: string
+                description: 传给图生图组件的完整提示词，说明保留参考图哪些元素、修改哪些元素、目标构图、风格、文字要求和排除项
+              size:
+                type: string
+                enum:
+                - auto
+                - 2560x1440
+                - 1440x2560
+                - 2048x2048
+                - 2048x1536
+                - 1536x2048
+                - 1280x800
+                description: 图生图输出尺寸
+              max_images:
+                type: number
+                description: 生成数量，建议 1 到 4
+              style_summary:
+                type: string
+                description: 目标视觉风格摘要
+              quality_checklist:
+                type: string
+                description: 判断改图结果是否合格的检查清单
+              risk_notes:
+                type: string
+                description: 参考图质量、文字、人物或构图可能带来的效果风险
+            required:
+            - image_prompt
+            - size
+            - max_images
+            - style_summary
+            - quality_checklist
+            - risk_notes
+            additionalProperties: false
+        structured_output_enabled: true
+        selected: false
+        title: 规划图生图改图参数
+        type: llm
+        variables: []
+        video:
+          configs:
+            variable_selector: []
+          enabled: false
+        vision:
+          enabled: false
+      height: 184
+      id: plan_image_edit
+      position:
+        x: 390
+        y: 260
+      positionAbsolute:
+        x: 390
+        y: 260
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        code: "function extractStructured(value) {\n  if (value === null || value === undefined) {\n    return {};\n  }\n\
+          \  if (typeof value === 'object') {\n    return value;\n  }\n  if (typeof value === 'string') {\n    try {\n   \
+          \   return JSON.parse(value);\n    } catch (error) {\n      return {};\n    }\n  }\n  return {};\n}\n\nfunction\
+          \ normalizeSize(planned, requested) {\n  const raw = String(requested || planned || '').trim().toLowerCase();\n\
+          \  const map = {\n    'auto': '2560x1440',\n    '16:9': '2560x1440',\n    'landscape': '2560x1440',\n    '9:16':\
+          \ '1440x2560',\n    'portrait': '1440x2560',\n    '1:1': '2048x2048',\n    'square': '2048x2048',\n    '4:3': '2048x1536',\n\
+          \    '3:4': '1536x2048'\n  };\n  if (map[raw]) {\n    return map[raw];\n  }\n  if (/^\\d{3,4}x\\d{3,4}$/.test(raw))\
+          \ {\n    return raw;\n  }\n  return '2560x1440';\n}\n\nfunction normalizeImageCount(value) {\n  const parsed = Number(value\
+          \ || 1);\n  if (!Number.isFinite(parsed)) {\n    return 1;\n  }\n  return Math.max(1, Math.min(4, Math.round(parsed)));\n\
+          }\n\nfunction main({planned_image_prompt, planned_size, planned_max_images, planned_style_summary, planned_quality_checklist,\
+          \ planned_risk_notes, edit_brief, output_use, aspect_size, image_count}) {\n  const data = {\n    image_prompt:\
+          \ planned_image_prompt,\n    size: planned_size,\n    max_images: planned_max_images,\n    style_summary: planned_style_summary,\n\
+          \    quality_checklist: planned_quality_checklist,\n    risk_notes: planned_risk_notes\n  };\n  const issues = [];\n\
+          \  let prompt = String(data.image_prompt || '').trim();\n  if (!prompt) {\n    const brief = String(edit_brief ||\
+          \ output_use || '图片编辑需求').trim();\n    prompt = [\n      '根据参考图进行高质量图片编辑。',\n      '编辑目标：' + brief.slice(0, 600),\n\
+          \      '要求：保留主体识别度，提升质感，风格统一，画面干净，无文字水印。'\n    ].join('\\n');\n    issues.push('planner_image_prompt_missing_used_fallback');\n\
+          \  }\n\n  const size = normalizeSize(data.size, aspect_size);\n  const maxImages = normalizeImageCount(image_count\
+          \ || data.max_images);\n  const diagnostics = {\n    status: issues.length ? 'fallback' : 'success',\n    issues,\n\
+          \    selected_model: 'jimeng-seedream-4.5-img2img',\n    selected_model_name: '即梦 SeedDream 4.5 图生图',\n    selected_model_note:\
+          \ 'AI Hub direct image-generation 图生图 component model_info.model_id uses the canvas selector id jimeng-seedream-4.5-img2img;\
+          \ LLM nodes use detail-card 模型版本 strings separately',\n    output_use: String(output_use || ''),\n    source_brief_length:\
+          \ String(edit_brief || '').length,\n    size,\n    max_images: maxImages,\n    style_summary: data.style_summary\
+          \ || '',\n    quality_checklist: data.quality_checklist || '',\n    risk_notes: data.risk_notes || ''\n  };\n\n\
+          \  return {\n    image_prompt: prompt,\n    size,\n    max_images: maxImages,\n    quality_checklist: String(data.quality_checklist\
+          \ || ''),\n    diagnostics: JSON.stringify(diagnostics, null, 2)\n  };\n}\n"
+        code_language: javascript
+        desc: 规范 SeedDream 图生图参数，校验提示词、尺寸、数量和诊断信息。
+        outputs:
+          diagnostics:
+            children: null
+            type: string
+          image_prompt:
+            children: null
+            type: string
+          max_images:
+            children: null
+            type: number
+          quality_checklist:
+            children: null
+            type: string
+          size:
+            children: null
+            type: string
+        selected: false
+        title: 规范图生图参数
+        type: code
+        variables:
+        - value_selector:
+          - plan_image_edit
+          - structured_output
+          - image_prompt
+          value_type: string
+          variable: planned_image_prompt
+        - value_selector:
+          - plan_image_edit
+          - structured_output
+          - size
+          value_type: string
+          variable: planned_size
+        - value_selector:
+          - plan_image_edit
+          - structured_output
+          - max_images
+          value_type: number
+          variable: planned_max_images
+        - value_selector:
+          - plan_image_edit
+          - structured_output
+          - style_summary
+          value_type: string
+          variable: planned_style_summary
+        - value_selector:
+          - plan_image_edit
+          - structured_output
+          - quality_checklist
+          value_type: string
+          variable: planned_quality_checklist
+        - value_selector:
+          - plan_image_edit
+          - structured_output
+          - risk_notes
+          value_type: string
+          variable: planned_risk_notes
+        - value_selector:
+          - start
+          - edit_brief
+          value_type: string
+          variable: edit_brief
+        - value_selector:
+          - start
+          - output_use
+          value_type: string
+          variable: output_use
+        - value_selector:
+          - start
+          - aspect_size
+          value_type: string
+          variable: aspect_size
+        - value_selector:
+          - start
+          - image_count
+          value_type: number
+          variable: image_count
+      height: 236
+      id: normalize_image_edit_request
+      position:
+        x: 700
+        y: 260
+      positionAbsolute:
+        x: 700
+        y: 260
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        desc: 使用当前 AI Hub 可用的 SeedDream 4.5 图生图组件，根据参考图和改图提示词生成图片。
+        model_info:
+          config_version: v1
+          model_id: jimeng-seedream-4.5-img2img
+          model_name: 即梦 SeedDream 4.5 图生图
+          provider: jimeng
+          provider_name: 即梦
+        params:
+          custom_size:
+            type: constant
+            value: null
+          enable_cs_transfer:
+            type: constant
+            value: true
+          images:
+            type: variable
+            value_selector:
+            - start
+            - reference_image
+          max_images:
+            type: variable
+            value_selector:
+            - normalize_image_edit_request
+            - max_images
+          prompt:
+            type: variable
+            value_selector:
+            - normalize_image_edit_request
+            - image_prompt
+          sequential_image_generation:
+            type: constant
+            value: false
+          size:
+            type: variable
+            value_selector:
+            - normalize_image_edit_request
+            - size
+          watermark:
+            type: constant
+            value: false
+        selected: false
+        title: 生成图生图结果
+        type: image-generation
+      height: 220
+      id: generate_image_edit
+      position:
+        x: 1010
+        y: 260
+      positionAbsolute:
+        x: 1010
+        y: 260
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        code: "function toArray(value) {\n  if (Array.isArray(value)) {\n    return value;\n  }\n  if (value === null || value\
+          \ === undefined || value === '') {\n    return [];\n  }\n  return [value];\n}\n\nfunction imageUrl(item) {\n  if\
+          \ (typeof item === 'string') {\n    return item.trim();\n  }\n  if (!item || typeof item !== 'object') {\n    return\
+          \ '';\n  }\n  return String(item.remote_url || item.url || item.download_url || item.image_url || item.preview_url\
+          \ || '').trim();\n}\n\nfunction main({images, image_prompt, size, diagnostics, quality_checklist}) {\n  const allImages\
+          \ = toArray(images);\n  const urls = allImages.map(imageUrl).filter(Boolean);\n  if (!urls.length) {\n    throw\
+          \ new Error('image-generation 图生图 returned no usable image_url');\n  }\n\n  const imagePackage = {\n    image_url:\
+          \ urls[0],\n    image_urls: urls,\n    size,\n    image_prompt,\n    quality_checklist,\n    diagnostics_json: diagnostics\n\
+          \  };\n\n  return {\n    image_url: urls[0],\n    image_urls_json: JSON.stringify(urls, null, 2),\n    status: 'success',\n\
+          \    message: 'Image edited by AI Hub image-generation component with 即梦 SeedDream 4.5 图生图',\n    images_json: JSON.stringify(allImages,\
+          \ null, 2),\n    image_package_json: JSON.stringify(imagePackage, null, 2),\n    raw_response_json: JSON.stringify({images:\
+          \ allImages}, null, 2)\n  };\n}\n"
+        code_language: javascript
+        desc: 提取改图结果 URL，并整理 End 节点需要返回的图片资产包和原始响应。
+        outputs:
+          image_package_json:
+            children: null
+            type: string
+          image_url:
+            children: null
+            type: string
+          image_urls_json:
+            children: null
+            type: string
+          images_json:
+            children: null
+            type: string
+          message:
+            children: null
+            type: string
+          raw_response_json:
+            children: null
+            type: string
+          status:
+            children: null
+            type: string
+        selected: false
+        title: 整理图生图输出
+        type: code
+        variables:
+        - value_selector:
+          - generate_image_edit
+          - images
+          value_type: array[file]
+          variable: images
+        - value_selector:
+          - normalize_image_edit_request
+          - image_prompt
+          value_type: string
+          variable: image_prompt
+        - value_selector:
+          - normalize_image_edit_request
+          - size
+          value_type: string
+          variable: size
+        - value_selector:
+          - normalize_image_edit_request
+          - diagnostics
+          value_type: string
+          variable: diagnostics
+        - value_selector:
+          - normalize_image_edit_request
+          - quality_checklist
+          value_type: string
+          variable: quality_checklist
+      height: 224
+      id: normalize_image_edit_output
+      position:
+        x: 1320
+        y: 260
+      positionAbsolute:
+        x: 1320
+        y: 260
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        desc: ''
+        outputs:
+        - value_selector:
+          - normalize_image_edit_output
+          - image_url
+          value_type: string
+          variable: image_url
+        - value_selector:
+          - normalize_image_edit_output
+          - image_urls_json
+          value_type: string
+          variable: image_urls_json
+        - value_selector:
+          - normalize_image_edit_output
+          - status
+          value_type: string
+          variable: status
+        - value_selector:
+          - normalize_image_edit_output
+          - message
+          value_type: string
+          variable: message
+        - value_selector:
+          - normalize_image_edit_output
+          - image_package_json
+          value_type: string
+          variable: image_package
+        - value_selector:
+          - normalize_image_edit_output
+          - images_json
+          value_type: string
+          variable: images_json
+        - value_selector:
+          - normalize_image_edit_output
+          - raw_response_json
+          value_type: string
+          variable: raw_response_json
+        - value_selector:
+          - normalize_image_edit_request
+          - diagnostics
+          value_type: string
+          variable: diagnostics
+        selected: false
+        title: End
+        type: end
+      height: 204
+      id: end
+      position:
+        x: 1630
+        y: 260
+      positionAbsolute:
+        x: 1630
+        y: 260
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    viewport:
+      x: 0
+      y: 0
+      zoom: 0.75
