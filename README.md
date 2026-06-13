@@ -33,14 +33,17 @@
 ```text
 relay-loop/
 ├── SKILL.md
+├── examples/
 ├── references/
 │   ├── commander-recovery.md
 │   ├── executor-dispatch.md
 │   ├── goal-contract.md
 │   ├── handoff.md
+│   ├── repair-flywheel.md
 │   └── verify-and-visual.md
 └── scripts/
-    └── lint_goal.py
+    ├── lint_goal.py
+    └── lint_handoff.py
 ```
 
 ## `dify-dsl-builder`
@@ -146,6 +149,12 @@ ln -s "$(pwd)/dify-dsl-builder" ~/.codex/skills/dify-dsl-builder
 
 ```bash
 python3 relay-loop/scripts/lint_goal.py path/to/goal.txt
+```
+
+检查 `relay-loop` 的 Handoff 文档：
+
+```bash
+python3 relay-loop/scripts/lint_handoff.py path/to/handoff.md
 ```
 
 校验 Dify DSL 文件：

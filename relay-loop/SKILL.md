@@ -1,22 +1,16 @@
 ---
 name: relay-loop
 description: >-
-  Orchestrate a commander–executor relay loop. You (the strong reasoning model in
-  this session) act as the in-the-loop commander: plan the work, write a
-  self-contained Goal contract, dispatch it to a background CLI coding agent
-  (canonically Codex via `codex exec`, but any headless executor works), receive a
-  Handoff document when the executor finishes, verify the result yourself
-  (including real-browser visual checks), then dispatch the next baton as a fresh,
-  memoryless executor thread that carries the prior Handoff. Use this whenever the
-  user wants to drive Codex or a background agent through repeated
-  plan → dispatch → verify → advance cycles; write a Goal / kick-prompt / spec for
-  an executor; hand off between agent threads; run a mostly-autonomous build loop
-  with human-in-the-loop verification; or save tokens by keeping planning and
-  verification on the strong model and pushing implementation to a cheaper
-  executor. Trigger on phrases like "dispatch this to codex", "write a goal for
-  the executor", "kick off a background agent", "relay loop", "handoff to the next
-  thread", "orchestrate codex", "drive codex through this", "plan-execute-verify
-  loop", or "have codex build X and check its work".
+  Orchestrate a commander-executor relay loop for background coding agents such as
+  `codex exec`: plan the work, write a self-contained Goal contract, dispatch one
+  memoryless executor baton, receive and lint the Handoff, verify the result
+  yourself, then advance the next baton. Use when the user wants to dispatch work
+  to Codex/background agents, write a Goal/kick-prompt/spec for an executor,
+  hand off between agent threads, run plan-dispatch-verify-advance cycles, repair
+  a failed agent trace/log, create a Repro Capsule, or lock a regression. Triggers
+  include "dispatch this to codex", "write a goal for the executor", "kick off a
+  background agent", "relay loop", "handoff to the next thread", "orchestrate
+  codex", "repair the harness", and "lock this regression".
 ---
 
 # Relay Loop — commander drives, executor builds, handoff carries the baton
@@ -36,6 +30,9 @@ babysitting it and without losing the thread between runs.
   document. That document is the only thing that crosses from one executor thread
   to the next. You read it, verify against it, and inline its essence into the
   next Goal.
+- **A failure must become replayable.** For bugfix / bad-trace work, the Handoff
+  must carry a Repro Capsule, diagnosis, rerun command, and regression-lock
+  candidate. A fixed failure that cannot be rerun or guarded will come back.
 - **The Goal is a self-contained contract.** Because the executor can't read this
   skill or remember anything, the Goal you send must carry *everything the
   executor needs*: the outcome, how to verify, what not to touch, how to iterate,
@@ -49,7 +46,9 @@ Three consequences worth internalizing:
 2. **Continuity lives on disk, not in your context.** Your session will be
    compacted or restarted. Externalize where-we-are to a loop-state directory so a
    future you (or a teammate) can resume.
-3. **Token economy comes from baton length, not micro-management.** The more
+3. **Failures harden the harness only when recorded.** A bad trace should produce
+   a narrow fix plus a regression check or a named reason automation is impossible.
+4. **Token economy comes from baton length, not micro-management.** The more
    complete the contract, the farther the executor runs on its own, the less you
    spend. But batons that are too small invert this — see *Baton granularity*.
 
@@ -71,6 +70,9 @@ first few minutes discovering, never inventing:
 - **Loop-state directory** — pick a gitignored working dir for handoffs and
   state. Default convention: `.loop/` at repo root, added to
   `.git/info/exclude`. Reuse the project's if one exists.
+- **Failure inputs** — for bugfix / trace-driven work, capture the original input,
+  command, log, screenshot, branch/commit, and config needed to replay the failure.
+  See `references/repair-flywheel.md`.
 
 If a fact is missing and low-risk, pick the best conservative default and record
 the assumption. If it's high-risk (credentials, production, destructive, product
@@ -83,8 +85,8 @@ direction), that's a Pause condition, not a guess.
 2 write the Goal contract                (commander)  → references/goal-contract.md
 3 dispatch in the background             (commander)  → references/executor-dispatch.md
 4 executor runs autonomously             (executor — out of your hands)
-5 receive Handoff, land it to disk       (commander)  → references/handoff.md
-6 verify yourself, incl. visual          (commander)  → references/verify-and-visual.md
+5 receive + lint Handoff, land it to disk (commander) → references/handoff.md
+6 rerun + verify yourself, incl. visual   (commander) → references/verify-and-visual.md
 7 advance: merge/integrate, update anchor, dispatch next baton  → back to 2
 ```
 
@@ -126,10 +128,10 @@ while you're not watching.
 ### 5 — Receive the Handoff
 
 The executor's last act is to write a Handoff (`references/handoff.md`). Pull it
-from the executor's terminal log and land it into the loop-state directory. Keep
-Handoff content out of any public destination (PR/issue comments) — it routinely
-carries commands, endpoints, and environment detail. Public posts get a
-human-readable summary only.
+from the executor's terminal log, run `scripts/lint_handoff.py` on it, and land it
+into the loop-state directory. Keep Handoff content out of any public destination
+(PR/issue comments) — it routinely carries commands, endpoints, and environment
+detail. Public posts get a human-readable summary only.
 
 ### 6 — Verify (the part you must not skip)
 
@@ -138,6 +140,8 @@ Verify against the Goal's success criteria yourself, and specifically attack wha
 the executor *couldn't* see — its sandbox blind spots (no real backend, no real
 data) and whatever it flagged in its Handoff "what I did NOT verify" section. For
 anything user-facing, do a real visual check (`references/verify-and-visual.md`).
+For failure-driven work, rerun the original input from the Repro Capsule and check
+that the regression lock actually guards the old failure.
 If it falls short, write a focused fix-Goal and go back to step 2 — don't hand-fix
 silently, or the next baton inherits a false picture.
 
@@ -184,6 +188,9 @@ Size each baton by sandbox reachability:
 - **Green ≠ done.** Always verify behavior yourself, especially across seams the
   executor's sandbox can't exercise. Visual/real-backend check before claiming
   success.
+- **Fixed ≠ hardened.** A failure-driven baton is not ready until the original
+  input can be rerun and the failure is locked by a test/eval/replay/check, or the
+  Handoff names why only manual verification is possible.
 - **A denied action is a signal, not a retry.** If a permission or sandbox limit
   blocks the executor, change approach or pause for the human — don't loop on it.
 - **Discover, don't invent.** Project facts (commands, conventions, truth docs)
@@ -197,7 +204,10 @@ Read the one you need, when you need it — don't preload everything.
 - `references/goal-contract.md` — the Goal template, the inlined executor brief,
   and how to assemble a first vs. continuing baton. **The heart of the skill.**
 - `references/handoff.md` — the two-part Handoff protocol, the template, naming,
-  and how it relates to other status artifacts.
+  Diagnostic repair record, Repro Capsule, Regression lock, and how it relates to
+  other status artifacts.
+- `references/repair-flywheel.md` — how to turn bad traces/logs into diagnosis,
+  replay, focused repair, regression protection, and reusable harness blueprints.
 - `references/verify-and-visual.md` — the discovery-based verification ladder,
   sandbox-reachability of each rung, and the visual-verification tiers/tools.
 - `references/executor-dispatch.md` — background dispatch command, sandboxed-
@@ -206,6 +216,7 @@ Read the one you need, when you need it — don't preload everything.
 - `references/commander-recovery.md` — how to rebuild state after your session is
   compacted or restarted.
 - `scripts/lint_goal.py` — run on every assembled Goal before dispatch.
+- `scripts/lint_handoff.py` — run on every returned Handoff before trusting it.
 
 ## Anti-patterns
 
@@ -214,5 +225,6 @@ Read the one you need, when you need it — don't preload everything.
 - Inlining a whole prior Handoff verbatim into the next Goal — bloats the prompt
   and dilutes the executor's attention. Inline the *essence*, link the rest.
 - Trusting a mock-mode screenshot as proof a real-backend flow works.
+- Saying "fixed" without a Repro Capsule and regression lock.
 - Letting the executor pick its own scope and watching it wander out of bounds.
 - Keeping the only record of progress in your chat context.

@@ -18,9 +18,9 @@ narrative the commander wants is not what the next executor needs.
   job — distilling it is exactly the high-value work you shouldn't outsource to
   "paste the whole thing".
 - **Part B — full handoff.** The complete record for the *commander's
-  verification*: item-by-item acceptance, evidence pointers, and — critically — a
-  "what I did NOT verify" section. This **lands on disk**; it is not inlined into
-  the next Goal.
+  verification*: item-by-item acceptance, evidence pointers, the Diagnostic repair
+  record, Repro Capsule, Regression lock, and — critically — a "what I did NOT
+  verify" section. This **lands on disk**; it is not inlined into the next Goal.
 
 > Why not just inline everything? Token cost grows with every baton if you do, and
 > the next executor reads better from a tight must-read than from a long history.
@@ -71,6 +71,20 @@ only reach a boundary (enqueued / persisted / returned-200) must be marked as su
 as fully done. When you verify (step 6), aim your real-backend and visual checks
 straight at this section.
 
+## The repair flywheel rule
+
+For failure-driven batons, "fixed" is not enough. The Handoff must make the
+failure replayable and harder to repeat:
+
+- **Diagnostic repair record** — what failed, the causal chain, the root-cause
+  hypothesis, the exact fix surface, and the rerun command.
+- **Repro Capsule** — original input/path, command or browser/API flow, config,
+  failing signal, and trace/log/screenshot evidence.
+- **Regression lock** — the test/eval/replay/check added to guard this failure, or
+  the explicit reason only manual verification is possible.
+
+Run `scripts/lint_handoff.py <handoff-file>` before trusting a returned Handoff.
+
 ## Template
 
 ```markdown
@@ -86,6 +100,8 @@ straight at this section.
 - migration/contract state: {{e.g. "added migration <rev>, down_revision <rev>"; or none}}
 - no-go zones: {{areas the next leg must not touch}}
 - traps (don't repeat): {{1-3 concrete gotchas this run hit}}
+- repro capsule: {{pointer to the Repro Capsule below, or "none — not failure-driven"}}
+- regression lock: {{test/eval/replay/check pointer, or "none — not failure-driven"}}
 
 ## Part B — full record (lands on disk; for commander verification)
 
@@ -103,6 +119,26 @@ done (normal for Class B / out-of-sandbox steps) | BLOCKED = needs a human actio
 - end-to-end: {{which leg I actually verified vs. assumed; mark enqueue/persist-only
   results as "consumer/downstream NOT verified"}}
 
+### Diagnostic repair record (required for READY; use "n/a - not failure-driven" when unrelated)
+- failure observed: {{symptom from trace/log/user path; or "n/a — not failure-driven"}}
+- causal chain: {{how the failure moved across model/tool/retrieval/code steps}}
+- root cause hypothesis: {{why it failed, with confidence/uncertainty}}
+- exact fix surface: {{files/functions/prompts/config touched or proposed}}
+- proposed focused fix: {{what changed, or what should change next}}
+- rerun command: {{command/API/browser path that reruns the original failure}}
+
+### Repro Capsule (required for READY; use "n/a - not failure-driven" when unrelated)
+- original input: {{user input, fixture, API payload, URL, or browser path}}
+- command to reproduce: {{exact command/path; mark commander-only if sandbox cannot run it}}
+- environment/config: {{branch/commit, relevant env vars as $ENV_VAR names, services}}
+- failing signal before fix: {{error, assertion, screenshot, trace span, wrong output}}
+- trace/log/evidence: {{paths under .loop/evidence/... or log pointers}}
+
+### Regression lock (required for READY; use "n/a - not failure-driven" when unrelated)
+- test/check added: {{test/eval/replay/browser/API check pointer, or "not automated"}}
+- locked failure: {{one sentence: what cannot regress now}}
+- if not automated: {{why, and the manual verification script/checklist}}
+
 ### Deliverables (precise coordinates)
 - branch: {{name @ commit}}; base: {{@ commit}}
 - migration: {{rev + down_revision, or none}}
@@ -118,6 +154,7 @@ done (normal for Class B / out-of-sandbox steps) | BLOCKED = needs a human actio
 - suggested next outcome: {{one line}}
 - must carry: {{this Handoff's Part A + any contract/PR pointers}}
 - explicitly do NOT: {{boundaries for the next leg}}
+- blueprint candidate: {{whether this run produced a reusable harness pattern; pointer if saved}}
 
 ### Notes / decisions worth keeping
 - {{anything not recorded elsewhere that would otherwise be lost}}

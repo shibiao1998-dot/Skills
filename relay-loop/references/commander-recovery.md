@@ -22,6 +22,8 @@ one). It records just enough to resume:
 - current baton: {{task + leg, e.g. "142 leg 2"}}, status {{dispatched | verifying | advancing}}
 - last Goal dispatched: {{path/pointer to the assembled Goal, + the executor log path}}
 - last Handoff received: {{handoff-<task>-<leg>.md}}
+- last run trace: {{.loop/runs/<task>-<leg>.jsonl, or none}}
+- latest blueprint candidate: {{.loop/blueprints/<topic>.md, or none}}
 - latest handoff per task: {{142 → handoff-142-2.md; auth → handoff-auth-1.md; ...}}
 - next intent: {{what the next baton should tackle}}
 - authoritative status: {{pointer to the project's state file / issue tracker}}
@@ -56,7 +58,9 @@ Before doing anything else in a relay effort you're resuming:
    confirm what's actually merged/landed (the anchor can lag a beat).
 4. **List the loop-state dir** (`ls` handoffs + evidence) to sanity-check the relay
    history against the anchor.
-5. **Reconstruct your position** and resume the loop at the right beat: if a baton
+5. **Read the run trace / blueprint if named** — for failure-driven work, this is
+   where red/green/replay evidence and reusable traps are easiest to recover.
+6. **Reconstruct your position** and resume the loop at the right beat: if a baton
    was `dispatched`, go find its executor log and pick up at "receive"; if you were
    `verifying`, resume verification; if `advancing`, write the next Goal.
 

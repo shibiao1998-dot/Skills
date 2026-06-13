@@ -29,6 +29,10 @@ Drafting rules that matter:
   two people would agree whether it's met.
 - Put **discovered, concrete commands** in Verification — never "make sure it
   works". If you don't know the commands, make discovery the first step.
+- For bugfix / bad-trace work, Verification starts with the original failing input:
+  reproduce or capture the failure signal, apply the focused fix, rerun that exact
+  input, then lock the failure with a regression test/eval/replay/check where
+  practical. See `references/repair-flywheel.md`.
 - "What must not change" goes in **Constraints**; filesystem/write permissions go
   in **Boundaries**. Keep them separate.
 - In Iteration, require a **new source of evidence** after repeated failure (read
@@ -61,6 +65,8 @@ Truth sources (reference, do NOT copy or override; on conflict, the truth source
 Verification (concrete evidence only — discover the project's own commands first):
   {{the verification ladder for this baton — see references/verify-and-visual.md;
     name exact commands, expected signals, and what artifacts/screenshots to capture}}
+  {{if bugfix / bad-trace: name the original input, failing signal, rerun command,
+    and regression-lock check expected in the Handoff's Repro Capsule}}
 
 Constraints (what must not change):
   {{invariants: public APIs / data shapes / schemas / styles / branch rules}}
@@ -86,8 +92,11 @@ Iteration policy (how to make progress, and the brakes):
 
 Stop when (proof of completion + deliver the baton):
   {{acceptance criteria met, item by item}} AND {{the verification ladder is green
-  or any gap is explicitly reported}} AND evidence is captured. Then write the
-  Handoff (format below) and echo its full text as your final terminal output.
+  or any gap is explicitly reported}} AND evidence is captured. For bugfix /
+  bad-trace work, the original failing input has been rerun and the failure is
+  locked by a test/eval/replay/check, or the Handoff explains why only manual
+  verification is possible. Then write the Handoff (format below) and echo its full
+  text as your final terminal output.
 
 Pause if (stop and escalate — do NOT work around):
   {{anything needing the network / a push to remote / credentials / production data
@@ -131,9 +140,12 @@ in this message — there is no earlier conversation and no skill for you to con
    hand back. That is a normal outcome, not a failure.
 5. Capture evidence as you go: the commands you ran and their result lines,
    screenshots for any UI. You'll point to these in the Handoff.
-6. Secret hygiene: never print or paste real credentials; use $ENV_VAR placeholders;
+6. For failure-driven work, preserve the Repro Capsule: original input, failing
+   signal, rerun command, config/commit, evidence pointer, and the regression lock
+   you added or could not add.
+7. Secret hygiene: never print or paste real credentials; use $ENV_VAR placeholders;
    keep them out of logs and the Handoff.
-7. Your final act is to write the Handoff in the exact format given, and echo its
+8. Your final act is to write the Handoff in the exact format given, and echo its
    full text as your last terminal output so the commander can retrieve it (the
    commander may not be able to read files you wrote inside this sandbox).
 ```
@@ -156,6 +168,9 @@ missing task reference, a pause list with no escalation triggers, a stop conditi
 that forgets the Handoff, and anything that looks like a leaked secret. Fix and
 re-run until clean, then dispatch (`references/executor-dispatch.md`).
 
+When the executor returns, run `scripts/lint_handoff.py <handoff-file>` before
+using the Handoff as evidence or inlining Part A into the next Goal.
+
 ## Worked example (generic, abbreviated)
 
 ```text
@@ -168,10 +183,12 @@ Truth sources (reference, do NOT copy or override):
   - Prior progress: none — this is the first baton
 
 Verification:
-  - Add a failing regression test for the percentage-coupon case, then make it pass.
+  - Add a failing regression test for the percentage-coupon case, confirm it fails
+    before the fix, then make it pass.
   - Run the project's unit tests for the checkout/pricing area (discover the runner
     from package scripts) and the smallest relevant lint/typecheck.
-  - Capture the test names and their pass/fail lines as evidence.
+  - Capture the original coupon input, red/green test lines, and rerun command in
+    the Repro Capsule.
 
 Constraints:
   - Do not change public coupon API names, the DB schema, or store-credit behavior.
@@ -188,7 +205,8 @@ Iteration policy:
 
 Stop when:
   - Regression test fails before the fix and passes after; targeted lint/typecheck is
-    green; evidence captured. Then write the Handoff and echo it.
+    green; the original failing input is rerun; Repro Capsule and Regression lock
+    are filled in. Then write the Handoff and echo it.
 
 Pause if:
   - A schema migration, payment credentials, production data, or a product decision

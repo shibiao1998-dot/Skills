@@ -26,6 +26,13 @@ scripts, Makefile, CI config, test runners — discover them).
   pointer (test name, screenshot path, command output). Only "waiting on a human"
   items may be parked as ⏸, with the needed action named.
 
+For bugfix / bad-trace batons, add a failure-replay rung before claiming done:
+
+- **FR — failure replay.** Use the Handoff's Repro Capsule to rerun the original
+  input/path that failed. Confirm the old failing signal is gone and the Regression
+  lock names a durable test/eval/replay/check. If the lock is manual-only, verify
+  the reason and run the manual script/checklist.
+
 Put the verification ladder for a baton directly into the Goal's Verification
 element, with the discovered commands inlined — so the executor has no "I thought I
 ran it" ambiguity.
@@ -44,6 +51,7 @@ its sandbox physically can't do — it will either stall or fake it.
 | R3 | **commander** | needs real services + data the sandbox can't bring up |
 | R4 | **executor: mock-mode only** / **commander: real-backend** | the seam lives here |
 | R5 | both | executor self-reports; commander confirms |
+| FR | **commander** (often) | rerun original failure input; executor may lack the real services/data |
 
 Practical rule: if a rung is out of the executor's reach, the Goal says so, the
 executor stops at the highest rung it *can* reach and hands back `PARTIAL`, and the
@@ -98,3 +106,11 @@ Store evidence in the loop-state directory, e.g. `.loop/evidence/{{task}}/`, wit
 filenames keyed to the criterion they prove. The executor records pointers to its
 evidence in the Handoff; you add yours from Tiers 2–3. Pointers, not pasted blobs —
 and never paste secrets (use `$ENV_VAR`).
+
+For failure-driven work, include the red/green/replay evidence separately when
+possible:
+
+- `*-red.txt` or screenshot: original failure signal
+- `*-green.txt`: focused check after the fix
+- `*-replay.txt` or screenshot: commander rerun against the original input
+- `*-regression.txt`: proof the regression lock exists and runs

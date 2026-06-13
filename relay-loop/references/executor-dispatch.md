@@ -23,6 +23,10 @@ codex exec --full-auto "$(cat /path/to/goal-<task>-<leg>.txt)" \
   notified on completion. Otherwise append `&` and poll the log.
 - One baton = one run = one log. Name the log after the task + leg so it lines up
   with the Handoff.
+- For failure-driven work, also ask the executor to append key phase events to a
+  lightweight run trace such as `.loop/runs/<task>-<leg>.jsonl` when it can write
+  the loop-state dir: dispatch, red failure, fix, green check, replay, Handoff.
+  Keep the terminal log as the source for raw detail.
 - Don't block your session in a foreground wait. Plan the next move or step away;
   come back when the run reports done.
 
