@@ -39,8 +39,11 @@ REQUIRED_ELEMENTS = [
 ]
 
 # Unfilled placeholders. {{...}} is ours; the rest are common stray markers.
+# The bracketed pattern catches copied prompt templates like [THING] while avoiding
+# normal Markdown links such as [docs](path).
 PLACEHOLDER_PATTERNS = [
     r"\{\{[^}]+\}\}",
+    r"\[[A-Z][A-Z0-9 _/\-]{2,}\](?!\()",
     r"\bTBD\b",
     r"\bTODO\b",
     r"待补充",
@@ -140,8 +143,11 @@ def lint_text(text: str, source: str) -> list[str]:
 
     # No unfilled placeholders.
     for pattern in PLACEHOLDER_PATTERNS:
-        if re.search(pattern, text):
-            errors.append(f"{source}: unresolved placeholder matched `{pattern}`")
+        match = re.search(pattern, text)
+        if match:
+            errors.append(
+                f"{source}: unresolved placeholder `{match.group(0)}` matched `{pattern}`"
+            )
 
     # No brake-removing vague instructions.
     for pattern in DANGEROUS_VAGUE_PATTERNS:

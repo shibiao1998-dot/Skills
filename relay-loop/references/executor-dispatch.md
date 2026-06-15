@@ -30,6 +30,40 @@ codex exec --full-auto "$(cat /path/to/goal-<task>-<leg>.txt)" \
 - Don't block your session in a foreground wait. Plan the next move or step away;
   come back when the run reports done.
 
+## Parallel fan-out dispatch
+
+Parallel dispatch is a commander quality tactic for independent batons, not a way
+to make one executor self-perpetuate. Use it liberally for read-only exploration,
+independent reviews, competing diagnoses, and verification passes; use it for
+implementation only when write surfaces and synthesis are clear. Before launching,
+instantiate `references/fanout-harness.md` in the loop-state dir and run
+`scripts/lint_fanout.py` on it. The split note must record:
+
+- shared objective and truth sources
+- each sub-baton's owner name, Goal file, allowed write surface, and log path
+- collision rules for shared files, branches, ports, databases, and generated
+  artifacts
+- synthesis order: compare, merge, or choose one result, then verify yourself
+
+Do not dispatch until the split note passes lint. If it fails because the write
+surfaces collide or the synthesis plan is vague, switch to read-only exploration
+batons, narrow ownership, or record `Mode: SINGLE` with a single-baton rationale.
+
+Launch one executor per Goal, with one log and one expected Handoff per executor:
+
+```bash
+codex exec --full-auto "$(cat "/path/to/goal-<task>-<leg-a>.txt")" \
+  > "/tmp/executor-<task>-<leg-a>.log" 2>&1 &
+
+codex exec --full-auto "$(cat "/path/to/goal-<task>-<leg-b>.txt")" \
+  > "/tmp/executor-<task>-<leg-b>.log" 2>&1 &
+```
+
+Keep their write surfaces disjoint unless the explicit purpose is read-only
+analysis. If two Handoffs propose conflicting edits, the commander resolves the
+conflict in a new synthesis baton or by hand-verified integration; do not ask the
+parallel executors to coordinate through chat or shared mutable state.
+
 ## Don't fight the sandbox (denied = signal, not retry)
 
 Executors run sandboxed on purpose. If the executor (or you, on its behalf) tries

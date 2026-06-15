@@ -47,6 +47,37 @@ Translate vague taste words instead of banning them: "polished", "professional",
 "looks native" aren't failures — making them the *acceptance test* is. Turn them
 into a direction + screenshot checks + a bounded number of focused passes.
 
+## Build briefs and parallel Goals
+
+Some task prompts arrive as a filled build brief: "build X in Y with features Z,
+make it feel like Q, output as R." Treat that as input material for the Goal, not
+as the Goal itself. Convert it into the seven elements:
+
+- Outcome = the requested artifact and behavior.
+- Verification = build/test/run commands, screenshots, browser checks, evals, or
+  reviewable files that prove the artifact matches the brief.
+- Constraints and Boundaries = project truth sources, allowed files, no-go zones,
+  and what must not regress.
+- Iteration, Stop when, Pause if = the autonomous loop, completion proof, and
+  escalation brakes.
+
+For parallel fan-out, the commander first writes and lints a top-level split note
+from `references/fanout-harness.md`, then one full Goal per executor. Prefer extra
+read-only exploration, review, or verification batons when they add independent
+evidence; token cost is not the limiting factor. Each parallel Goal must be
+self-contained and must add:
+
+- `Sub-baton ownership`: the exact files/modules/questions this executor owns.
+- `Sibling collision rule`: what this executor must not touch because another
+  baton owns it.
+- `Synthesis contract`: the Handoff name and the evidence the commander will use
+  to merge or compare results.
+
+Do not write "as many agents as needed" into a Goal as an unbounded instruction.
+Name the batons you can defend. Extra agents are useful when they improve coverage,
+surface competing diagnoses, or verify different failure modes without increasing
+merge risk or verification ambiguity.
+
 ## The assembled Goal (template)
 
 Placeholders are `{{double-brace}}` so the linter can catch any you forgot to fill;

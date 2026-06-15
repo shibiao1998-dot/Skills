@@ -3,14 +3,15 @@ name: relay-loop
 description: >-
   Orchestrate a commander-executor relay loop for background coding agents such as
   `codex exec`: plan the work, write a self-contained Goal contract, dispatch one
-  memoryless executor baton, receive and lint the Handoff, verify the result
-  yourself, then advance the next baton. Use when the user wants to dispatch work
-  to Codex/background agents, write a Goal/kick-prompt/spec for an executor,
-  hand off between agent threads, run plan-dispatch-verify-advance cycles, repair
-  a failed agent trace/log, create a Repro Capsule, or lock a regression. Triggers
-  include "dispatch this to codex", "write a goal for the executor", "kick off a
-  background agent", "relay loop", "handoff to the next thread", "orchestrate
-  codex", "repair the harness", and "lock this regression".
+  memoryless executor baton or a gated fan-out of independent batons, receive and
+  lint the Handoff, verify the result yourself, then advance the next baton. Use
+  when the user wants to dispatch work to Codex/background agents, write a
+  Goal/kick-prompt/spec for an executor, hand off between agent threads, run
+  plan-dispatch-verify-advance cycles, repair a failed agent trace/log, create a
+  Repro Capsule, or lock a regression. Triggers include "dispatch this to codex",
+  "write a goal for the executor", "kick off a background agent", "parallel
+  goals", "relay loop", "handoff to the next thread", "orchestrate codex",
+  "repair the harness", and "lock this regression".
 ---
 
 # Relay Loop — commander drives, executor builds, handoff carries the baton
@@ -38,6 +39,11 @@ babysitting it and without losing the thread between runs.
   executor needs*: the outcome, how to verify, what not to touch, how to iterate,
   when to stop, when to pause — plus a short operating brief and the exact Handoff
   format. If it isn't in the Goal, the executor doesn't know it.
+- **Parallel assessment is default; fan-out is quality-first.** Always ask whether
+  independent executors would improve coverage, reduce blind spots, or produce
+  useful competing evidence. Fan out when you can name ownership, collision rules,
+  independent verification, and a synthesis point. Each executor still gets its own
+  self-contained Goal and writes its own Handoff.
 
 Three consequences worth internalizing:
 
@@ -48,9 +54,10 @@ Three consequences worth internalizing:
    future you (or a teammate) can resume.
 3. **Failures harden the harness only when recorded.** A bad trace should produce
    a narrow fix plus a regression check or a named reason automation is impossible.
-4. **Token economy comes from baton length, not micro-management.** The more
-   complete the contract, the farther the executor runs on its own, the less you
-   spend. But batons that are too small invert this — see *Baton granularity*.
+4. **Quality comes from coverage plus synthesis, not agent count alone.** Extra
+   executors are welcome when they add independent evidence. They are harmful when
+   they collide on the same files, duplicate the same blind spot, or leave the
+   commander with an unverifiable merge.
 
 ## Before the loop: discover the project (don't assume)
 
@@ -83,6 +90,7 @@ direction), that's a Pause condition, not a guess.
 ```
 1 recover + plan + scope this baton      (commander)
 2 write the Goal contract                (commander)  → references/goal-contract.md
+2a fan-out harness gate                  (commander)  → references/fanout-harness.md
 3 dispatch in the background             (commander)  → references/executor-dispatch.md
 4 executor runs autonomously             (executor — out of your hands)
 5 receive + lint Handoff, land it to disk (commander) → references/handoff.md
@@ -109,6 +117,30 @@ the branch/commit to build on, the no-go zones, the traps). Run
 `scripts/lint_goal.py` on the assembled Goal before sending — it catches the
 classic failure modes (missing elements, unfilled placeholders, vague verification,
 unbounded retries, leaked secrets).
+
+### 2a — Fan-out harness gate
+
+Default to assessing whether parallel executors would improve the result. Token
+cost is not the primary constraint; quality, mergeability, and verification are.
+Fan out when the work decomposes into genuinely independent batons:
+
+- **Good fan-out:** exploration passes, separate modules/files, independent test
+  surfaces, UI/design review vs. backend analysis, docs/examples that do not edit
+  the same source, competing read-only diagnoses, or separate verification passes
+  that look for different failure modes.
+- **Bad fan-out:** one task must land before another can start, several executors
+  would edit the same files, the scope needs a product decision, or the merge point
+  would be harder than the work. If uncertainty is the blocker, first fan out
+  read-only exploration Goals, then synthesize before implementation.
+
+Before dispatching, write a compact top-level split note: shared objective,
+sub-baton list, ownership boundaries, shared constraints, expected Handoff names,
+and the synthesis order. Use `references/fanout-harness.md` as the template and
+run `scripts/lint_fanout.py` before writing or dispatching the per-executor Goals.
+If the task stays single-baton after assessment, record `Mode: SINGLE` and the
+single-baton rationale in the same harness. Then write **one full Goal per
+executor**. Do not rely on agents talking to each other or on a shared chat
+transcript; continuity still flows through their Handoffs and your verification.
 
 ### 3 — Dispatch
 
@@ -152,11 +184,11 @@ When it genuinely passes: integrate (merge / land), update the loop-state anchor
 executor thread — inlining this baton's Handoff essence. Loop until the whole
 effort is done and you have personally verified it.
 
-## Baton granularity (where token economy is won or lost)
+## Baton granularity (where quality is won or lost)
 
 Don't centralize all topic-selection onto yourself — making every issue its own
 tiny baton inverts the savings (every baton costs a Goal + a Handoff read + a
-verify). Instead:
+verify) and can reduce quality by fragmenting context. Instead:
 
 - **You own the baton boundary** (which slice of work, where it stops).
 - **The executor owns intra-baton topology** (the order of sub-steps, local
@@ -166,8 +198,8 @@ Size each baton by sandbox reachability:
 
 - **Class A — sandbox-closable.** Pure logic with unit/in-memory tests, no network,
   no real DB, no push needed. The executor can take a whole dependency-closed
-  sub-chain end to end in one baton. This is the token-saving sweet spot; don't
-  chop it up.
+  sub-chain end to end in one baton. Don't chop it up unless parallel read-only
+  review or independent verification would improve confidence.
 - **Class B — crosses a push/integration boundary.** Needs the network, a real
   database/services, CI, or a migration/contract that must be pushed and merged
   before the next step builds on it. The executor does the part it *can* verify in
@@ -188,6 +220,11 @@ Size each baton by sandbox reachability:
 - **Green ≠ done.** Always verify behavior yourself, especially across seams the
   executor's sandbox can't exercise. Visual/real-backend check before claiming
   success.
+- **Commander verification should become automation.** "Verify yourself" means the
+  commander owns the acceptance gate, not that a human must manually inspect every
+  repeatable detail. Convert repeated human checks into tests, scripts, browser
+  checks, evals, CI jobs, and replay commands. Leave humans the parts that require
+  judgment, authorization, production risk acceptance, or product direction.
 - **Fixed ≠ hardened.** A failure-driven baton is not ready until the original
   input can be rerun and the failure is locked by a test/eval/replay/check, or the
   Handoff names why only manual verification is possible.
@@ -203,6 +240,9 @@ Read the one you need, when you need it — don't preload everything.
 
 - `references/goal-contract.md` — the Goal template, the inlined executor brief,
   and how to assemble a first vs. continuing baton. **The heart of the skill.**
+- `references/fanout-harness.md` — the structured split-note templates for
+  FANOUT / EXPLORE_FIRST / SINGLE decisions. Use before dispatching parallel work
+  or when a complex task needs an explicit no-fan-out rationale.
 - `references/handoff.md` — the two-part Handoff protocol, the template, naming,
   Diagnostic repair record, Repro Capsule, Regression lock, and how it relates to
   other status artifacts.
@@ -215,6 +255,7 @@ Read the one you need, when you need it — don't preload everything.
   secret hygiene.
 - `references/commander-recovery.md` — how to rebuild state after your session is
   compacted or restarted.
+- `scripts/lint_fanout.py` — run on every fan-out split note before dispatch.
 - `scripts/lint_goal.py` — run on every assembled Goal before dispatch.
 - `scripts/lint_handoff.py` — run on every returned Handoff before trusting it.
 
