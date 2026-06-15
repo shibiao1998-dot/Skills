@@ -274,6 +274,12 @@ Read the one you need, when you need it — don't preload everything.
 
 - `references/goal-contract.md` — the Goal template, the inlined executor brief,
   and how to assemble a first vs. continuing baton. **The heart of the skill.**
+- `references/loop-blueprints.md` — a relay-native catalog of ~8 common loop
+  patterns (test triage, CI/PR until green, post-edit guard, independent verifier,
+  spec-first ship, API/contract/migration, visual/E2E, dependency/security), each a
+  pre-filled mapping onto the seven Goal elements + Handoff + verification, plus the
+  manual/event/interval trigger reframing and a blueprint map for picking the next
+  baton. Use as a menu at step 1 when the work matches a common shape.
 - `references/fanout-harness.md` — the structured split-note templates for
   FANOUT / EXPLORE_FIRST / SINGLE decisions. Use before dispatching parallel work
   or when a complex task needs an explicit no-fan-out rationale.
