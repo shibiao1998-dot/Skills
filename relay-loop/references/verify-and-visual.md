@@ -37,6 +37,25 @@ Put the verification ladder for a baton directly into the Goal's Verification
 element, with the discovered commands inlined — so the executor has no "I thought I
 ran it" ambiguity.
 
+## Verify the checks, not just their color (anti-gaming)
+
+Green is necessary, not sufficient — and an agent optimizes whatever you measure. A
+baton can reach green by deleting a failing test, adding `skip`/`xfail`, weakening an
+assertion, hiding a retry, mocking the component under test, hardcoding an expected
+value, or swallowing an error. So part of commander verification is auditing the
+checks themselves, not just their result line:
+
+- Diff the test/check files in the baton's diff. Were cases removed, assertions
+  loosened, the thing under test mocked, or a failing path commented out?
+- Confirm new tests actually fail *without* the fix (red-first), not just pass with it.
+- Confirm coverage of the changed code didn't quietly shrink.
+
+If the checks were weakened to reach green, treat the baton as failed regardless of
+the result line. This is the operational defense against Goodhart's law; it pairs
+with the Goal's anti-gaming clause (`references/goal-contract.md`). For high-stakes or
+unattended work, make this an **independent verifier baton** — a read-only checker on
+a different model, prompted to refute (`references/fanout-harness.md`).
+
 ## Sandbox reachability — who can climb which rung
 
 This is the correction most people miss. A constrained executor sandbox (no

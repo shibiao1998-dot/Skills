@@ -47,6 +47,16 @@ Translate vague taste words instead of banning them: "polished", "professional",
 "looks native" aren't failures — making them the *acceptance test* is. Turn them
 into a direction + screenshot checks + a bounded number of focused passes.
 
+## Goal layering (the baton serves a milestone, not just itself)
+
+A single baton's Outcome should trace upward: it serves a **milestone**, which
+serves the effort's **north-star**. Keep that hierarchy in the loop-state anchor
+(`references/commander-recovery.md`) and name, in each Goal's Outcome, which
+milestone it advances. Layering is what keeps a long or unattended loop from nailing
+a local target while drifting off the real mission — the Goodhart trap at the
+planning level. It also makes scope arguments concrete: a sub-step that doesn't serve
+the current milestone is out of this baton's boundary, full stop.
+
 ## Build briefs and parallel Goals
 
 Some task prompts arrive as a filled build brief: "build X in Y with features Z,
@@ -85,7 +95,7 @@ legitimate `<...>` in content (generics, `<branch>` notation) won't trip it. Wri
 the body in the project's working language; keep the command token `/goal`.
 
 ```text
-/goal {{outcome — a concrete end-state, anchored to the task/issue if one exists}}
+/goal {{outcome — a concrete end-state, anchored to the task/issue if one exists, naming the milestone it serves}}
 
 Truth sources (reference, do NOT copy or override; on conflict, the truth source wins):
   - Task: {{issue/ticket id + where its acceptance criteria live, or "none"}}
@@ -102,6 +112,11 @@ Verification (concrete evidence only — discover the project's own commands fir
 Constraints (what must not change):
   {{invariants: public APIs / data shapes / schemas / styles / branch rules}}
   {{project rules relevant to this baton — cite the project's own AGENTS.md/etc.}}
+  Integrity (anti-gaming): the verification is a proxy for the real outcome, not the
+  target. Never reach green by deleting, skipping, weakening, or rewriting
+  tests/assertions, mocking the component under test, hardcoding expected outputs, or
+  swallowing errors. If a check cannot pass honestly, hand back PARTIAL or BLOCKED —
+  a faked green is worse than an honest red.
   Secret hygiene: never read, print, paste, or commit real credentials; refer to
   them only as $ENV_VAR placeholders; keep them out of code, logs, and the Handoff.
 
@@ -118,8 +133,11 @@ Iteration policy (how to make progress, and the brakes):
   relevant check after each, read logs before retrying. If the same failure persists
   twice, switch evidence source (full traceback / docs / minimal repro) — do not
   repeat the same attempt. After at most {{N, e.g. 3}} focused passes without success,
-  stop and hand back with the blocker described. Low-risk unknowns: pick the best
-  conservative default and record it; only the Pause-if list stops you.
+  downgrade to read-only diagnosis (capture the failing state and a root-cause
+  hypothesis) and hand back PARTIAL/BLOCKED with that diagnosis — do not thrash or
+  silently broaden scope (see references/autonomy-heartbeat.md for the full
+  degradation ladder). Low-risk unknowns: pick the best conservative default and
+  record it; only the Pause-if list stops you.
 
 Stop when (proof of completion + deliver the baton):
   {{acceptance criteria met, item by item}} AND {{the verification ladder is green
@@ -163,6 +181,10 @@ in this message — there is no earlier conversation and no skill for you to con
 2. Work autonomously in multiple rounds inside the Boundaries: implement a slice →
    run the project's checks → read logs → fix → re-verify. Do NOT stop after one
    step. Stop only when "Stop when" is satisfied or a "Pause if" trigger fires.
+   Integrity: the checks are a proxy for the real outcome, not the target — never
+   reach green by deleting/skipping/weakening tests or assertions, mocking the thing
+   under test, hardcoding values, or swallowing errors; an honest red beats a faked
+   green.
 3. You own the order of sub-steps within the boundary; do not expand scope past it.
    Out-of-scope problems get recorded for the human, not fixed.
 4. If you hit something this sandbox cannot do — no network, read-only repo, no real
@@ -195,9 +217,13 @@ in this message — there is no earlier conversation and no skill for you to con
 
 Run `scripts/lint_goal.py <assembled-goal-file>`. It rejects the classic failures:
 missing elements, unfilled `{{...}}`, vague verification, unbounded retries, a
-missing task reference, a pause list with no escalation triggers, a stop condition
-that forgets the Handoff, and anything that looks like a leaked secret. Fix and
-re-run until clean, then dispatch (`references/executor-dispatch.md`).
+missing task reference, a missing anti-gaming clause, a failure-driven Goal that
+forgets to require a red-first regression check, a `Mode: AUTONOMOUS` Goal that hasn't
+mechanically earned its unattended gate (machine-verifiable Stop-when, named
+independent verifier, recorded human sign-off — see
+`references/autonomy-heartbeat.md`), a pause list with no escalation triggers, a stop
+condition that forgets the Handoff, and anything that looks like a leaked secret. Fix
+and re-run until clean, then dispatch (`references/executor-dispatch.md`).
 
 When the executor returns, run `scripts/lint_handoff.py <handoff-file>` before
 using the Handoff as evidence or inlining Part A into the next Goal.
@@ -223,6 +249,8 @@ Verification:
 
 Constraints:
   - Do not change public coupon API names, the DB schema, or store-credit behavior.
+  - Integrity (anti-gaming): do not delete, skip, or weaken tests/assertions to reach
+    green; an honest red beats a faked green.
   - Secret hygiene: $ENV_VAR placeholders only.
 
 Boundaries:

@@ -72,6 +72,25 @@ to escalate — e.g. a "full access" sandbox flag — and the environment denies
 Change approach or pause for the human. Looping on a denied action wastes the baton
 and trains bad habits into your loop.
 
+## Provision the executor (resources sufficient)
+
+"Sufficient resources" is one of the three pillars (see `SKILL.md`): a baton fails
+just as often from missing tools as from a vague goal. Before dispatch, make sure the
+executor can actually reach what the work needs — and that the Goal names it:
+
+- **Tools & connectors.** If the work touches GitHub, an issue tracker (Linear/Jira),
+  chat (Slack), or a database, the executor needs that connector (often an MCP server)
+  available in its environment, or the step becomes a commander hop. Decide which, and
+  say so in the Goal.
+- **Permissions & data.** Test fixtures, seed data, env vars (as `$ENV_VAR`), service
+  endpoints — provision them or mark the rung commander-only.
+- **Knowledge.** The truth-source pointers and the prior-baton essence are resources
+  too; an under-briefed executor reinvents or guesses.
+
+What the executor genuinely cannot be given (network, real production data, a
+credential it shouldn't hold) is not a gap to paper over — it's a Class B boundary or
+a Pause-if. Provision what you can; route the rest to the commander.
+
 ## Discover the executor's constraints, then encode the bypass
 
 A constrained executor sandbox commonly has some of: **no network**, a **read-only
@@ -128,6 +147,9 @@ When the run finishes:
    (`references/verify-and-visual.md`).
 3. If the run came back `BLOCKED`/`PARTIAL`, the Handoff tells you the exact action
    needed — do it (or escalate to the human), then start the next baton.
+4. For long-running or unattended loops, send a human-readable completion or pause
+   notification (push / chat / issue comment — environment-specific); keep Handoff
+   detail out of public channels (`references/autonomy-heartbeat.md`).
 
 ## A note on autonomy vs. the leash
 
@@ -135,4 +157,7 @@ The executor doesn't re-kick itself — each baton is one run and then it stops.
 relaunch. That cadence is deliberate: it gives you a verification gate between every
 baton. The contract (the Goal) is what lets the executor run far *within* a baton
 without supervision; the relaunch is what keeps a human-checked checkpoint between
-batons. Don't try to make the executor self-perpetuate — that throws away the gate.
+batons. Don't try to make the *executor* self-perpetuate — that throws away the gate.
+(An external heartbeat may re-kick the loop only once the gate itself is automated;
+that opt-in upgrade is `references/autonomy-heartbeat.md`, and it automates the gate
+rather than removing it.)

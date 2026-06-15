@@ -10,7 +10,8 @@ description: >-
   plan-dispatch-verify-advance cycles, repair a failed agent trace/log, create a
   Repro Capsule, or lock a regression. Triggers include "dispatch this to codex",
   "write a goal for the executor", "kick off a background agent", "parallel
-  goals", "relay loop", "handoff to the next thread", "orchestrate codex",
+  goals", "run the loop unattended/overnight", "autonomous loop on a heartbeat",
+  "relay loop", "handoff to the next thread", "orchestrate codex",
   "repair the harness", and "lock this regression".
 ---
 
@@ -44,8 +45,15 @@ babysitting it and without losing the thread between runs.
   useful competing evidence. Fan out when you can name ownership, collision rules,
   independent verification, and a synthesis point. Each executor still gets its own
   self-contained Goal and writes its own Handoff.
+- **You are managing, not just dispatching.** The same discipline that makes a human
+  report succeed makes a memoryless executor succeed — three pillars: a *clear goal*
+  (the Goal contract), *sufficient resources* (the tools, connectors, permissions,
+  and prior knowledge it needs — you provision them), and *timely, independent
+  feedback* (verification each baton, ideally by a checker that isn't the doer).
+  Vague goals, missing resources, or self-graded work fail agents the same way they
+  fail people — only faster and more confidently.
 
-Three consequences worth internalizing:
+A few consequences worth internalizing:
 
 1. **Self-containment is non-negotiable.** A Goal that references "the skill" or
    "as discussed" is broken — the executor sees neither.
@@ -58,6 +66,10 @@ Three consequences worth internalizing:
    executors are welcome when they add independent evidence. They are harmful when
    they collide on the same files, duplicate the same blind spot, or leave the
    commander with an unverifiable merge.
+5. **The verifier is a proxy, not the target.** An agent optimizes whatever you
+   measure; tell it to make the tests pass and it may delete the failing test. Every
+   Goal carries an anti-gaming clause, and every verification confirms the checks
+   themselves weren't weakened — not just that they're green (Goodhart's law).
 
 ## Before the loop: discover the project (don't assume)
 
@@ -70,10 +82,12 @@ first few minutes discovering, never inventing:
   glossary, an `AGENTS.md`/`CLAUDE.md`/contributing guide? These outrank anything
   you or the executor might assume. The Goal *references* them; it never copies or
   overrides them.
-- **Executor sandbox constraints** — can the executor reach the network? Is the
-  repo's `.git` writable from its sandbox? Can it run the database / containers /
-  servers the tests need? The answers decide baton granularity and what must be
-  pushed/run on *your* side. See `references/executor-dispatch.md`.
+- **Executor sandbox constraints & provisioning** — can the executor reach the
+  network? Is the repo's `.git` writable from its sandbox? Can it run the database /
+  containers / servers the tests need? Which connectors (GitHub, issue tracker, chat,
+  DB) does the work require, and does the executor's environment have them? The
+  answers decide baton granularity, what you must *provision* for the executor, and
+  what must be pushed/run on *your* side. See `references/executor-dispatch.md`.
 - **Loop-state directory** — pick a gitignored working dir for handoffs and
   state. Default convention: `.loop/` at repo root, added to
   `.git/info/exclude`. Reuse the project's if one exists.
@@ -116,7 +130,8 @@ continuing baton, also inline the prior Handoff's "must-read" excerpt (≤ ~1.5 
 the branch/commit to build on, the no-go zones, the traps). Run
 `scripts/lint_goal.py` on the assembled Goal before sending — it catches the
 classic failure modes (missing elements, unfilled placeholders, vague verification,
-unbounded retries, leaked secrets).
+unbounded retries, a missing anti-gaming clause, a failure-driven Goal with no
+red-first check, leaked secrets).
 
 ### 2a — Fan-out harness gate
 
@@ -181,8 +196,14 @@ silently, or the next baton inherits a false picture.
 
 When it genuinely passes: integrate (merge / land), update the loop-state anchor
 (which baton, what's done, what's next), and write the next Goal as a brand-new
-executor thread — inlining this baton's Handoff essence. Loop until the whole
-effort is done and you have personally verified it.
+executor thread — inlining this baton's Handoff essence. At a milestone boundary,
+reconcile your externalized memory against what actually landed
+(`references/commander-recovery.md`) so the next baton doesn't build on stale
+premises. Loop until the whole effort is done and you have personally verified it.
+If the batons ahead are fully machine-verifiable, you may let the loop run unattended
+on a heartbeat instead of re-kicking each one (`references/autonomy-heartbeat.md`) —
+the heartbeat re-runs the commander cycle (gate included); it does NOT make the
+executor self-perpetuate. Autonomy is earned by verifiability, not assumed.
 
 ## Baton granularity (where quality is won or lost)
 
@@ -213,6 +234,11 @@ Size each baton by sandbox reachability:
   the last run; anything not in the Goal effectively doesn't exist for it.
 - **Externalize your memory.** You will be compacted/restarted. If where-we-are
   lives only in your context, the whole loop stalls when you lose it.
+- **Knowledge rots — reconcile it.** Your externalized memory (anchor, inlined
+  Handoff essence, project docs) drifts from reality across a long loop. Reconcile it
+  against the repo at each milestone (`references/commander-recovery.md`;
+  non-optional in the autonomy tier); an unattended loop reading stale premises fails
+  faster the harder it runs.
 - **Secrets never travel in the clear.** Handoffs and logs carry commands and
   config. Keep real keys/tokens as `$ENV_VAR` placeholders, never paste real
   values, and never echo a Handoff verbatim into a public comment. The linter
@@ -220,6 +246,14 @@ Size each baton by sandbox reachability:
 - **Green ≠ done.** Always verify behavior yourself, especially across seams the
   executor's sandbox can't exercise. Visual/real-backend check before claiming
   success.
+- **Audit the checks, not just their color (anti-gaming).** State in every Goal that
+  the executor may not reach green by deleting, skipping, weakening, or mocking-away
+  the checks. When you verify, diff the tests/checks themselves — a shrunk assertion
+  or a deleted case is a failure, not a pass.
+- **Doer ≠ checker.** The agent that wrote the code can't be the only judge of it.
+  Own the acceptance gate yourself, and for high-stakes or unattended work spin an
+  independent verifier baton — ideally on a different model — prompted to refute, not
+  confirm.
 - **Commander verification should become automation.** "Verify yourself" means the
   commander owns the acceptance gate, not that a human must manually inspect every
   repeatable detail. Convert repeated human checks into tests, scripts, browser
@@ -254,7 +288,12 @@ Read the one you need, when you need it — don't preload everything.
   executor bypass patterns (e.g. two-hop push), denied-action rule, path quoting,
   secret hygiene.
 - `references/commander-recovery.md` — how to rebuild state after your session is
-  compacted or restarted.
+  compacted or restarted, including the layered goal anchor and the reconcile step.
+- `references/autonomy-heartbeat.md` — the opt-in autonomy tier: when and how to let
+  the loop run unattended on a heartbeat (schedule/cron/hooks/CI), the "autonomy is
+  earned by verifiability" gate (lint-enforced via `Mode: AUTONOMOUS`), the degradation
+  ladder, and the notify-human closed loop. Read before removing yourself from the
+  per-baton cycle.
 - `scripts/lint_fanout.py` — run on every fan-out split note before dispatch.
 - `scripts/lint_goal.py` — run on every assembled Goal before dispatch.
 - `scripts/lint_handoff.py` — run on every returned Handoff before trusting it.
@@ -269,3 +308,7 @@ Read the one you need, when you need it — don't preload everything.
 - Saying "fixed" without a Repro Capsule and regression lock.
 - Letting the executor pick its own scope and watching it wander out of bounds.
 - Keeping the only record of progress in your chat context.
+- Gaming the verifier: deleting/skipping/weakening tests, mocking the thing under
+  test, or hardcoding outputs to turn a check green without doing the work.
+- Running unattended without an automated gate — letting batons advance (or
+  auto-merging) when the Stop-when criteria aren't actually machine-verified.

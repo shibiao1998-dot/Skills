@@ -28,6 +28,7 @@ Verification:
 
 Constraints:
   - Do not change public coupon API names, database schema, or payment-provider config.
+  - Integrity (anti-gaming): never delete, skip, or weaken tests/assertions to fake a green; an honest red beats a faked green.
   - Secret hygiene: use $ENV_VAR placeholders only.
 
 Boundaries:
@@ -43,6 +44,22 @@ Stop when:
 Pause if:
   - Credentials, network push, production data, destructive actions, or product decisions are required.
 """
+
+
+# A Goal that has mechanically earned the right to run unattended (Mode: AUTONOMOUS):
+# machine-verifiable Stop-when, a named independent verifier, and a recorded human
+# sign-off. Built from GOOD_GOAL so the two stay in sync.
+AUTONOMOUS_GOAL = (
+    GOOD_GOAL.replace(
+        "/goal Fix coupon expiry validation so expired coupons are rejected with a focused regression test.",
+        "/goal Fix coupon expiry validation so expired coupons are rejected with a focused regression test.\n\nMode: AUTONOMOUS",
+    ).replace(
+        "  - Run `python -m pytest tests/test_coupons.py` for the targeted suite.",
+        "  - Run `python -m pytest tests/test_coupons.py` for the targeted suite.\n"
+        + "  - Independent verifier: a different-model verifier baton re-runs this ladder and refutes (handoff-142-verify.md).",
+    )
+    + "\nAutonomy sign-off: human-approved eligibility checklist recorded at .loop/autonomy-142.md.\n"
+)
 
 
 class LintGoalTests(unittest.TestCase):
@@ -69,6 +86,146 @@ class LintGoalTests(unittest.TestCase):
         )
 
         self.assertEqual([], self.lint(goal))
+
+    def test_missing_anti_gaming_clause_is_flagged(self) -> None:
+        goal = GOOD_GOAL.replace(
+            "  - Integrity (anti-gaming): never delete, skip, or weaken tests/assertions to fake a green; an honest red beats a faked green.\n",
+            "",
+        )
+
+        errors = self.lint(goal)
+
+        self.assertTrue(any("anti-gaming" in error for error in errors), errors)
+
+    def test_failure_driven_goal_must_require_red_first(self) -> None:
+        # Mention a Repro Capsule (a failure-driven signal) but drop the red-first
+        # requirement: the linter should demand fail-before-fix.
+        goal = GOOD_GOAL.replace(
+            "  - Run `python -m pytest tests/test_coupons.py` for the targeted suite.",
+            "  - Run `python -m pytest tests/test_coupons.py` and fill in the Repro Capsule.",
+        ).replace(
+            "The regression test fails before the fix and passes after, targeted pytest is green",
+            "Targeted pytest is green",
+        )
+
+        errors = self.lint(goal)
+
+        self.assertTrue(any("red-first" in error for error in errors), errors)
+
+    def test_failure_driven_goal_with_red_first_passes(self) -> None:
+        goal = GOOD_GOAL.replace(
+            "  - Run `python -m pytest tests/test_coupons.py` for the targeted suite.",
+            "  - Run `python -m pytest tests/test_coupons.py` and fill in the Repro Capsule.",
+        )
+
+        self.assertEqual([], self.lint(goal))
+
+    def test_inlined_brief_does_not_falsely_mark_feature_goal_failure_driven(self) -> None:
+        # The standard operating brief (inlined into every Goal) mentions "Repro
+        # Capsule" generically; that must NOT classify a non-failure-driven feature
+        # Goal as failure-driven and demand a red-first check.
+        goal = GOOD_GOAL + (
+            "\n--- Executor operating brief ---\n"
+            "6. For failure-driven work, preserve the Repro Capsule: original input,\n"
+            "   failing signal, rerun command, and the regression lock you added.\n"
+        )
+
+        self.assertEqual([], self.lint(goal))
+
+    def test_failing_input_in_feature_goal_does_not_trigger_red_first(self) -> None:
+        # "failing input" is ordinary feature-validation vocabulary, not a bug-repro
+        # signal — it must not force a red-first requirement.
+        goal = GOOD_GOAL.replace(
+            "  - Run `python -m pytest tests/test_coupons.py` for the targeted suite.",
+            "  - Run `python -m pytest tests/test_coupons.py`; a failing input shows an inline error.",
+        )
+
+        self.assertEqual([], self.lint(goal))
+
+    def test_chinese_integrity_clause_without_token_passes(self) -> None:
+        # A substantive integrity clause in Chinese with no literal 反作弊 token must
+        # satisfy the anti-gaming check (semantic match, not label match).
+        goal = GOOD_GOAL.replace(
+            "  - Integrity (anti-gaming): never delete, skip, or weaken tests/assertions to fake a green; an honest red beats a faked green.",
+            "  - 完整性：绝不能通过删除、跳过、弱化测试与断言来伪造绿色测试结果。",
+        )
+
+        self.assertEqual([], self.lint(goal))
+
+    def test_bare_anti_gaming_token_without_substance_is_flagged(self) -> None:
+        # The mirror image: a Goal that only name-drops the label, with no actual
+        # integrity instruction, must still be flagged.
+        goal = GOOD_GOAL.replace(
+            "  - Integrity (anti-gaming): never delete, skip, or weaken tests/assertions to fake a green; an honest red beats a faked green.",
+            "  - We considered anti-gaming concerns earlier; ignore them for now.",
+        )
+
+        errors = self.lint(goal)
+
+        self.assertTrue(any("anti-gaming" in error for error in errors), errors)
+
+    # --- Autonomy gate (Mode: AUTONOMOUS) ---
+
+    def test_complete_autonomous_goal_passes(self) -> None:
+        self.assertEqual([], self.lint(AUTONOMOUS_GOAL))
+
+    def test_non_autonomous_goal_is_not_subject_to_autonomy_gate(self) -> None:
+        # GOOD_GOAL names no verifier and no sign-off, yet must pass — the autonomy
+        # gate is opt-in and only fires when the Goal declares Mode: AUTONOMOUS.
+        self.assertEqual([], self.lint(GOOD_GOAL))
+        self.assertNotIn("verifier", " ".join(self.lint(GOOD_GOAL)))
+
+    def test_autonomous_goal_missing_independent_verifier_is_flagged(self) -> None:
+        goal = AUTONOMOUS_GOAL.replace(
+            "  - Independent verifier: a different-model verifier baton re-runs this ladder and refutes (handoff-142-verify.md).\n",
+            "",
+        )
+
+        errors = self.lint(goal)
+
+        self.assertTrue(any("independent verifier" in e for e in errors), errors)
+
+    def test_autonomous_goal_missing_human_signoff_is_flagged(self) -> None:
+        goal = AUTONOMOUS_GOAL.replace(
+            "Autonomy sign-off: human-approved eligibility checklist recorded at .loop/autonomy-142.md.\n",
+            "",
+        )
+
+        errors = self.lint(goal)
+
+        self.assertTrue(any("sign-off" in e for e in errors), errors)
+
+    def test_autonomous_goal_with_taste_word_stop_when_is_flagged(self) -> None:
+        goal = AUTONOMOUS_GOAL.replace(
+            "The regression test fails before the fix and passes after, targeted pytest is green",
+            "The change looks polished",
+        )
+
+        errors = self.lint(goal)
+
+        self.assertTrue(any("taste/judgment" in e for e in errors), errors)
+
+    def test_autonomy_declared_as_markdown_heading_still_gated(self) -> None:
+        # A heading-style declaration (## Mode: AUTONOMOUS) must still trip the gate —
+        # otherwise an autonomy Goal written that way would silently run ungated.
+        goal = AUTONOMOUS_GOAL.replace("Mode: AUTONOMOUS", "## Mode: AUTONOMOUS").replace(
+            "  - Independent verifier: a different-model verifier baton re-runs this ladder and refutes (handoff-142-verify.md).\n",
+            "",
+        )
+
+        errors = self.lint(goal)
+
+        self.assertTrue(any("independent verifier" in e for e in errors), errors)
+
+    def test_autonomous_goal_with_non_machine_verifiable_stop_when_is_flagged(self) -> None:
+        goal = AUTONOMOUS_GOAL.replace(
+            "The regression test fails before the fix and passes after, targeted pytest is green, and the Handoff is written with evidence.",
+            "The coupon feature is complete and the Handoff is written with notes.",
+        )
+
+        errors = self.lint(goal)
+
+        self.assertTrue(any("machine-verifiable" in e for e in errors), errors)
 
 
 if __name__ == "__main__":

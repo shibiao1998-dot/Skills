@@ -18,7 +18,8 @@ one). It records just enough to resume:
 ```markdown
 # Loop anchor (commander's resume point)
 - updated: {{date}}
-- effort: {{one line — what this relay loop is driving toward}}
+- effort (north-star): {{one line — the durable mission this relay loop drives toward}}
+- current milestone: {{the milestone the live batons ladder up to}}
 - current baton: {{task + leg, e.g. "142 leg 2"}}, status {{dispatched | verifying | advancing}}
 - last Goal dispatched: {{path/pointer to the assembled Goal, + the executor log path}}
 - last Handoff received: {{handoff-<task>-<leg>.md}}
@@ -34,6 +35,16 @@ For per-task authoritative state, point at whatever the project already uses (a
 state file, the issue tracker); for the full narrative, point at the journal. The
 anchor just tells a fresh commander which beat of the loop they're standing in.
 
+## Goal layering in the anchor
+
+The anchor carries the goal hierarchy so no baton loses the thread: the **north-star**
+(the durable mission — `effort` above), the **current milestone** the live batons
+ladder up to, and the **current baton**. Each Goal's Outcome should name the milestone
+it serves (see `references/goal-contract.md`). In a long or unattended loop this is
+what stops the executor from nailing a local target while drifting off the mission,
+and it gives a resuming commander the *why* behind the current baton, not just the
+*what*.
+
 ## Update discipline
 
 The anchor is only useful if it's current. Write to it at the two moments that
@@ -46,6 +57,23 @@ change your position in the loop:
 
 If the project keeps a running journal, append a one-line entry at the same moments
 so the narrative and the anchor stay in sync.
+
+## Keep the externalized memory honest (reconcile)
+
+Externalized state is only an asset while it's true. Across a long loop the anchor,
+the inlined Handoff essence, and the project docs drift from what's actually merged —
+and an unattended executor will build on the drift. Reconcile on a cadence (each
+milestone, or every N batons), not just at recovery:
+
+- Anchor vs. authoritative status: does "current baton / latest handoff" match what's
+  really landed? Trust the truth source; fix the anchor.
+- Inlined essence vs. reality: is the branch/commit/no-go list you keep pasting into
+  Goals still correct, or superseded?
+- Project docs vs. code: have CLAUDE.md / specs drifted from what the loop changed?
+
+A dedicated knowledge-cleanup pass (e.g. a neat-freak / 洁癖-style skill) is the right
+tool for the docs side. The autonomy tier makes this non-optional
+(`references/autonomy-heartbeat.md`).
 
 ## Recovery procedure (run at the start of any fresh/resumed session)
 

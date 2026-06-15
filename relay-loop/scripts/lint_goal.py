@@ -3,9 +3,11 @@
 
 Catches the failure modes that make a memoryless executor waste a baton:
 missing contract elements, unfilled {{placeholders}}, vague verification,
-unbounded retries, a missing truth-source reference, a pause list with no real
-escalation trigger, a stop condition that forgets the handoff, and — importantly —
-anything that looks like a leaked secret.
+unbounded retries, a missing truth-source reference, a missing anti-gaming clause,
+a failure-driven Goal that forgets to require a red-first regression check, a pause
+list with no real escalation trigger, a stop condition that forgets the handoff, an
+autonomy-mode Goal that hasn't mechanically earned its unattended gate, and —
+importantly — anything that looks like a leaked secret.
 
 Usage:
     python3 lint_goal.py <goal-file> [<goal-file> ...]
@@ -76,6 +78,89 @@ DANGEROUS_VAGUE_PATTERNS = [
 PAUSE_TRIGGER_PATTERNS = [
     r"\b(credential|secret|token|password|network|push|remote|production|prod|destructive|delete|drop|migration|payment|deploy|human|owner|decision|approval|conflict|block)\w*",
     r"(凭证|密钥|账号|联网|推送|远端|生产|破坏性|删除|迁移|支付|发布|部署|人工|决策|审批|冲突|阻塞)",
+]
+
+# Anti-gaming / integrity clause must be present (Goodhart's-law defense): the Goal
+# must tell the executor it may not fake green by weakening or deleting the checks.
+# Match the SEMANTICS — a "don't fake it" verb near a tests/checks/green object — not a
+# literal label, so a substantive clause in any wording or language passes, while a bare
+# mention of the word "anti-gaming" does not.
+ANTIGAMING_FORBID = (
+    r"delet|remov|skip|disabl|weaken|loosen|comment[\s-]?out|mock|stub|"
+    + r"hard[\s-]?cod|fake|fabricat|swallow|suppress|"
+    + r"删除|移除|跳过|禁用|弱化|放松|注释|硬编码|伪造|造假|吞掉|屏蔽"
+)
+ANTIGAMING_OBJECT = r"test|assert|check|green|coverage|测试|断言|检查|绿|覆盖"
+ANTIGAMING_RE = re.compile(
+    rf"(?:{ANTIGAMING_FORBID})[\s\S]{{0,60}}(?:{ANTIGAMING_OBJECT})"
+    + rf"|(?:{ANTIGAMING_OBJECT})[\s\S]{{0,60}}(?:{ANTIGAMING_FORBID})",
+    flags=re.IGNORECASE,
+)
+
+# Signals that a Goal is failure-driven (bugfix / bad-trace work). Narrow on purpose:
+# generic words like "regression" or "failing input" must NOT trip it, and these are
+# matched only against the commander-authored Verification / Stop-when sections (never
+# the boilerplate brief / Handoff template, which mention "Repro Capsule" generically).
+FAILURE_DRIVEN_PATTERNS = [
+    r"repro capsule",
+    r"regression lock",
+    r"bad trace",
+    r"original failing input",
+    r"reproduces? the (?:original )?fail",
+    r"复现胶囊",
+    r"复放胶囊",
+    r"回归锁",
+    r"坏轨迹",
+]
+
+# A failure-driven Goal must require the regression check to fail BEFORE the fix —
+# otherwise a passing test proves nothing about the bug it claims to guard.
+RED_FIRST_PATTERNS = [
+    r"fails? before",
+    r"red before",
+    r"before the fix",
+    r"先失败",
+    r"先红",
+    r"修复前.*失败",
+]
+
+# Autonomy tier: a Goal may declare it is eligible to run unattended on a heartbeat.
+# When it does, the gate stops being prose self-attestation and must be mechanically
+# earned (see references/autonomy-heartbeat.md): a machine-verifiable Stop-when, a
+# named independent verifier, and a recorded human sign-off (autonomy is granted, never
+# self-granted).
+AUTONOMOUS_MODE_RE = re.compile(
+    r"^\s*(?:#{1,6}\s*|[-*]\s*)?(?:Mode|Autonomy|模式)\s*[:：]\s*(?:AUTONOMOUS|autonomous|自治|无人值守)\b"
+    + r"|^\s*(?:#{1,6}\s*|[-*]\s*)?自治模式\s*[:：]",
+    flags=re.MULTILINE | re.IGNORECASE,
+)
+
+# Taste / judgment words an unattended Stop-when must NOT rely on — they need a human.
+TASTE_PATTERNS = [
+    r"looks?\s+(?:good|right|fine|nice|polished|clean|native|professional)",
+    r"seems?\s+(?:good|right|fine|ok|okay|reasonable)",
+    r"feels?\s+(?:good|right|native)",
+    r"\b(?:polished|good enough|clean enough|looks native|production-quality)\b",
+    r"(?:好看|美观|像样|自然|差不多|感觉(?:对|不错|可以|良好))",
+]
+
+# An autonomous Goal must name the independent verifier that gates its advance.
+INDEPENDENT_VERIFIER_PATTERNS = [
+    r"independent verifier",
+    r"verifier baton",
+    r"独立验证",
+    r"独立校验",
+]
+
+# An autonomous Goal must record the human sign-off that granted autonomy.
+AUTONOMY_SIGNOFF_PATTERNS = [
+    r"sign(?:ed)?[\s-]?off\b",
+    r"human[\s-]?(?:grant|approv|authoriz)",
+    r"eligibility checklist",
+    r"签字",
+    r"签核",
+    r"人工(?:授权|批准|签)",
+    r"授权自治",
 ]
 
 # Things that look like REAL secrets. $ENV_VAR placeholders and {{...}} are exempt.
@@ -184,6 +269,43 @@ def lint_text(text: str, source: str) -> list[str]:
     # Stop-when must require producing a handoff (the baton).
     if not re.search(r"hand[\s\-]?off|交接|接力棒", text, flags=re.IGNORECASE):
         errors.append(f"{source}: stop-when must require producing a Handoff (none mentioned)")
+
+    # Anti-gaming clause must be present — without it the executor may optimize the
+    # verifier instead of the outcome (delete failing tests, weaken assertions). Match
+    # the semantics anywhere in the Goal, not a literal label.
+    if not ANTIGAMING_RE.search(text):
+        errors.append(f"{source}: missing an anti-gaming/integrity clause (forbid deleting, skipping, or weakening tests/assertions to fake a green result)")
+
+    # Failure-driven Goals must require red-first. Look only in the commander-authored
+    # Verification + Stop-when sections, so the boilerplate brief / Handoff template
+    # (which mention "Repro Capsule" generically) don't misclassify a feature Goal.
+    fd_text = " ".join(
+        body for body in (
+            section_body(text, REQUIRED_ELEMENTS[1][1]),
+            section_body(text, REQUIRED_ELEMENTS[5][1]),
+        ) if body
+    )
+    if any(re.search(p, fd_text, flags=re.IGNORECASE) for p in FAILURE_DRIVEN_PATTERNS) and not any(
+        re.search(p, fd_text, flags=re.IGNORECASE) for p in RED_FIRST_PATTERNS
+    ):
+        errors.append(f"{source}: failure-driven Goal must require the regression check to fail before the fix (red-first), not just pass after")
+
+    # Autonomy gate: a Goal that declares it may run unattended (`Mode: AUTONOMOUS`)
+    # must mechanically earn it, not just assert it — see references/autonomy-heartbeat.md.
+    # Otherwise "earned by verifiability" is prose the same agent can tick off for itself.
+    if AUTONOMOUS_MODE_RE.search(text):
+        stop_when = section_body(text, REQUIRED_ELEMENTS[5][1]) or ""
+        if not any(re.search(p, stop_when, flags=re.IGNORECASE) for p in VERIFICATION_EVIDENCE_PATTERNS):
+            errors.append(f"{source}: autonomous Goal's Stop-when must be machine-verifiable (name commands/checks/exit codes, not prose)")
+        for pattern in TASTE_PATTERNS:
+            match = re.search(pattern, stop_when, flags=re.IGNORECASE)
+            if match:
+                errors.append(f"{source}: autonomous Goal's Stop-when relies on a taste/judgment word (`{match.group(0)}`) — unattended acceptance must be machine-checkable, not a human eye")
+                break
+        if not any(re.search(p, text, flags=re.IGNORECASE) for p in INDEPENDENT_VERIFIER_PATTERNS):
+            errors.append(f"{source}: autonomous Goal must name the independent verifier baton that gates its advance (different model, refute template)")
+        if not any(re.search(p, text, flags=re.IGNORECASE) for p in AUTONOMY_SIGNOFF_PATTERNS):
+            errors.append(f"{source}: autonomous Goal must record the human sign-off that granted autonomy (autonomy is granted, never self-granted)")
 
     # Secret scan — the leak gate.
     for pattern, why in SECRET_PATTERNS:

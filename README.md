@@ -35,13 +35,16 @@ relay-loop/
 ├── SKILL.md
 ├── examples/
 ├── references/
+│   ├── autonomy-heartbeat.md
 │   ├── commander-recovery.md
 │   ├── executor-dispatch.md
+│   ├── fanout-harness.md
 │   ├── goal-contract.md
 │   ├── handoff.md
 │   ├── repair-flywheel.md
 │   └── verify-and-visual.md
 └── scripts/
+    ├── lint_fanout.py
     ├── lint_goal.py
     └── lint_handoff.py
 ```

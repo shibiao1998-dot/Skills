@@ -124,3 +124,33 @@ Human gates remaining: <judgment / approval / production gates, or "none">
 - [ ] Goal file lint passed.
 - [ ] One log path and one Handoff path recorded.
 ```
+
+## The independent verifier baton (doer ≠ checker)
+
+The executor that wrote the code is the worst judge of whether it's correct — it
+grades its own exam leniently and shares its own blind spots. For high-stakes or
+unattended work, dispatch a separate **verifier baton**:
+
+- **Type: read-only verification.** It owns no write surface; it cannot "fix" what it
+  reviews (that would re-merge doer and checker). The fan-out linter enforces the
+  disjoint write surfaces.
+- **Different model when you can.** Running the verifier on a different model than the
+  doer breaks correlated blind spots — the two fail in different places.
+- **Prompt it to refute, not confirm.** Its Goal is "try to show these claims are
+  wrong": re-run the verification ladder, attack the seams the doer's sandbox
+  couldn't reach, and confirm the checks weren't weakened (anti-gaming,
+  `references/verify-and-visual.md`). It reports what it could *not* verify, not just
+  a thumbs-up.
+- **Synthesis:** the commander advances only if the verifier finds no real defect; a
+  refuted claim routes back into a fix baton.
+
+This is the parallel-fan-out form of the "doer ≠ checker" pillar and the automated
+gate the autonomy tier depends on (`references/autonomy-heartbeat.md`).
+
+## Isolate parallel writers (worktrees)
+
+Read-only batons share the tree safely. The moment two batons **write** in parallel,
+give each its own workspace — a git worktree (or the harness's worktree-isolation
+flag) on its own branch — so they can't clobber each other's files or index. Merge the
+branches at the synthesis step, resolving conflicts on the commander side; never ask
+the parallel writers to coordinate through shared mutable state.
