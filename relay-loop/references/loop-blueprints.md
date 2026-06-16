@@ -221,14 +221,17 @@ sign-off, `Mode: AUTONOMOUS`). They never turn a memoryless executor into a daem
   the build to map 1:1 to it. Not for exploratory work where the spec doesn't exist yet
   (write the spec first, or fan out read-only exploration — the EXPLORE_FIRST split-note
   decision in `references/fanout-harness.md`).
-- **Truth sources to discover:** the spec/PRD/issue and its acceptance criteria (the
-  authoritative source — on conflict, the spec wins); ADRs/glossary; existing contracts.
+- **Truth sources to discover:** the spec/PRD/issue and its acceptance criteria;
+  ADRs/glossary; existing contracts; any explicit precedence rule between those
+  sources. If truth sources conflict, Pause unless an explicit precedence source
+  resolves the conflict — do not silently pick the spec as the winner.
 - **Per-pass check (first action → loop):** first turn each acceptance criterion into a
   checklist item with a concrete verification; then build one slice, verify it against
   its criterion, and repeat. The R5 acceptance checklist is the spine of the loop.
-- **Exit signal:** every spec criterion is ✅ with an evidence pointer (or ⏸ waiting-on-
-  human with the action named), the verification ladder is green, and nothing was built
-  beyond the spec.
+- **Exit signal:** every in-scope spec criterion is ✅ with an evidence pointer, the
+  verification ladder is green, and nothing was built beyond the spec. If a criterion
+  needs human input, hand back PARTIAL/BLOCKED with the exact action needed unless the
+  Goal explicitly scoped that criterion out.
 - **Max passes:** per-slice bounded; out-of-spec findings are recorded for the human,
   not built.
 - **Anti-gaming rules:** do not silently descope or reinterpret a criterion to declare
@@ -320,8 +323,9 @@ sign-off, `Mode: AUTONOMOUS`). They never turn a memoryless executor into a daem
   per baton; read its changelog for breaking changes; bump it; run the full suite +
   build; read the failures. One dep per pass, never a mass bump.
 - **Exit signal:** the targeted dependency updated, full suite + build green, no new
-  advisory introduced, and breaking changes addressed — or the bump reverted with a
-  recorded reason.
+  advisory introduced, and breaking changes addressed. If the bump must be reverted or
+  cannot be applied safely, hand back PARTIAL/BLOCKED with the unresolved advisory and
+  the required decision/action.
 - **Max passes:** bounded; a major-version bump with breaking changes is a Pause (a
   decision), not an autonomous slog.
 - **Anti-gaming rules:** do not pin to a vulnerable version to "pass" a check; do not
