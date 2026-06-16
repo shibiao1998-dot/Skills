@@ -167,6 +167,32 @@ Pause if (stop and escalate — do NOT work around):
   base commit, migration/contract state, no-go zones, traps to avoid}}
 ```
 
+## Standard anti-gaming guardrail block (reusable)
+
+The template's Constraints already carry a one-line Integrity clause, and
+`scripts/lint_goal.py` requires *some* such clause in every Goal. For check-driven work —
+especially the **"until green" / make-the-checks-pass** families (CI-until-green,
+fix-the-build) — drop in this fuller, copy-pasteable block instead. It closes the gaming
+vector a test-only clause misses: rewriting the **verifier itself** (the check command or
+the exit criteria) so that nothing actually has to work.
+
+```text
+Integrity (anti-gaming) — the checks are a proxy for the real outcome, not the target:
+  - Do not delete, skip, disable, comment out, weaken, or loosen tests/assertions to reach green.
+  - Do not modify, rewrite, relax, or replace the check command, the exit/stop criteria,
+    or the acceptance gate to force a pass.
+  - Do not mock the component under test, hardcode expected outputs, or swallow errors.
+  - If a check cannot pass honestly, stop with evidence (PARTIAL/BLOCKED) — a faked green
+    is worse than an honest red.
+```
+
+The linter enforces this asymmetrically: **every** Goal needs the first kind of clause
+(don't weaken the tests); a **green-class** Goal — one whose outcome / verification /
+stop-when is about reaching or keeping green — additionally needs the second (don't
+rewrite the check command or exit criteria). The per-blueprint "anti-gaming rules" in
+`references/loop-blueprints.md` are concrete instances of this block; the
+`examples/goal-*.txt` Goals show it in place.
+
 ## The executor operating brief (inline verbatim)
 
 This is the generalized "how to behave" the executor needs because it can't read
@@ -217,8 +243,10 @@ in this message — there is no earlier conversation and no skill for you to con
 
 Run `scripts/lint_goal.py <assembled-goal-file>`. It rejects the classic failures:
 missing elements, unfilled `{{...}}`, vague verification, unbounded retries, a
-missing task reference, a missing anti-gaming clause, a failure-driven Goal that
-forgets to require a red-first regression check, a `Mode: AUTONOMOUS` Goal that hasn't
+missing task reference, a missing anti-gaming clause, a green-class ("until green")
+Goal that doesn't also forbid rewriting the check command or exit criteria, a
+failure-driven Goal that forgets to require a red-first regression check, a
+`Mode: AUTONOMOUS` Goal that hasn't
 mechanically earned its unattended gate (machine-verifiable Stop-when, named
 independent verifier, recorded human sign-off — see
 `references/autonomy-heartbeat.md`), a pause list with no escalation triggers, a stop

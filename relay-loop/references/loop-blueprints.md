@@ -359,6 +359,13 @@ catalog family in the Handoff's `blueprint candidate` field.
 
 ## Using a blueprint (the four moves)
 
+Worked, lint-clean Goal contracts for the CI, independent-verifier, and visual/E2E
+families live in `examples/goal-*.txt` — read one next to its family below. To start a
+fresh draft for any family, scaffold it with
+`scripts/render_blueprint_goal.py --blueprint <family> --task <slug> --outcome "…"`
+(`--list` to see the keys): it pre-fills the seven elements and the standard
+anti-gaming block into `.loop/goals/`, leaving `{{placeholders}}` for you to complete.
+
 1. **Pick + scope.** Choose the family at step 1; set the baton boundary. If two
    families overlap, compose them — the schema is shared.
 2. **Fill from discovery.** Replace every "discover the project's…" with the project's

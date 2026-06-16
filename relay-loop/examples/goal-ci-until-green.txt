@@ -1,0 +1,32 @@
+/goal Drive PR #318's CI to green: get every required check on the real pipeline passing by fixing the actual failures, not by touching the gate. (Blueprint: CI / PR until green.)
+
+Truth sources (reference, do NOT copy or override; on conflict the truth source wins):
+  - Task: PR #318 and the issue it closes; acceptance = all required checks green AND review threads resolved.
+  - CI config: the workflow/job definitions in the repo's CI directory (discover them) and the branch-protection required-checks list.
+  - Prior progress: none — this is the first baton.
+
+Verification (concrete evidence only — discover the project's own commands first):
+  - Read the failing job's logs from the real CI run; do not guess the cause.
+  - Reproduce each failing job locally with the project's own command (discover it from the CI config or package scripts) and capture the red/green result lines.
+  - After pushing, confirm on the real remote that every required check is green; capture the run URL and the resulting check list.
+
+Constraints (what must not change):
+  - Do not change the CI configuration, the required-checks list, or branch protection to make a failing job pass.
+  - Integrity (anti-gaming): never delete, skip, disable, weaken, or loosen tests/assertions to reach green; and never modify, rewrite, relax, or replace the check command, the exit/stop criteria, or the acceptance gate to force a pass. If a check cannot pass honestly, hand back PARTIAL/BLOCKED — a faked green is worse than an honest red.
+  - Secret hygiene: never read, print, or commit real credentials; refer to them only as $ENV_VAR placeholders.
+
+Boundaries (where you may write):
+  - Write only the source and tests needed to fix the failing jobs. Do not touch the CI config, unrelated modules, or other PRs' branches.
+  - Out-of-scope findings → record them for the human; do not act.
+
+Iteration policy (how to make progress, and the brakes):
+  - Discovery first: read the truth sources, then list your assumptions. One focused fix per failing job; rerun that job's command locally; read the log before retrying. If the same job stays red after 3 focused passes, stop and hand back PARTIAL with the failing log and a root-cause hypothesis — do not broaden scope.
+
+Stop when (proof of completion + deliver the baton):
+  - Every required check is green on the real remote pipeline, review threads are resolved, no check was weakened or bypassed, and evidence (run URL, check list, local red/green lines) is captured. Then write the Handoff (Part A/B per references/handoff.md) and echo its full text.
+
+Pause if (stop and escalate — do NOT work around):
+  - A required secret/credential, a protected-branch merge, a production deploy, or a product decision is needed; or a truth-source conflict; or the same job blocks you 3 times. Then write a BLOCKED Handoff naming the exact action you need.
+
+--- Executor operating brief + Handoff format ---
+When actually dispatching, inline the standard executor brief from references/goal-contract.md and the Handoff template from references/handoff.md verbatim below this line. They are omitted here because this file illustrates the seven contract elements for the blueprint, not a live send.

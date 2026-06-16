@@ -86,6 +86,53 @@ Pause if: <credentials/network/production/destructive/product decision/conflict>
 - [ ] One log path and one Handoff path per baton.
 ```
 
+### EXPLORE_FIRST variant
+
+Use `Mode: EXPLORE_FIRST` when the work-list is not yet known: a single read-only
+scout baton runs **before** the parallel fan-out, discovers and ranks the work, and
+names the disjoint surface each follow-on baton will own. The fix batons dispatch only
+after the scout's Handoff lands. Structurally it is a FANOUT note — same sections, same
+baton fields, same disjoint-write rule — so reuse the template above and just change
+the mode, mark the scout as the first read-only baton, and ground the fan-out
+ownership in the scout's work-list.
+
+```text
+## Fan-out decision
+Mode: EXPLORE_FIRST
+Reason: a read-only scout must discover the work-list before independent fix batons can own disjoint files.
+Human gates remaining: none.
+
+## Sub-batons
+### Baton S - read-only scout (runs first)
+Type: read-only exploration
+Goal file: .loop/goals/goal-<task>-scout.txt
+Handoff file: .loop/handoffs/handoff-<task>-scout.md
+Log file: .loop/logs/executor-<task>-scout.log
+Ownership: discover and rank the work-list and name the disjoint fix surface per follow-on baton.
+Allowed write surface: none (read-only analysis)
+Forbidden write surface: repository files, CI config, production source
+Verification surface: cite exact paths and evidence proving each item belongs on the work-list.
+Stop when: Handoff lists the ranked work-list and one owned surface per follow-on baton.
+Pause if: credentials, production data, destructive action, or truth-source conflict is required.
+
+### Baton A - fix first scouted item
+Type: implementation
+Goal file: .loop/goals/goal-<task>-a.txt
+Handoff file: .loop/handoffs/handoff-<task>-a.md
+Log file: .loop/logs/executor-<task>-a.log
+Ownership: address the top item the scout named, owning only that surface.
+Allowed write surface: <exact file the scout assigned to A>
+Forbidden write surface: every surface owned by another baton, CI config, production source
+Verification surface: run the scoped check the scout named and capture the evidence.
+Stop when: the scouted item is resolved and Handoff captures evidence.
+Pause if: the fix needs a change outside the owned surface.
+
+# ... add one fix baton per scouted item; keep their write surfaces disjoint ...
+```
+
+The scout baton owns no write surface, so it does not collide with the fix batons; the
+synthesis plan merges fix Handoffs only for items on the scout's ranked work-list.
+
 ## SINGLE split-note template
 
 Use this when you assessed fan-out and rejected it. It preserves the assessment so

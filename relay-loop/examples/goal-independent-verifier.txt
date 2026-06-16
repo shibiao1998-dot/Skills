@@ -1,0 +1,32 @@
+/goal Independently verify the work in handoff-318-2: try to refute its claims by re-running the verification ladder from a clean checkout, and report any real defect. (Blueprint: independent verifier pass.)
+
+Truth sources (reference, do NOT copy or override; on conflict the truth source wins):
+  - Task: the acceptance criteria named in the originating issue (read them directly, not the doer's self-report).
+  - Prior progress: handoff-318-2 names the branch @ commit under review and its claimed evidence.
+  - Verification commands: the project's discovered lint/typecheck/test and CI-replica commands.
+
+Verification (concrete evidence only — discover the project's own commands first):
+  - From a clean checkout of the branch @ commit, re-run the full ladder yourself: lint, typecheck, unit tests, and the CI replica (discover the exact commands); capture each result line.
+  - Diff the test and check files in the branch against base and confirm no case was deleted, no assertion loosened, and the component under test was not mocked away.
+  - Attack the seams the doer's sandbox could not reach, and record what you could NOT verify.
+
+Constraints (what must not change):
+  - Read-only: you own no write surface and must not edit, fix, or refactor anything under review — a refuted claim routes back to a separate fix baton; repairing it here is out of bounds.
+  - Integrity (anti-gaming): judge by re-derived evidence, not the doer's self-report; never delete, skip, or weaken tests/assertions, and never modify, rewrite, or relax the check command or exit criteria, to make the result look clean.
+  - Secret hygiene: refer to credentials only as $ENV_VAR placeholders.
+
+Boundaries (where you may write):
+  - Write nothing in the repo. Produce only your verdict and evidence pointers in the Handoff under the loop-state directory.
+  - Out-of-scope findings → record them for the human; do not act.
+
+Iteration policy (how to make progress, and the brakes):
+  - Discovery first: read the acceptance criteria and the handoff; list what each claim asserts. Re-run each ladder rung once from clean; on a flaky or environment failure, capture it and note it rather than retrying blindly. After one full pass, produce the verdict — do not loop attempting a fix.
+
+Stop when (proof of completion + deliver the baton):
+  - The ladder has been re-run from a clean checkout with results captured, the checks are confirmed not weakened, every acceptance criterion is marked verified or refuted with an evidence pointer, and residual unverified items are listed. Then write the Handoff (Part A/B per references/handoff.md) and echo its full text.
+
+Pause if (stop and escalate — do NOT work around):
+  - The verification needs network, credentials, production data, or a destructive action the sandbox denies; or a truth-source conflict; or the branch under review cannot be checked out. Then write a BLOCKED Handoff naming the exact action you need.
+
+--- Executor operating brief + Handoff format ---
+When actually dispatching, inline the standard executor brief from references/goal-contract.md and the Handoff template from references/handoff.md verbatim below this line. They are omitted here because this file illustrates the seven contract elements for the blueprint, not a live send.
