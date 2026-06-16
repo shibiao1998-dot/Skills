@@ -4,8 +4,10 @@
 Catches the failure modes that make a memoryless executor waste a baton:
 missing contract elements, unfilled {{placeholders}}, vague verification,
 unbounded retries, a missing truth-source reference, a missing anti-gaming clause,
-a failure-driven Goal that forgets to require a red-first regression check, a pause
-list with no real escalation trigger, a stop condition that forgets the handoff, an
+a green-class ("until green") Goal that doesn't also forbid rewriting the check
+command or exit criteria, a failure-driven Goal that forgets to require a red-first
+regression check, a pause list with no real escalation trigger, a stop condition
+that forgets the handoff, an
 autonomy-mode Goal that hasn't mechanically earned its unattended gate, and —
 importantly — anything that looks like a leaked secret.
 
@@ -94,6 +96,37 @@ ANTIGAMING_OBJECT = r"test|assert|check|green|coverage|测试|断言|检查|绿|
 ANTIGAMING_RE = re.compile(
     rf"(?:{ANTIGAMING_FORBID})[\s\S]{{0,60}}(?:{ANTIGAMING_OBJECT})"
     + rf"|(?:{ANTIGAMING_OBJECT})[\s\S]{{0,60}}(?:{ANTIGAMING_FORBID})",
+    flags=re.IGNORECASE,
+)
+
+# Green-class Goals — the "until green" / "make the checks pass" family (CI-until-green,
+# fix-the-build). They are the ones most tempted to reach green by rewriting the verifier
+# itself, not just weakening a test, so they must carry an extra guardrail. Narrow on
+# purpose: an ordinary "tests are green" completion signal must NOT trip this.
+GREEN_CLASS_PATTERNS = [
+    r"\buntil\b[\s\S]{0,40}\bgreen\b",
+    r"\b(?:keep|make|drive|get|turn|stay|remain|bring|push)\b[\s\S]{0,40}\bgreen\b",
+    r"\buntil\b[\s\S]{0,40}\b(?:pass|passes|passing)\b",
+    r"\b(?:all|required|every)\b[\s\S]{0,25}\bchecks?\b[\s\S]{0,25}\b(?:pass|passes|green)\b",
+    r"\bCI\b[\s\S]{0,25}\bgreen\b",
+    r"(?:直到|保持|让|使)[\s\S]{0,20}(?:通过|变绿|为绿|全绿)",
+]
+
+# The guardrail a green-class Goal must carry beyond "don't weaken tests": it must forbid
+# rewriting the verifier itself — the check command, the exit/stop criteria, or the
+# acceptance gate. Same forbid-verb-near-object shape as ANTIGAMING_RE.
+CHECK_TAMPER_FORBID = (
+    r"modif|rewrit|rewrote|chang|alter|relax|loosen|adjust|edit|swap|replac|disabl|bypass|weaken|"
+    + r"改写|修改|更改|放松|放宽|绕过|篡改|削弱"
+)
+CHECK_TAMPER_OBJECT = (
+    r"check command|exit (?:condition|criteri)|stop[\s-]?when|pass(?:ing)? condition|"
+    + r"acceptance (?:criteri|condition|gate)|the gate\b|exit code|"
+    + r"检查命令|退出条件|完成条件|停止条件|验收(?:标准|条件)|通过条件"
+)
+CHECK_TAMPER_RE = re.compile(
+    rf"(?:{CHECK_TAMPER_FORBID})[\s\S]{{0,60}}(?:{CHECK_TAMPER_OBJECT})"
+    + rf"|(?:{CHECK_TAMPER_OBJECT})[\s\S]{{0,60}}(?:{CHECK_TAMPER_FORBID})",
     flags=re.IGNORECASE,
 )
 
@@ -275,6 +308,23 @@ def lint_text(text: str, source: str) -> list[str]:
     # the semantics anywhere in the Goal, not a literal label.
     if not ANTIGAMING_RE.search(text):
         errors.append(f"{source}: missing an anti-gaming/integrity clause (forbid deleting, skipping, or weakening tests/assertions to fake a green result)")
+
+    # Green-class Goals (the "until green" / make-the-checks-pass family) can be gamed by
+    # rewriting the check command or exit criteria themselves — a vector the general
+    # anti-gaming clause (aimed at tests/assertions) need not cover. When the Goal's
+    # outcome / verification / stop-when is about reaching or keeping green, require an
+    # explicit guardrail against tampering with the check / exit criteria. The green-class
+    # signal is scoped to commander-authored sections so boilerplate doesn't trip it; the
+    # guardrail itself may appear anywhere in the Goal.
+    green_blob = " ".join(
+        body for body in (
+            goal_line,
+            section_body(text, REQUIRED_ELEMENTS[1][1]),
+            section_body(text, REQUIRED_ELEMENTS[5][1]),
+        ) if body
+    )
+    if any(re.search(p, green_blob, flags=re.IGNORECASE) for p in GREEN_CLASS_PATTERNS) and not CHECK_TAMPER_RE.search(text):
+        errors.append(f"{source}: green-class ('until green' / make-the-checks-pass) Goal must also forbid modifying the check command or exit/stop criteria to force a pass — not only weakening tests")
 
     # Failure-driven Goals must require red-first. Look only in the commander-authored
     # Verification + Stop-when sections, so the boilerplate brief / Handoff template

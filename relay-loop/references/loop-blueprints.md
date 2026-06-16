@@ -359,6 +359,9 @@ catalog family in the Handoff's `blueprint candidate` field.
 
 ## Using a blueprint (the four moves)
 
+Worked, lint-clean Goal contracts for the CI, independent-verifier, and visual/E2E
+families live in `examples/goal-*.txt` — read one next to its family below.
+
 1. **Pick + scope.** Choose the family at step 1; set the baton boundary. If two
    families overlap, compose them — the schema is shared.
 2. **Fill from discovery.** Replace every "discover the project's…" with the project's

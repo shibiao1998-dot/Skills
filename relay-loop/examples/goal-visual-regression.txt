@@ -1,0 +1,32 @@
+/goal Verify the redesigned account-settings page renders correctly through the real user path and capture a screenshot baseline so visual regressions are caught later. (Blueprint: visual / E2E verification.)
+
+Truth sources (reference, do NOT copy or override; on conflict the truth source wins):
+  - Task: the design spec / issue for the account-settings redesign and its acceptance criteria.
+  - Flow under test: the documented user path to reach and exercise the page.
+  - Tooling: how to bring up the app with a real local backend, and the project's end-to-end / screenshot runner (discover it).
+
+Verification (concrete evidence only — discover the project's own commands first):
+  - Bring up the real local backend and drive the full user path through the actual UI; do not rely on a mock-mode view for the front-back seam.
+  - Capture screenshots at each step and a screenshot diff against the agreed baseline; a console error counts as a failure.
+  - Confirm persistence: re-load the page and verify the saved settings actually round-trip, not just a 200 response.
+
+Constraints (what must not change):
+  - Do not change the page's public routes, the settings API, or the data schema.
+  - Integrity (anti-gaming): a mock-mode screenshot is not proof a real flow works. Never delete, skip, or weaken the visual/E2E tests or assertions to fake a green; never assert a 200 without checking persistence; and never modify, rewrite, or relax the screenshot-diff check or its baseline to force a pass.
+  - Secret hygiene: refer to credentials only as $ENV_VAR placeholders; do not capture secrets in screenshots.
+
+Boundaries (where you may write):
+  - Write only the end-to-end / screenshot test and its baseline artifacts; do not touch the page implementation or the backend.
+  - Out-of-scope findings → record them for the human; do not act.
+
+Iteration policy (how to make progress, and the brakes):
+  - Discovery first: read the spec and the flow, list assumptions, then exercise one step at a time and read each screenshot before moving on. If the page cannot be reached or the backend will not start after 3 focused attempts, stop and hand back PARTIAL with the captured state and the blocker.
+
+Stop when (proof of completion + deliver the baton):
+  - The full user path passes through the real UI with no console error, the screenshot diff matches the agreed baseline, persistence is confirmed by round-trip, and screenshots are captured under the loop-state evidence directory. Then write the Handoff (Part A/B per references/handoff.md) and echo its full text.
+
+Pause if (stop and escalate — do NOT work around):
+  - A real login session, production data, a credentialed third-party service, or a design decision about the intended look is required; or a truth-source conflict; or the backend cannot be started. Then write a BLOCKED Handoff naming the exact action you need.
+
+--- Executor operating brief + Handoff format ---
+When actually dispatching, inline the standard executor brief from references/goal-contract.md and the Handoff template from references/handoff.md verbatim below this line. They are omitted here because this file illustrates the seven contract elements for the blueprint, not a live send.
