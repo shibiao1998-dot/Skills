@@ -13,11 +13,9 @@ matches the work, then fill its fields from project discovery. If nothing fits
 cleanly, compose from the closest two — the schema is the same for all of them.
 
 > **Provenance.** These families synthesize the *structure* of public loop templates
-> surveyed at `https://loops.elorm.xyz/loops` (commander research notes:
-> `.loop/loops-elorm-research-2026-06-15/research-report.md`, gitignored). They do
-> **not** copy any external prompt. The external templates are prompt-only; the
-> relay-native value here is the mapping onto Goal / Handoff / verification, the
-> anti-gaming block, and the commander-owned gate.
+> surveyed at `https://loops.elorm.xyz/loops`. They do **not** copy external kickoffs
+> or install material. The relay-native value here is the mapping onto Goal / Handoff
+> / verification, the anti-gaming block, and the commander-owned gate.
 
 ## Two senses of "blueprint" — don't conflate them
 
