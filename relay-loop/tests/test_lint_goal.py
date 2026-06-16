@@ -265,6 +265,29 @@ class LintGoalTests(unittest.TestCase):
         # one (no over-flagging).
         self.assertEqual([], self.lint(GREEN_CLASS_GOAL_OK))
 
+    # --- Truth-sources thin-content gate ---
+
+    def test_truth_sources_too_thin_is_flagged(self) -> None:
+        # A present-but-1-char Truth-sources body (e.g. `Truth sources: x`) satisfies
+        # the presence check but is not actionable. The thin-content gate must catch it
+        # like every other required element.
+        thin_truth_block = (
+            "Truth sources: x"
+        )
+        goal = GOOD_GOAL.replace(
+            "Truth sources:\n"
+            + "  - Task: ISSUE-142 acceptance criteria.\n"
+            + "  - Contracts/specs: pricing rules in docs/pricing.md.\n"
+            + "  - Prior progress: none.",
+            thin_truth_block,
+        )
+
+        errors = self.lint(goal)
+
+        self.assertTrue(any("too thin" in error for error in errors), errors)
+        # The unmodified GOOD_GOAL must still lint clean — no regression.
+        self.assertEqual([], self.lint(GOOD_GOAL))
+
     # --- Shipped example Goals stay lint-clean ---
 
     def test_example_goal_files_are_lint_clean(self) -> None:

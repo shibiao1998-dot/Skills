@@ -101,6 +101,71 @@ class RenderBlueprintGoalTests(unittest.TestCase):
             self.assertIn("/goal ", text)
             self.assertEqual([], self.lint(fill(text)))
 
+    def test_cli_stdout_prints_draft_and_writes_no_file(self) -> None:
+        # --stdout prints the draft and must not write anything to the out-dir.
+        with tempfile.TemporaryDirectory() as tmp:
+            buf = io.StringIO()
+            with contextlib.redirect_stdout(buf):
+                rc = render_blueprint_goal.main([
+                    "render_blueprint_goal.py",
+                    "--blueprint", "ci-until-green",
+                    "--task", "318",
+                    "--outcome", SAMPLE_OUTCOME,
+                    "--out-dir", tmp,
+                    "--stdout",
+                ])
+            self.assertEqual(0, rc)
+            printed = buf.getvalue()
+            self.assertTrue(printed.startswith("# Blueprint:"))
+            self.assertIn("/goal ", printed)
+            self.assertEqual([], list(Path(tmp).iterdir()))
+
+    def test_cli_refuses_overwrite_without_force_then_overwrites_with_force(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            argv = [
+                "render_blueprint_goal.py",
+                "--blueprint", "ci-until-green",
+                "--task", "318",
+                "--outcome", SAMPLE_OUTCOME,
+                "--out-dir", tmp,
+            ]
+            with contextlib.redirect_stdout(io.StringIO()):
+                first = render_blueprint_goal.main(argv)
+            self.assertEqual(0, first)
+            path = Path(tmp) / "goal-318.txt"
+            path.write_text("sentinel\n", encoding="utf-8")
+
+            # Without --force the existing draft must be refused (non-zero exit, untouched).
+            err = io.StringIO()
+            with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(err):
+                refused = render_blueprint_goal.main(argv)
+            self.assertNotEqual(0, refused)
+            self.assertIn("already exists", err.getvalue())
+            self.assertEqual("sentinel\n", path.read_text(encoding="utf-8"))
+
+            # With --force the draft is overwritten.
+            with contextlib.redirect_stdout(io.StringIO()):
+                forced = render_blueprint_goal.main(argv + ["--force"])
+            self.assertEqual(0, forced)
+            self.assertNotEqual("sentinel\n", path.read_text(encoding="utf-8"))
+            self.assertTrue(path.read_text(encoding="utf-8").startswith("# Blueprint:"))
+
+    def test_cli_list_prints_every_blueprint_key(self) -> None:
+        buf = io.StringIO()
+        with contextlib.redirect_stdout(buf):
+            rc = render_blueprint_goal.main(["render_blueprint_goal.py", "--list"])
+        self.assertEqual(0, rc)
+        printed = buf.getvalue()
+        for key in render_blueprint_goal.BLUEPRINTS:
+            self.assertIn(key, printed)
+
+    def test_cli_missing_required_args_exits_nonzero(self) -> None:
+        # argparse's parser.error raises SystemExit when --blueprint/--task/--outcome
+        # are all absent (and --list is not passed).
+        with contextlib.redirect_stderr(io.StringIO()):
+            with self.assertRaises(SystemExit):
+                render_blueprint_goal.main(["render_blueprint_goal.py"])
+
 
 if __name__ == "__main__":
     unittest.main()

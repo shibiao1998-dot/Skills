@@ -33,7 +33,7 @@ from pathlib import Path
 # Each element: a human name + the keyword alternatives that head its section.
 # The colon (and any "(note)" before it) is matched by the helpers, not here.
 REQUIRED_ELEMENTS = [
-    ("outcome anchor (truth sources)", [r"Truth sources?", r"真相源?", r"Task"]),
+    ("outcome anchor (truth sources)", [r"Truth sources?", r"真相源?"]),
     ("verification", [r"Verification", r"验证"]),
     ("constraints", [r"Constraints", r"约束"]),
     ("boundaries", [r"Boundaries", r"边界"]),
@@ -287,7 +287,7 @@ def lint_text(text: str, source: str) -> list[str]:
         errors.append(f"{source}: verification should name concrete evidence (commands, tests, logs, screenshots, endpoints, artifacts)")
 
     # Thin sections usually mean the contract wasn't really filled in.
-    for name, keywords in REQUIRED_ELEMENTS[1:]:
+    for name, keywords in REQUIRED_ELEMENTS:
         content = section_body(text, keywords)
         if content is not None and len(content) < 12:
             errors.append(f"{source}: `{name}` content is too thin")
