@@ -303,6 +303,9 @@ Read the one you need, when you need it — don't preload everything.
 - `scripts/lint_fanout.py` — run on every fan-out split note before dispatch.
 - `scripts/lint_goal.py` — run on every assembled Goal before dispatch.
 - `scripts/lint_handoff.py` — run on every returned Handoff before trusting it.
+- `scripts/render_blueprint_goal.py` — scaffold a Goal-contract draft from a
+  `references/loop-blueprints.md` family (`--list` for keys) into `.loop/goals/`, with
+  the standard anti-gaming block baked in and `{{placeholders}}` to fill, then lint.
 
 ## Anti-patterns
 
