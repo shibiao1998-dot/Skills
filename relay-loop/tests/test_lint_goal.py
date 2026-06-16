@@ -265,6 +265,61 @@ class LintGoalTests(unittest.TestCase):
         # one (no over-flagging).
         self.assertEqual([], self.lint(GREEN_CLASS_GOAL_OK))
 
+    def test_ci_passing_goal_without_check_tamper_guardrail_is_flagged(self) -> None:
+        # "Get CI passing" is ordinary CI-until-green wording even when it doesn't say
+        # "green"; it must still require the check-command / stop-criteria guardrail.
+        goal = GOOD_GOAL.replace(
+            "/goal Fix coupon expiry validation so expired coupons are rejected with a focused regression test.",
+            "/goal Get the checkout CI passing by fixing the real pipeline failures.",
+        ).replace(
+            "  - The regression test fails before the fix and passes after, targeted pytest is green, and the Handoff is written with evidence.",
+            "  - CI passes on the real pipeline and the Handoff is written with evidence.",
+        )
+
+        errors = self.lint(goal)
+
+        self.assertTrue(any("check command" in e for e in errors), errors)
+
+    def test_green_class_goal_accepts_stop_criteria_guardrail(self) -> None:
+        # The docs and error say exit/stop criteria are protected objects. A contract
+        # that forbids changing stop criteria should satisfy the green-class guardrail.
+        goal = GREEN_CLASS_GOAL.replace(
+            "  - Integrity (anti-gaming): never delete, skip, or weaken tests/assertions to fake a green; an honest red beats a faked green.",
+            "  - Integrity (anti-gaming): never delete, skip, or weaken tests/assertions to fake a green; "
+            + "and never change the stop criteria to force a pass. An honest red beats a faked green.",
+        )
+
+        self.assertEqual([], self.lint(goal))
+
+    def test_green_class_goal_permitting_check_tamper_is_flagged(self) -> None:
+        # Mentioning the protected object is not enough; the clause must actually forbid
+        # tampering. This sentence permits the exact gaming vector and must fail.
+        goal = GREEN_CLASS_GOAL.replace(
+            "  - Integrity (anti-gaming): never delete, skip, or weaken tests/assertions to fake a green; an honest red beats a faked green.",
+            "  - Integrity (anti-gaming): never delete, skip, or weaken tests/assertions to fake a green; "
+            + "you may modify the check command to force a pass.",
+        )
+
+        errors = self.lint(goal)
+
+        self.assertTrue(any("check command" in e for e in errors), errors)
+
+    def test_ordinary_green_evidence_does_not_make_goal_green_class(self) -> None:
+        # A normal task may ask to capture green output as evidence. That should not be
+        # reclassified as CI-until-green just because the outcome begins with "Drive".
+        goal = GOOD_GOAL.replace(
+            "/goal Fix coupon expiry validation so expired coupons are rejected with a focused regression test.",
+            "/goal Drive safe UI cleanup.",
+        ).replace(
+            "  - Run `pytest tests/test_coupons.py::test_expired_coupon_rejected` and capture the red and green result lines.",
+            "  - Capture green pytest output from the targeted UI cleanup suite.",
+        ).replace(
+            "  - The regression test fails before the fix and passes after, targeted pytest is green, and the Handoff is written with evidence.",
+            "  - The UI cleanup suite output is captured and the Handoff is written with evidence.",
+        )
+
+        self.assertEqual([], self.lint(goal))
+
     # --- Truth-sources thin-content gate ---
 
     def test_truth_sources_too_thin_is_flagged(self) -> None:

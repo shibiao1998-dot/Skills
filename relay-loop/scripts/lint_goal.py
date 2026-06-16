@@ -109,24 +109,32 @@ GREEN_CLASS_PATTERNS = [
     r"\buntil\b[\s\S]{0,40}\b(?:pass|passes|passing)\b",
     r"\b(?:all|required|every)\b[\s\S]{0,25}\bchecks?\b[\s\S]{0,25}\b(?:pass|passes|green)\b",
     r"\bCI\b[\s\S]{0,25}\bgreen\b",
+    r"\bCI\b[\s\S]{0,25}\b(?:pass|passes|passing)\b",
+    r"\b(?:pass|passes|passing)\b[\s\S]{0,25}\bCI\b",
     r"(?:直到|保持|让|使)[\s\S]{0,20}(?:通过|变绿|为绿|全绿)",
 ]
 
 # The guardrail a green-class Goal must carry beyond "don't weaken tests": it must forbid
 # rewriting the verifier itself — the check command, the exit/stop criteria, or the
-# acceptance gate. Same forbid-verb-near-object shape as ANTIGAMING_RE.
+# acceptance gate. Require explicit negative/forbidding wording near the protected action
+# so a permissive sentence like "you may modify the check command" cannot satisfy it.
+CHECK_TAMPER_NEGATION = (
+    r"never|do\s+not|don't|must\s+not|may\s+not|cannot|can't|forbid|prohibit|"
+    + r"绝不|禁止|不得|不能|不要|不允许|不可"
+)
 CHECK_TAMPER_FORBID = (
-    r"modif|rewrit|rewrote|chang|alter|relax|loosen|adjust|edit|swap|replac|disabl|bypass|weaken|"
+    r"modif|rewrit|rewrote|chang|alter|relax|loosen|adjust|edit|swap|replac|disabl|bypass|weaken|touch|"
     + r"改写|修改|更改|放松|放宽|绕过|篡改|削弱"
 )
 CHECK_TAMPER_OBJECT = (
-    r"check command|exit (?:condition|criteri)|stop[\s-]?when|pass(?:ing)? condition|"
+    r"check command|exit (?:condition|criteri)|stop (?:condition|criteri)|exit/stop criteri|"
+    + r"stop[\s-]?when|pass(?:ing)? condition|"
     + r"acceptance (?:criteri|condition|gate)|the gate\b|exit code|"
     + r"检查命令|退出条件|完成条件|停止条件|验收(?:标准|条件)|通过条件"
 )
 CHECK_TAMPER_RE = re.compile(
-    rf"(?:{CHECK_TAMPER_FORBID})[\s\S]{{0,60}}(?:{CHECK_TAMPER_OBJECT})"
-    + rf"|(?:{CHECK_TAMPER_OBJECT})[\s\S]{{0,60}}(?:{CHECK_TAMPER_FORBID})",
+    rf"(?:{CHECK_TAMPER_NEGATION})[^.;。；\n]{{0,80}}(?:{CHECK_TAMPER_FORBID})[^.;。；\n]{{0,80}}(?:{CHECK_TAMPER_OBJECT})"
+    + rf"|(?:{CHECK_TAMPER_NEGATION})[^.;。；\n]{{0,80}}(?:{CHECK_TAMPER_OBJECT})[^.;。；\n]{{0,80}}(?:{CHECK_TAMPER_FORBID})",
     flags=re.IGNORECASE,
 )
 
@@ -316,14 +324,19 @@ def lint_text(text: str, source: str) -> list[str]:
     # explicit guardrail against tampering with the check / exit criteria. The green-class
     # signal is scoped to commander-authored sections so boilerplate doesn't trip it; the
     # guardrail itself may appear anywhere in the Goal.
-    green_blob = " ".join(
+    green_sections = [
         body for body in (
             goal_line,
             section_body(text, REQUIRED_ELEMENTS[1][1]),
             section_body(text, REQUIRED_ELEMENTS[5][1]),
         ) if body
+    ]
+    is_green_class = any(
+        re.search(pattern, section, flags=re.IGNORECASE)
+        for section in green_sections
+        for pattern in GREEN_CLASS_PATTERNS
     )
-    if any(re.search(p, green_blob, flags=re.IGNORECASE) for p in GREEN_CLASS_PATTERNS) and not CHECK_TAMPER_RE.search(text):
+    if is_green_class and not CHECK_TAMPER_RE.search(text):
         errors.append(f"{source}: green-class ('until green' / make-the-checks-pass) Goal must also forbid modifying the check command or exit/stop criteria to force a pass — not only weakening tests")
 
     # Failure-driven Goals must require red-first. Look only in the commander-authored
